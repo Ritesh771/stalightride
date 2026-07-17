@@ -1,0 +1,202 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/hooks/use-session";
+import { SiteHeader } from "@/components/site-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Upload, X } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/vendor/vehicles/new")({ component: NewVehicle });
+
+function NewVehicle() {
+  const { user } = useSession();
+  const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+
+  const [form, setForm] = useState({
+    title: "", category: "car", brand: "", model: "", year: new Date().getFullYear(),
+    fuel: "petrol", transmission: "manual", mileage_kmpl: "", seats: "",
+    city: "", address: "", description: "",
+    price_hourly: "", price_daily: "", price_weekly: "", security_deposit: "0",
+  });
+
+  const set = (k: string, v: any) => setForm((s) => ({ ...s, [k]: v }));
+
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = Array.from(e.target.files ?? []).slice(0, 8);
+    setFiles(list);
+    setPreviews(list.map((f) => URL.createObjectURL(f)));
+  };
+  const remove = (i: number) => {
+    setFiles(files.filter((_, x) => x !== i));
+    setPreviews(previews.filter((_, x) => x !== i));
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!form.price_daily) return toast.error("Daily price is required");
+    setSaving(true);
+    try {
+      // Ensure vendor row exists
+      await supabase.from("vendors").upsert({ id: user.id, business_name: user.user_metadata?.full_name || user.email || "Host" });
+      await supabase.from("user_roles").upsert({ user_id: user.id, role: "vendor" as const }, { onConflict: "user_id,role" });
+
+      const insertPayload = {
+        vendor_id: user.id,
+        title: form.title,
+        category: form.category as any,
+        brand: form.brand,
+        model: form.model,
+        year: Number(form.year),
+        fuel: form.fuel as any,
+        transmission: form.transmission as any,
+        mileage_kmpl: form.mileage_kmpl ? Number(form.mileage_kmpl) : null,
+        seats: form.seats ? Number(form.seats) : null,
+        city: form.city,
+        address: form.address || null,
+        description: form.description || null,
+        price_hourly: form.price_hourly ? Number(form.price_hourly) : null,
+        price_daily: Number(form.price_daily),
+        price_weekly: form.price_weekly ? Number(form.price_weekly) : null,
+        security_deposit: Number(form.security_deposit || 0),
+        status: "active" as const,
+      };
+
+      const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload).select("id").single();
+      if (error) throw error;
+
+      // Upload files
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = file.name.split(".").pop();
+        const path = `${user.id}/${vehicle.id}/${Date.now()}-${i}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("vehicle-images").upload(path, file, { upsert: false });
+        if (upErr) throw upErr;
+        await supabase.from("vehicle_images").insert({ vehicle_id: vehicle.id, url: path, sort_order: i });
+      }
+
+      toast.success("Vehicle listed!");
+      navigate({ to: "/vehicle/$id", params: { id: vehicle.id } });
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to create");
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <div className="min-h-screen">
+      <SiteHeader />
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <h1 className="font-display text-3xl font-semibold">List a new vehicle</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Add photos, pricing, and details so renters can find you.</p>
+
+        <Card className="mt-6"><CardContent className="p-6">
+          <form onSubmit={submit} className="space-y-6">
+            <Section title="Basics">
+              <Field label="Title"><Input value={form.title} onChange={(e) => set("title", e.target.value)} required placeholder="e.g. Tesla Model 3 — long range" /></Field>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Category">
+                  <Select value={form.category} onValueChange={(v) => set("category", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="car">Car</SelectItem><SelectItem value="ev">EV</SelectItem>
+                      <SelectItem value="motorcycle">Motorcycle</SelectItem><SelectItem value="scooter">Scooter</SelectItem>
+                      <SelectItem value="bike">Bike</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Year"><Input type="number" value={form.year} onChange={(e) => set("year", e.target.value)} required /></Field>
+                <Field label="Brand"><Input value={form.brand} onChange={(e) => set("brand", e.target.value)} required /></Field>
+                <Field label="Model"><Input value={form.model} onChange={(e) => set("model", e.target.value)} required /></Field>
+              </div>
+            </Section>
+
+            <Section title="Specs">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Fuel">
+                  <Select value={form.fuel} onValueChange={(v) => set("fuel", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="petrol">Petrol</SelectItem><SelectItem value="diesel">Diesel</SelectItem>
+                      <SelectItem value="electric">Electric</SelectItem><SelectItem value="hybrid">Hybrid</SelectItem>
+                      <SelectItem value="none">N/A</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Transmission">
+                  <Select value={form.transmission} onValueChange={(v) => set("transmission", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Manual</SelectItem><SelectItem value="automatic">Automatic</SelectItem>
+                      <SelectItem value="none">N/A</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Mileage (kmpl)"><Input type="number" step="0.1" value={form.mileage_kmpl} onChange={(e) => set("mileage_kmpl", e.target.value)} /></Field>
+                <Field label="Seats"><Input type="number" value={form.seats} onChange={(e) => set("seats", e.target.value)} /></Field>
+              </div>
+            </Section>
+
+            <Section title="Location">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} required /></Field>
+                <Field label="Pickup address"><Input value={form.address} onChange={(e) => set("address", e.target.value)} /></Field>
+              </div>
+            </Section>
+
+            <Section title="Pricing">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Field label="Hourly"><Input type="number" step="0.01" value={form.price_hourly} onChange={(e) => set("price_hourly", e.target.value)} /></Field>
+                <Field label="Daily *"><Input type="number" step="0.01" value={form.price_daily} onChange={(e) => set("price_daily", e.target.value)} required /></Field>
+                <Field label="Weekly"><Input type="number" step="0.01" value={form.price_weekly} onChange={(e) => set("price_weekly", e.target.value)} /></Field>
+                <Field label="Security deposit"><Input type="number" step="0.01" value={form.security_deposit} onChange={(e) => set("security_deposit", e.target.value)} /></Field>
+              </div>
+            </Section>
+
+            <Section title="Description">
+              <Textarea rows={4} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Highlights, quirks, rules, included extras…" />
+            </Section>
+
+            <Section title="Photos">
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-8 text-center hover:border-primary/50">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <span className="text-sm">Click to upload up to 8 photos</span>
+                <input type="file" accept="image/*" multiple className="hidden" onChange={onPick} />
+              </label>
+              {previews.length > 0 && (
+                <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {previews.map((src, i) => (
+                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg">
+                      <img src={src} alt="" className="h-full w-full object-cover" />
+                      <button type="button" onClick={() => remove(i)} className="absolute right-1 top-1 rounded-full bg-black/70 p-1"><X className="h-3 w-3" /></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Section>
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => navigate({ to: "/vendor" })}>Cancel</Button>
+              <Button type="submit" disabled={saving} className="shadow-glow">{saving ? "Publishing…" : "Publish listing"}</Button>
+            </div>
+          </form>
+        </CardContent></Card>
+      </div>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return <div><h3 className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h3><div className="mt-3 space-y-3">{children}</div></div>;
+}
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div><Label>{label}</Label><div className="mt-1">{children}</div></div>;
+}
