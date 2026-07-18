@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPicker } from "@/components/map-picker";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 
@@ -27,6 +28,7 @@ function NewVehicle() {
     city: "", address: "", description: "",
     price_hourly: "", price_daily: "", price_weekly: "", security_deposit: "0",
   });
+  const [pin, setPin] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
 
   const set = (k: string, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
@@ -44,9 +46,9 @@ function NewVehicle() {
     e.preventDefault();
     if (!user) return;
     if (!form.price_daily) return toast.error("Daily price is required");
+    if (!pin.lat || !pin.lng) return toast.error("Drop a pickup pin on the map so renters can find your vehicle");
     setSaving(true);
     try {
-      // Ensure vendor row exists
       await supabase.from("vendors").upsert({ id: user.id, business_name: user.user_metadata?.full_name || user.email || "Host" });
       await supabase.from("user_roles").upsert({ user_id: user.id, role: "vendor" as const }, { onConflict: "user_id,role" });
 
@@ -63,6 +65,8 @@ function NewVehicle() {
         seats: form.seats ? Number(form.seats) : null,
         city: form.city,
         address: form.address || null,
+        lat: pin.lat,
+        lng: pin.lng,
         description: form.description || null,
         price_hourly: form.price_hourly ? Number(form.price_hourly) : null,
         price_daily: Number(form.price_daily),
@@ -74,7 +78,6 @@ function NewVehicle() {
       const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload).select("id").single();
       if (error) throw error;
 
-      // Upload files
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const ext = file.name.split(".").pop();
@@ -84,7 +87,7 @@ function NewVehicle() {
         await supabase.from("vehicle_images").insert({ vehicle_id: vehicle.id, url: path, sort_order: i });
       }
 
-      toast.success("Vehicle listed!");
+      toast.success("Vehicle published!");
       navigate({ to: "/vehicle/$id", params: { id: vehicle.id } });
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create");
@@ -94,14 +97,14 @@ function NewVehicle() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-        <h1 className="font-display text-3xl font-semibold">List a new vehicle</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Add photos, pricing, and details so renters can find you.</p>
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 animate-fade-in">
+        <h1 className="font-display text-3xl font-semibold">List your vehicle</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Add photos, pickup location, and pricing so riders can book you.</p>
 
         <Card className="mt-6"><CardContent className="p-6">
           <form onSubmit={submit} className="space-y-6">
             <Section title="Basics">
-              <Field label="Title"><Input value={form.title} onChange={(e) => set("title", e.target.value)} required placeholder="e.g. Tesla Model 3 — long range" /></Field>
+              <Field label="Title"><Input value={form.title} onChange={(e) => set("title", e.target.value)} required placeholder="e.g. Honda City 2023 — automatic" /></Field>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Category">
                   <Select value={form.category} onValueChange={(v) => set("category", v)}>
@@ -145,19 +148,20 @@ function NewVehicle() {
               </div>
             </Section>
 
-            <Section title="Location">
+            <Section title="Pickup location">
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} required /></Field>
-                <Field label="Pickup address"><Input value={form.address} onChange={(e) => set("address", e.target.value)} /></Field>
+                <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} required placeholder="Bengaluru" /></Field>
+                <Field label="Full address"><Input value={form.address} onChange={(e) => set("address", e.target.value)} required placeholder="Street, area, landmark" /></Field>
               </div>
+              <MapPicker value={pin} onChange={setPin} className="mt-2" />
             </Section>
 
-            <Section title="Pricing">
+            <Section title="Pricing (INR)">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Field label="Hourly"><Input type="number" step="0.01" value={form.price_hourly} onChange={(e) => set("price_hourly", e.target.value)} /></Field>
-                <Field label="Daily *"><Input type="number" step="0.01" value={form.price_daily} onChange={(e) => set("price_daily", e.target.value)} required /></Field>
-                <Field label="Weekly"><Input type="number" step="0.01" value={form.price_weekly} onChange={(e) => set("price_weekly", e.target.value)} /></Field>
-                <Field label="Security deposit"><Input type="number" step="0.01" value={form.security_deposit} onChange={(e) => set("security_deposit", e.target.value)} /></Field>
+                <Field label="Hourly"><Input type="number" step="1" value={form.price_hourly} onChange={(e) => set("price_hourly", e.target.value)} /></Field>
+                <Field label="Daily *"><Input type="number" step="1" value={form.price_daily} onChange={(e) => set("price_daily", e.target.value)} required /></Field>
+                <Field label="Weekly"><Input type="number" step="1" value={form.price_weekly} onChange={(e) => set("price_weekly", e.target.value)} /></Field>
+                <Field label="Security deposit"><Input type="number" step="1" value={form.security_deposit} onChange={(e) => set("security_deposit", e.target.value)} /></Field>
               </div>
             </Section>
 
@@ -166,7 +170,7 @@ function NewVehicle() {
             </Section>
 
             <Section title="Photos">
-              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-8 text-center hover:border-primary/50">
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border p-8 text-center transition-colors hover:border-primary/50 hover:bg-muted/40">
                 <Upload className="h-6 w-6 text-muted-foreground" />
                 <span className="text-sm">Click to upload up to 8 photos</span>
                 <input type="file" accept="image/*" multiple className="hidden" onChange={onPick} />
@@ -174,9 +178,9 @@ function NewVehicle() {
               {previews.length > 0 && (
                 <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {previews.map((src, i) => (
-                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg">
+                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg animate-scale-in">
                       <img src={src} alt="" className="h-full w-full object-cover" />
-                      <button type="button" onClick={() => remove(i)} className="absolute right-1 top-1 rounded-full bg-black/70 p-1"><X className="h-3 w-3" /></button>
+                      <button type="button" onClick={() => remove(i)} className="absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white"><X className="h-3 w-3" /></button>
                     </div>
                   ))}
                 </div>
@@ -185,7 +189,7 @@ function NewVehicle() {
 
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => navigate({ to: "/vendor" })}>Cancel</Button>
-              <Button type="submit" disabled={saving} className="shadow-glow">{saving ? "Publishing…" : "Publish listing"}</Button>
+              <Button type="submit" disabled={saving}>{saving ? "Publishing…" : "Publish listing"}</Button>
             </div>
           </form>
         </CardContent></Card>
