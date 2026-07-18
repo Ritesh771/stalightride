@@ -58,7 +58,7 @@ function VendorDashboard() {
   if (!user) return null;
 
   const earnings = (bookings ?? [])
-    .filter((b) => b.status === "completed" || b.status === "confirmed")
+    .filter((b) => b.payment_status === "paid")
     .reduce((s, b) => s + Number(b.total_price), 0);
 
   if (!vendor) {
