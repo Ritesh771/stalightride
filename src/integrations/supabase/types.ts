@@ -56,11 +56,13 @@ export type Database = {
           created_at: string
           customer_id: string
           discount: number
+          dropoff_time: string
           end_date: string
           id: string
           notes: string | null
           paid_at: string | null
           payment_status: string
+          pickup_time: string
           qr_code: string | null
           razorpay_order_id: string | null
           razorpay_payment_id: string | null
@@ -78,11 +80,13 @@ export type Database = {
           created_at?: string
           customer_id: string
           discount?: number
+          dropoff_time?: string
           end_date: string
           id?: string
           notes?: string | null
           paid_at?: string | null
           payment_status?: string
+          pickup_time?: string
           qr_code?: string | null
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
@@ -100,11 +104,13 @@ export type Database = {
           created_at?: string
           customer_id?: string
           discount?: number
+          dropoff_time?: string
           end_date?: string
           id?: string
           notes?: string | null
           paid_at?: string | null
           payment_status?: string
+          pickup_time?: string
           qr_code?: string | null
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
