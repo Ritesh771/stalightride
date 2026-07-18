@@ -30,6 +30,8 @@ function VehiclePage() {
   const [activeImg, setActiveImg] = useState(0);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [pickupTime, setPickupTime] = useState("10:00");
+  const [dropoffTime, setDropoffTime] = useState("10:00");
   const [notes, setNotes] = useState("");
   const [booking, setBooking] = useState(false);
   const [wished, setWished] = useState(false);
@@ -77,6 +79,8 @@ function VehiclePage() {
         customer_id: user.id,
         start_date: start,
         end_date: end,
+        pickup_time: pickupTime,
+        dropoff_time: dropoffTime,
         base_price: subtotal,
         security_deposit: v.security_deposit,
         total_price: total,
