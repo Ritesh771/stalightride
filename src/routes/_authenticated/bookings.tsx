@@ -161,9 +161,19 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                 </div>
               </div>
               {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
-                <div className="flex shrink-0 items-center justify-center rounded-lg bg-white p-2">
-                  <QRCodeSVG value={b.qr_code} size={80} />
-                </div>
+                <a
+                  href={`/booking/qr/${b.qr_code}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 flex-col items-center justify-center gap-1 rounded-lg bg-white p-2 ring-1 ring-border transition-transform hover:scale-[1.03]"
+                  title="Scan or open to view booking details"
+                >
+                  <QRCodeSVG
+                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/booking/qr/${b.qr_code}`}
+                    size={96}
+                  />
+                  <span className="text-[10px] font-medium text-muted-foreground">Scan for details</span>
+                </a>
               )}
             </CardContent>
           </Card>
