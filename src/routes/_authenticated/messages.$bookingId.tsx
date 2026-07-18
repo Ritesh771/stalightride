@@ -56,6 +56,7 @@ function MessagesPage() {
   }, [bookingId, user, navigate]);
 
   useEffect(() => {
+    if (!allowed) return;
     const ch = supabase.channel(`msgs-${bookingId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
         async (payload) => {
@@ -64,7 +65,7 @@ function MessagesPage() {
         })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [bookingId]);
+  }, [bookingId, allowed]);
 
   useEffect(() => { listRef.current?.scrollTo({ top: 999999 }); }, [messages]);
 
