@@ -40,8 +40,9 @@ function Profile() {
     const path = `${user.id}/avatar-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); setUploading(false); return; }
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    setProfile({ ...profile, avatar_url: data.publicUrl });
+    const { data, error: sErr } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (sErr || !data) { toast.error(sErr?.message ?? "Could not sign URL"); setUploading(false); return; }
+    setProfile({ ...profile, avatar_url: data.signedUrl });
     setUploading(false);
   };
 
