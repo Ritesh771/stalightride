@@ -169,7 +169,7 @@ function VehiclePage() {
             <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">Pickup location</h2>
               <p className="mt-1 text-sm text-muted-foreground">{mapQuery}</p>
-              <VehicleMap query={mapQuery} className="mt-4 aspect-[16/9]" />
+              <VehicleMap query={mapQuery} lat={v.lat} lng={v.lng} className="mt-4 aspect-[16/9] animate-fade-in" />
             </section>
 
             <section className="mt-6 rounded-2xl border border-border bg-card p-6">
