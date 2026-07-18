@@ -135,3 +135,35 @@
 @utility shadow-glow { box-shadow: var(--shadow-glow); }
 @utility shadow-card { box-shadow: var(--shadow-card); }
 @utility text-gradient { color: var(--color-foreground); }
+
+/* ————— Map / ride themed animations ————— */
+@keyframes rs-map-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes rs-pin-drop {
+  0% { transform: translateY(-14px) scale(0.85); opacity: 0; }
+  60% { transform: translateY(2px) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes rs-pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes rs-route-dash {
+  to { stroke-dashoffset: -32; }
+}
+
+@utility map-shimmer {
+  background: linear-gradient(90deg, oklch(0.97 0 0) 0%, oklch(0.93 0 0) 40%, oklch(0.97 0 0) 80%);
+  background-size: 200% 100%;
+  animation: rs-map-shimmer 2.2s linear infinite;
+}
+@utility pin-drop { animation: rs-pin-drop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@utility pulse-ring {
+  position: relative;
+}
+@utility route-dash {
+  stroke-dasharray: 6 6;
+  animation: rs-route-dash 1.4s linear infinite;
+}
