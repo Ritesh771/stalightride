@@ -120,30 +120,7 @@ function VendorDashboard() {
           {!vehicles && <div className="mt-4 grid gap-3 sm:grid-cols-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}</div>}
           {vehicles && vehicles.length === 0 && <p className="mt-4 text-muted-foreground">No vehicles yet.</p>}
           {vehicles && vehicles.length > 0 && (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {vehicles.map((v) => {
-                const img = v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0];
-                const url = img ? publicUrl("vehicle-images", img.url) : null;
-                return (
-                  <Card key={v.id}>
-                    <div className="aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">{url && <img src={url} alt="" className="h-full w-full object-cover" />}</div>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="min-w-0">
-                          <div className="truncate font-medium">{v.title}</div>
-                          <div className="truncate text-xs text-muted-foreground">{v.city}</div>
-                        </div>
-                        <Badge variant="outline">{v.status}</Badge>
-                      </div>
-                      <div className="mt-2 flex justify-between text-sm">
-                        <span>{currency(v.price_daily)} / day</span>
-                        <Link to="/vehicle/$id" params={{ id: v.id }} className="text-primary hover:underline">View</Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+            <VehiclesGrid vehicles={vehicles} />
           )}
         </section>
 
