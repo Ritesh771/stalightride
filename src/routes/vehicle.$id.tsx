@@ -172,7 +172,18 @@ function VehiclePage() {
 
             <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">Pickup location</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{mapQuery}</p>
+              <div className="mt-2 flex items-start gap-2 text-sm">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-foreground pin-drop" />
+                <div>
+                  <p className="font-medium">{v.address || v.city}</p>
+                  {v.address && <p className="text-xs text-muted-foreground">{v.city}</p>}
+                  {v.lat && v.lng && (
+                    <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+                      {Number(v.lat).toFixed(5)}, {Number(v.lng).toFixed(5)}
+                    </p>
+                  )}
+                </div>
+              </div>
               <VehicleMap query={mapQuery} lat={v.lat} lng={v.lng} className="mt-4 aspect-[16/9] animate-fade-in" />
             </section>
 
