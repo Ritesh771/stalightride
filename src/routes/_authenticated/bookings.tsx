@@ -131,7 +131,10 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                     {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-muted-foreground">{b.start_date} → {b.end_date}</div>
+                <div className="mt-2 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
+                  <div>📅 {b.start_date} → {b.end_date}</div>
+                  <div>🕒 {String(b.pickup_time ?? "").slice(0, 5)} → {String(b.dropoff_time ?? "").slice(0, 5)}</div>
+                </div>
                 <div className="mt-1 text-sm">Total: <span className="font-semibold">{currency(b.total_price)}</span></div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
