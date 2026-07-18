@@ -71,11 +71,15 @@ function MessagesPage() {
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim() || !user) return;
+    if (!text.trim() || !user || !allowed) return;
     const body = text.trim();
     setText("");
-    await supabase.from("messages").insert({ booking_id: bookingId, sender_id: user.id, body });
+    const { error } = await supabase.from("messages").insert({ booking_id: bookingId, sender_id: user.id, body });
+    if (error) toast.error(error.message);
   };
+
+  if (allowed === false) return null;
+
 
   return (
     <div className="min-h-screen">
