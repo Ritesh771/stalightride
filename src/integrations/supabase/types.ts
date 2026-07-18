@@ -59,7 +59,11 @@ export type Database = {
           end_date: string
           id: string
           notes: string | null
+          paid_at: string | null
+          payment_status: string
           qr_code: string | null
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
           security_deposit: number
           start_date: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -77,7 +81,11 @@ export type Database = {
           end_date: string
           id?: string
           notes?: string | null
+          paid_at?: string | null
+          payment_status?: string
           qr_code?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           security_deposit?: number
           start_date: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -95,7 +103,11 @@ export type Database = {
           end_date?: string
           id?: string
           notes?: string | null
+          paid_at?: string | null
+          payment_status?: string
           qr_code?: string | null
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
           security_deposit?: number
           start_date?: string
           status?: Database["public"]["Enums"]["booking_status"]
