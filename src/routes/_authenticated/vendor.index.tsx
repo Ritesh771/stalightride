@@ -158,3 +158,34 @@ function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: a
     </CardContent></Card>
   );
 }
+
+function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
+  const paths = vehicles.map((v) => v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.url);
+  const urls = useSignedUrls("vehicle-images", paths);
+  return (
+    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {vehicles.map((v) => {
+        const img = v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0];
+        const url = img ? urls[img.url] : null;
+        return (
+          <Card key={v.id}>
+            <div className="aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">{url && <img src={url} alt="" className="h-full w-full object-cover" />}</div>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div className="truncate font-medium">{v.title}</div>
+                  <div className="truncate text-xs text-muted-foreground">{v.city}</div>
+                </div>
+                <Badge variant="outline">{v.status}</Badge>
+              </div>
+              <div className="mt-2 flex justify-between text-sm">
+                <span>{currency(v.price_daily)} / day</span>
+                <Link to="/vehicle/$id" params={{ id: v.id }} className="text-foreground hover:underline">View</Link>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
