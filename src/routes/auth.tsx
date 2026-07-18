@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { Zap } from "lucide-react";
+import logoAsset from "@/assets/rideshare-logo.asset.json";
 
 const search = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
