@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { Bike, Car, Zap, Search, Shield, Sparkles, MapPin, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Bike, Car, Zap, ShieldCheck, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({ component: Index });
 
@@ -14,47 +17,85 @@ const CATS = [
 ];
 
 function Index() {
+  const navigate = useNavigate();
+  const [city, setCity] = useState("");
+
+  const search = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate({ to: "/browse", search: { city: city || undefined } as any });
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="gradient-hero absolute inset-0 -z-10" />
-        <div className="mx-auto max-w-7xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Peer-to-peer vehicle rentals
-            </div>
-            <h1 className="mt-6 text-4xl font-semibold leading-tight sm:text-6xl">
-              Rent any ride. <span className="text-gradient">Anywhere.</span>
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 md:py-20">
+          <div className="flex flex-col justify-center">
+            <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Go anywhere,<br />rent anything.
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-              From scooters to EVs, book vehicles by the hour, day, or week — straight from
-              trusted local hosts.
+            <p className="mt-5 max-w-lg text-base text-muted-foreground sm:text-lg">
+              Book cars, bikes, scooters and EVs from trusted local hosts. By the hour, day or week.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="shadow-glow">
-                <Link to="/browse"><Search className="mr-2 h-4 w-4" />Find a ride</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/vendor">Become a host</Link>
-              </Button>
+
+            <form onSubmit={search} className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter your city"
+                  className="h-12 pl-9"
+                />
+              </div>
+              <Button type="submit" size="lg" className="h-12 px-6">Search</Button>
+            </form>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {CATS.map((c) => (
+                <Link
+                  key={c.key}
+                  to="/browse"
+                  search={{ category: c.key } as any}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <c.icon className="h-4 w-4" />
+                  {c.label}
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Category chips */}
-          <div className="mx-auto mt-14 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-5">
+          <div className="relative hidden md:block">
+            <div className="aspect-[4/5] w-full overflow-hidden rounded-2xl bg-muted">
+              <img
+                src="https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80"
+                alt="Person driving a car"
+                className="h-full w-full object-cover"
+                loading="eager"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories grid (mobile-friendly) */}
+      <section className="border-b border-border py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">Choose your ride</h2>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {CATS.map((c) => (
               <Link
                 key={c.key}
                 to="/browse"
                 search={{ category: c.key } as any}
-                className="group flex flex-col items-center justify-center gap-2 rounded-xl border border-border/60 bg-card/60 p-4 backdrop-blur transition hover:border-primary/50 hover:bg-card"
+                className="group flex flex-col items-start justify-between rounded-xl border border-border bg-card p-5 transition hover:border-foreground/40"
               >
-                <c.icon className="h-6 w-6 text-primary transition group-hover:scale-110" />
-                <span className="text-sm">{c.label}</span>
+                <c.icon className="h-8 w-8 text-foreground" />
+                <span className="mt-8 text-base font-semibold">{c.label}</span>
+                <span className="text-xs text-muted-foreground">Explore →</span>
               </Link>
             ))}
           </div>
@@ -62,18 +103,16 @@ function Index() {
       </section>
 
       {/* Features */}
-      <section className="border-t border-border/60 py-20">
+      <section className="border-b border-border py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { icon: Shield, title: "Verified hosts", body: "Every host completes identity checks before their vehicles go live." },
-              { icon: MapPin, title: "Local & convenient", body: "Find vehicles near you with map-powered search." },
-              { icon: Star, title: "Rated by real riders", body: "Transparent reviews from customers who've actually booked." },
+              { icon: ShieldCheck, title: "Verified hosts", body: "Every host completes identity checks before their vehicles go live." },
+              { icon: MapPin, title: "Local & convenient", body: "Find vehicles near you in seconds." },
+              { icon: Clock, title: "Flexible pricing", body: "Rent by the hour, day, or week — whatever suits you." },
             ].map((f) => (
-              <div key={f.title} className="rounded-2xl border border-border/60 bg-card p-6 shadow-card">
-                <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
-                  <f.icon className="h-5 w-5" />
-                </div>
+              <div key={f.title} className="rounded-xl border border-border bg-card p-6">
+                <f.icon className="h-6 w-6 text-foreground" />
                 <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
               </div>
@@ -82,19 +121,32 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-border/60 pb-24 pt-16">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <h2 className="text-3xl font-semibold sm:text-4xl">Ready to hit the road?</h2>
-          <p className="mt-3 text-muted-foreground">Sign up in seconds. Book in minutes.</p>
-          <Button asChild size="lg" className="mt-6 shadow-glow"><Link to="/auth">Get started</Link></Button>
+      {/* Driver CTA */}
+      <section className="py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 md:grid-cols-2 md:items-center">
+          <div>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">Earn by sharing your vehicle</h2>
+            <p className="mt-3 text-muted-foreground">List your car, bike, or scooter in minutes. You control availability and pricing.</p>
+            <Button asChild size="lg" className="mt-6"><Link to="/vendor">Get started</Link></Button>
+          </div>
+          <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
+            <img
+              src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80"
+              alt="Car parked on street"
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
-      <footer className="border-t border-border/60 py-8">
+      <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} RideShare</span>
-          <span>Built with care.</span>
+          <div className="flex gap-4">
+            <Link to="/browse" className="hover:text-foreground">Browse</Link>
+            <Link to="/vendor" className="hover:text-foreground">Become a host</Link>
+          </div>
         </div>
       </footer>
     </div>
