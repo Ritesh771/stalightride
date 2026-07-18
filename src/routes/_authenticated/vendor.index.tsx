@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { publicUrl, currency } from "@/lib/format";
+import { currency } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
 import { Plus, Car, DollarSign, Calendar, ShieldCheck } from "lucide-react";
 
