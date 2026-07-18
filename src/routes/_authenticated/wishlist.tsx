@@ -5,7 +5,8 @@ import { useSession } from "@/hooks/use-session";
 import { SiteHeader } from "@/components/site-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { publicUrl, currency } from "@/lib/format";
+import { currency } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 
@@ -29,8 +30,13 @@ function Wishlist() {
     load();
   };
 
+  const paths = (items ?? []).map((w) =>
+    w.vehicles?.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.url,
+  );
+  const urls = useSignedUrls("vehicle-images", paths);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-semibold">Wishlist</h1>
@@ -42,7 +48,7 @@ function Wishlist() {
               const v = w.vehicles;
               if (!v) return null;
               const img = v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0];
-              const url = img ? publicUrl("vehicle-images", img.url) : null;
+              const url = img ? urls[img.url] : null;
               return (
                 <Card key={w.id} className="overflow-hidden">
                   <Link to="/vehicle/$id" params={{ id: v.id }}>
@@ -53,7 +59,7 @@ function Wishlist() {
                     <div className="truncate text-xs text-muted-foreground">{v.city}</div>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="text-sm"><span className="font-semibold">{currency(v.price_daily)}</span> / day</div>
-                      <Button size="sm" variant="ghost" onClick={() => remove(w.id)}><Heart className="h-4 w-4 fill-primary text-primary" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => remove(w.id)}><Heart className="h-4 w-4 fill-foreground text-foreground" /></Button>
                     </div>
                   </CardContent>
                 </Card>

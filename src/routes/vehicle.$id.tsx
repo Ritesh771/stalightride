@@ -10,7 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { publicUrl, currency, daysBetween } from "@/lib/format";
+import { currency, daysBetween } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
+import { VehicleMap } from "@/components/vehicle-map";
 import { toast } from "sonner";
 import { Star, MapPin, Users, Fuel, Cog, Gauge, Heart, ShieldCheck } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
@@ -55,12 +57,13 @@ function VehiclePage() {
       .then(({ data }) => setWished(!!data));
   }, [user, id]);
 
+  const images = (v?.vehicle_images ?? []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+  const urls = useSignedUrls("vehicle-images", images.map((im: any) => im.url));
+  const imgUrl = images[activeImg] ? urls[images[activeImg].url] : null;
+
   const days = start && end ? daysBetween(start, end) : 0;
   const subtotal = useMemo(() => (v ? days * Number(v.price_daily) : 0), [days, v]);
   const total = subtotal + (v ? Number(v.security_deposit) : 0);
-
-  const images = (v?.vehicle_images ?? []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
-  const imgUrl = images[activeImg] ? publicUrl("vehicle-images", images[activeImg].url) : null;
 
   const book = async () => {
     if (!user) { navigate({ to: "/auth" }); return; }
@@ -101,7 +104,7 @@ function VehiclePage() {
   };
 
   if (!v) return (
-    <div className="min-h-screen"><SiteHeader />
+    <div className="min-h-screen bg-background"><SiteHeader />
       <div className="mx-auto grid max-w-7xl gap-4 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_360px]">
         <Skeleton className="aspect-[16/10] rounded-2xl" />
         <Skeleton className="h-80 rounded-2xl" />
@@ -109,8 +112,10 @@ function VehiclePage() {
     </div>
   );
 
+  const mapQuery = [v.address, v.city].filter(Boolean).join(", ") || v.city;
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
@@ -118,28 +123,28 @@ function VehiclePage() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-3.5 w-3.5" />{v.city}
               <span>·</span>
-              <Star className="h-3.5 w-3.5 fill-primary text-primary" />{Number(v.avg_rating).toFixed(1)} ({v.review_count})
+              <Star className="h-3.5 w-3.5 fill-foreground text-foreground" />{Number(v.avg_rating).toFixed(1)} ({v.review_count})
             </div>
             <h1 className="mt-1 font-display text-3xl font-semibold">{v.title}</h1>
             <p className="text-sm text-muted-foreground">{v.brand} {v.model} · {v.year}</p>
           </div>
           <Button variant="outline" size="sm" onClick={toggleWish}>
-            <Heart className={`mr-2 h-4 w-4 ${wished ? "fill-primary text-primary" : ""}`} />
+            <Heart className={`mr-2 h-4 w-4 ${wished ? "fill-foreground text-foreground" : ""}`} />
             {wished ? "Saved" : "Save"}
           </Button>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div>
-            <div className="overflow-hidden rounded-2xl border border-border/60 bg-card">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card">
               <div className="aspect-[16/10] bg-muted">
                 {imgUrl ? <img src={imgUrl} alt={v.title} className="h-full w-full object-cover" /> : <div className="grid h-full w-full place-items-center text-muted-foreground">No image</div>}
               </div>
               {images.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto p-2">
                   {images.map((im: any, i: number) => (
-                    <button key={i} onClick={() => setActiveImg(i)} className={`h-16 w-24 shrink-0 overflow-hidden rounded-md border ${i === activeImg ? "border-primary" : "border-border/60"}`}>
-                      <img src={publicUrl("vehicle-images", im.url) ?? ""} alt="" className="h-full w-full object-cover" />
+                    <button key={i} onClick={() => setActiveImg(i)} className={`h-16 w-24 shrink-0 overflow-hidden rounded-md border ${i === activeImg ? "border-foreground" : "border-border"}`}>
+                      {urls[im.url] && <img src={urls[im.url]} alt="" className="h-full w-full object-cover" />}
                     </button>
                   ))}
                 </div>
@@ -153,7 +158,7 @@ function VehiclePage() {
               <Spec icon={Gauge} label="Mileage" value={v.mileage_kmpl ? `${v.mileage_kmpl} kmpl` : "—"} />
             </div>
 
-            <section className="mt-6 rounded-2xl border border-border/60 bg-card p-6">
+            <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">About this ride</h2>
               <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{v.description || "No description provided."}</p>
               {v.address && (
@@ -161,7 +166,13 @@ function VehiclePage() {
               )}
             </section>
 
-            <section className="mt-6 rounded-2xl border border-border/60 bg-card p-6">
+            <section className="mt-6 rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-display text-lg font-semibold">Pickup location</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{mapQuery}</p>
+              <VehicleMap query={mapQuery} className="mt-4 aspect-[16/9]" />
+            </section>
+
+            <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <div className="flex items-center gap-3">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={vendorProfile?.avatar_url ?? undefined} />
@@ -177,18 +188,18 @@ function VehiclePage() {
               </div>
             </section>
 
-            <section className="mt-6 rounded-2xl border border-border/60 bg-card p-6">
+            <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">Reviews</h2>
               {!reviews && <Skeleton className="mt-3 h-16" />}
               {reviews && reviews.length === 0 && <p className="mt-3 text-sm text-muted-foreground">No reviews yet.</p>}
               {reviews && reviews.length > 0 && (
                 <ul className="mt-4 space-y-4">
                   {reviews.map((r: any) => (
-                    <li key={r.id} className="border-t border-border/60 pt-4 first:border-0 first:pt-0">
+                    <li key={r.id} className="border-t border-border pt-4 first:border-0 first:pt-0">
                       <div className="flex items-center gap-2">
                         <Avatar className="h-7 w-7"><AvatarImage src={r.profiles?.avatar_url} /><AvatarFallback>{(r.profiles?.full_name || "U").charAt(0)}</AvatarFallback></Avatar>
                         <span className="text-sm font-medium">{r.profiles?.full_name || "User"}</span>
-                        <span className="ml-2 flex items-center text-xs text-muted-foreground"><Star className="mr-1 h-3 w-3 fill-primary text-primary" />{r.rating}</span>
+                        <span className="ml-2 flex items-center text-xs text-muted-foreground"><Star className="mr-1 h-3 w-3 fill-foreground text-foreground" />{r.rating}</span>
                       </div>
                       {r.comment && <p className="mt-1 text-sm text-muted-foreground">{r.comment}</p>}
                     </li>
@@ -198,9 +209,8 @@ function VehiclePage() {
             </section>
           </div>
 
-          {/* Booking box */}
           <aside className="lg:sticky lg:top-20 lg:self-start">
-            <Card className="shadow-card">
+            <Card>
               <CardContent className="p-6">
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-semibold">{currency(v.price_daily)}</span>
@@ -226,19 +236,19 @@ function VehiclePage() {
                 </div>
 
                 {days > 0 && (
-                  <div className="mt-4 space-y-1 border-t border-border/60 pt-4 text-sm">
+                  <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
                     <Row label={`${currency(v.price_daily)} × ${days} day${days > 1 ? "s" : ""}`} value={currency(subtotal)} />
                     <Row label="Security deposit" value={currency(v.security_deposit)} />
-                    <div className="mt-2 flex justify-between border-t border-border/60 pt-2 text-base font-semibold">
+                    <div className="mt-2 flex justify-between border-t border-border pt-2 text-base font-semibold">
                       <span>Total</span><span>{currency(total)}</span>
                     </div>
                   </div>
                 )}
 
-                <Button onClick={book} disabled={booking || !start || !end} className="mt-4 w-full shadow-glow">
+                <Button onClick={book} disabled={booking || !start || !end} className="mt-4 w-full">
                   {booking ? "Requesting…" : user ? "Request to book" : "Sign in to book"}
                 </Button>
-                <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged yet</p>
+                <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged until the host accepts.</p>
               </CardContent>
             </Card>
           </aside>
@@ -250,7 +260,7 @@ function VehiclePage() {
 
 function Spec({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-3">
+    <div className="rounded-xl border border-border bg-card p-3">
       <div className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5" />{label}</div>
       <div className="mt-1 text-sm font-medium capitalize">{String(value)}</div>
     </div>

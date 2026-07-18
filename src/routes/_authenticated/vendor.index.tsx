@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { publicUrl, currency } from "@/lib/format";
+import { currency } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
 import { Plus, Car, DollarSign, Calendar, ShieldCheck } from "lucide-react";
 
@@ -57,7 +58,7 @@ function VendorDashboard() {
   if (!user) return null;
 
   const earnings = (bookings ?? [])
-    .filter((b) => b.status === "completed" || b.status === "confirmed")
+    .filter((b) => b.payment_status === "paid")
     .reduce((s, b) => s + Number(b.total_price), 0);
 
   if (!vendor) {
@@ -119,30 +120,7 @@ function VendorDashboard() {
           {!vehicles && <div className="mt-4 grid gap-3 sm:grid-cols-2">{Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}</div>}
           {vehicles && vehicles.length === 0 && <p className="mt-4 text-muted-foreground">No vehicles yet.</p>}
           {vehicles && vehicles.length > 0 && (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {vehicles.map((v) => {
-                const img = v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0];
-                const url = img ? publicUrl("vehicle-images", img.url) : null;
-                return (
-                  <Card key={v.id}>
-                    <div className="aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">{url && <img src={url} alt="" className="h-full w-full object-cover" />}</div>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="min-w-0">
-                          <div className="truncate font-medium">{v.title}</div>
-                          <div className="truncate text-xs text-muted-foreground">{v.city}</div>
-                        </div>
-                        <Badge variant="outline">{v.status}</Badge>
-                      </div>
-                      <div className="mt-2 flex justify-between text-sm">
-                        <span>{currency(v.price_daily)} / day</span>
-                        <Link to="/vehicle/$id" params={{ id: v.id }} className="text-primary hover:underline">View</Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+            <VehiclesGrid vehicles={vehicles} />
           )}
         </section>
 
@@ -178,5 +156,36 @@ function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: a
       <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="h-5 w-5" /></div>
       <div><div className="text-xs text-muted-foreground">{label}</div><div className="text-2xl font-semibold">{value}</div></div>
     </CardContent></Card>
+  );
+}
+
+function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
+  const paths = vehicles.map((v) => v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.url);
+  const urls = useSignedUrls("vehicle-images", paths);
+  return (
+    <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {vehicles.map((v) => {
+        const img = v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0];
+        const url = img ? urls[img.url] : null;
+        return (
+          <Card key={v.id}>
+            <div className="aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">{url && <img src={url} alt="" className="h-full w-full object-cover" />}</div>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div className="truncate font-medium">{v.title}</div>
+                  <div className="truncate text-xs text-muted-foreground">{v.city}</div>
+                </div>
+                <Badge variant="outline">{v.status}</Badge>
+              </div>
+              <div className="mt-2 flex justify-between text-sm">
+                <span>{currency(v.price_daily)} / day</span>
+                <Link to="/vehicle/$id" params={{ id: v.id }} className="text-foreground hover:underline">View</Link>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

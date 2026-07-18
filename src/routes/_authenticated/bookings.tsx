@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
@@ -7,11 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { publicUrl, currency } from "@/lib/format";
+import { currency } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { useSession } from "@/hooks/use-session";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, CreditCard } from "lucide-react";
+import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
+import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
 export const Route = createFileRoute("/_authenticated/bookings")({ component: Bookings });
 
@@ -19,6 +23,9 @@ function Bookings() {
   const { user } = useSession();
   const [asCustomer, setAsCustomer] = useState<any[] | null>(null);
   const [asVendor, setAsVendor] = useState<any[] | null>(null);
+  const [paying, setPaying] = useState<string | null>(null);
+  const createOrder = useServerFn(createRazorpayOrder);
+  const verifyPayment = useServerFn(verifyRazorpayPayment);
 
   const load = async () => {
     if (!user) return;
@@ -40,8 +47,39 @@ function Bookings() {
     load();
   };
 
+  const payNow = async (b: any) => {
+    if (!user) return;
+    setPaying(b.id);
+    try {
+      const order = await createOrder({ data: { bookingId: b.id } });
+      await openRazorpayCheckout({
+        keyId: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        orderId: order.orderId,
+        name: "RideShare",
+        description: b.vehicles?.title ?? "Vehicle rental",
+        prefill: { email: user.email ?? undefined, name: user.user_metadata?.full_name ?? undefined },
+        onSuccess: async (resp) => {
+          try {
+            await verifyPayment({ data: { bookingId: b.id, ...resp } });
+            toast.success("Payment successful");
+            load();
+          } catch (e: any) {
+            toast.error(e.message ?? "Payment verification failed");
+          }
+        },
+        onDismiss: () => setPaying(null),
+      });
+    } catch (e: any) {
+      toast.error(e.message ?? "Could not start payment");
+    } finally {
+      setPaying(null);
+    }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-semibold">Bookings</h1>
@@ -51,10 +89,10 @@ function Bookings() {
             <TabsTrigger value="vendor">As host</TabsTrigger>
           </TabsList>
           <TabsContent value="customer" className="mt-4">
-            <List items={asCustomer} role="customer" onAction={setStatus} />
+            <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} paying={paying} />
           </TabsContent>
           <TabsContent value="vendor" className="mt-4">
-            <List items={asVendor} role="vendor" onAction={setStatus} />
+            <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} paying={paying} />
           </TabsContent>
         </Tabs>
       </div>
@@ -62,14 +100,20 @@ function Bookings() {
   );
 }
 
-function List({ items, role, onAction }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void }) {
+function List({ items, role, onAction, onPay, paying }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void; onPay: (b: any) => void; paying: string | null }) {
+  const paths = (items ?? []).map((b) =>
+    b.vehicles?.vehicle_images?.slice().sort((a: any, x: any) => a.sort_order - x.sort_order)[0]?.url,
+  );
+  const urls = useSignedUrls("vehicle-images", paths);
+
   if (!items) return <div className="grid gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>;
-  if (items.length === 0) return <div className="rounded-2xl border border-border/60 bg-card p-8 text-center text-muted-foreground">No bookings yet.</div>;
+  if (items.length === 0) return <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">No bookings yet.</div>;
   return (
     <ul className="grid gap-3">
       {items.map((b) => {
         const img = b.vehicles?.vehicle_images?.slice().sort((a: any, x: any) => a.sort_order - x.sort_order)[0];
-        const url = img ? publicUrl("vehicle-images", img.url) : null;
+        const url = img ? urls[img.url] : null;
+        const canPay = role === "customer" && b.status === "confirmed" && b.payment_status !== "paid";
         return (
           <Card key={b.id}>
             <CardContent className="flex flex-col gap-4 p-4 sm:flex-row">
@@ -82,7 +126,10 @@ function List({ items, role, onAction }: { items: any[] | null; role: "customer"
                     <Link to="/vehicle/$id" params={{ id: b.vehicles?.id }} className="font-medium hover:underline">{b.vehicles?.title}</Link>
                     <div className="text-xs text-muted-foreground">{b.vehicles?.city}</div>
                   </div>
-                  <StatusBadge s={b.status} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge s={b.status} />
+                    {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
+                  </div>
                 </div>
                 <div className="mt-2 text-sm text-muted-foreground">{b.start_date} → {b.end_date}</div>
                 <div className="mt-1 text-sm">Total: <span className="font-semibold">{currency(b.total_price)}</span></div>
@@ -94,10 +141,15 @@ function List({ items, role, onAction }: { items: any[] | null; role: "customer"
                       <Button size="sm" variant="outline" onClick={() => onAction(b.id, "rejected")}>Reject</Button>
                     </>
                   )}
-                  {role === "customer" && (b.status === "pending" || b.status === "confirmed") && (
+                  {canPay && (
+                    <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
+                      <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
+                    </Button>
+                  )}
+                  {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                   )}
-                  {b.status === "confirmed" && role === "vendor" && (
+                  {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
                   )}
                   <Button asChild size="sm" variant="ghost">
@@ -105,7 +157,7 @@ function List({ items, role, onAction }: { items: any[] | null; role: "customer"
                   </Button>
                 </div>
               </div>
-              {b.status === "confirmed" && b.qr_code && (
+              {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
                 <div className="flex shrink-0 items-center justify-center rounded-lg bg-white p-2">
                   <QRCodeSVG value={b.qr_code} size={80} />
                 </div>
@@ -120,11 +172,11 @@ function List({ items, role, onAction }: { items: any[] | null; role: "customer"
 
 function StatusBadge({ s }: { s: string }) {
   const map: Record<string, string> = {
-    pending: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
-    confirmed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-    rejected: "bg-red-500/15 text-red-400 border-red-500/30",
+    pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
+    confirmed: "bg-blue-100 text-blue-800 border-blue-300",
+    rejected: "bg-red-100 text-red-700 border-red-300",
     cancelled: "bg-muted text-muted-foreground",
-    completed: "bg-primary/15 text-primary border-primary/30",
+    completed: "bg-emerald-100 text-emerald-800 border-emerald-300",
   };
   return <Badge variant="outline" className={map[s] ?? ""}>{s}</Badge>;
 }

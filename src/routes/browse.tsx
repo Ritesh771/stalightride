@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { publicUrl, currency } from "@/lib/format";
+import { currency } from "@/lib/format";
+import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { MapPin, Star, Search, Filter } from "lucide-react";
 
 const search = z.object({
@@ -40,7 +41,7 @@ function Browse() {
   const params = useSearch({ from: "/browse" });
   const navigate = useNavigate();
   const [items, setItems] = useState<Vehicle[] | null>(null);
-  const [maxPrice, setMaxPrice] = useState<number>(params.max ?? 500);
+  const [maxPrice, setMaxPrice] = useState<number>(params.max ?? 5000);
 
   const update = (patch: Partial<Search>) =>
     navigate({ to: "/browse", search: { ...params, ...patch } as any });
@@ -65,8 +66,13 @@ function Browse() {
     })();
   }, [params.category, params.transmission, params.fuel, params.city, params.q, params.max]);
 
+  const paths = (items ?? []).map((v) =>
+    v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0]?.url,
+  );
+  const urls = useSignedUrls("vehicle-images", paths);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -77,8 +83,7 @@ function Browse() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-          {/* Filters */}
-          <aside className="space-y-5 rounded-2xl border border-border/60 bg-card p-5 shadow-card lg:sticky lg:top-20 lg:self-start">
+          <aside className="space-y-5 rounded-2xl border border-border bg-card p-5 lg:sticky lg:top-20 lg:self-start">
             <div className="flex items-center gap-2 text-sm font-medium"><Filter className="h-4 w-4" />Filters</div>
 
             <div>
@@ -139,13 +144,12 @@ function Browse() {
 
             <div>
               <div className="flex items-center justify-between"><Label>Max price / day</Label><span className="text-sm text-muted-foreground">{currency(maxPrice)}</span></div>
-              <Slider className="mt-3" min={20} max={1000} step={10} value={[maxPrice]} onValueChange={(v) => setMaxPrice(v[0])} onValueCommit={(v) => update({ max: v[0] })} />
+              <Slider className="mt-3" min={200} max={20000} step={100} value={[maxPrice]} onValueChange={(v) => setMaxPrice(v[0])} onValueCommit={(v) => update({ max: v[0] })} />
             </div>
 
             <Button variant="outline" className="w-full" onClick={() => navigate({ to: "/browse", search: {} as any })}>Clear filters</Button>
           </aside>
 
-          {/* Grid */}
           <div>
             {!items && (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -153,13 +157,17 @@ function Browse() {
               </div>
             )}
             {items && items.length === 0 && (
-              <div className="rounded-2xl border border-border/60 bg-card p-12 text-center">
+              <div className="rounded-2xl border border-border bg-card p-12 text-center">
                 <p className="text-muted-foreground">No vehicles match your filters yet.</p>
               </div>
             )}
             {items && items.length > 0 && (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {items.map((v) => <VehicleCard key={v.id} v={v} />)}
+                {items.map((v) => {
+                  const first = v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
+                  const url = first ? urls[first.url] : null;
+                  return <VehicleCard key={v.id} v={v} imgUrl={url ?? null} />;
+                })}
               </div>
             )}
           </div>
@@ -169,19 +177,17 @@ function Browse() {
   );
 }
 
-function VehicleCard({ v }: { v: Vehicle }) {
-  const img = v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
-  const url = img ? publicUrl("vehicle-images", img.url) : null;
+function VehicleCard({ v, imgUrl }: { v: Vehicle; imgUrl: string | null }) {
   return (
     <Link to="/vehicle/$id" params={{ id: v.id }} className="group">
-      <Card className="overflow-hidden transition group-hover:border-primary/50">
+      <Card className="overflow-hidden transition group-hover:border-foreground/40">
         <div className="relative aspect-[4/3] bg-muted">
-          {url ? (
-            <img src={url} alt={v.title} className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
+          {imgUrl ? (
+            <img src={imgUrl} alt={v.title} className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
           ) : (
             <div className="grid h-full w-full place-items-center text-muted-foreground">No image</div>
           )}
-          <Badge className="absolute left-3 top-3 bg-black/60 backdrop-blur">{v.category}</Badge>
+          <Badge className="absolute left-3 top-3 bg-black/70 text-white">{v.category}</Badge>
         </div>
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
@@ -190,14 +196,14 @@ function VehicleCard({ v }: { v: Vehicle }) {
               <div className="truncate text-xs text-muted-foreground">{v.brand} {v.model} · {v.year}</div>
             </div>
             <div className="flex items-center gap-1 text-sm">
-              <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+              <Star className="h-3.5 w-3.5 fill-foreground text-foreground" />
               {Number(v.avg_rating).toFixed(1)}
               <span className="text-xs text-muted-foreground">({v.review_count})</span>
             </div>
           </div>
           <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" />{v.city}</div>
-            <div className="text-sm"><span className="font-semibold text-foreground">{currency(v.price_daily)}</span><span className="text-muted-foreground"> / day</span></div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" />{v.city}</div>
+            <div className="text-sm"><span className="font-semibold">{currency(v.price_daily)}</span> <span className="text-xs text-muted-foreground">/ day</span></div>
           </div>
         </CardContent>
       </Card>
