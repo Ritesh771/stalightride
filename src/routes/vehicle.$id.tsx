@@ -225,12 +225,20 @@ function VehiclePage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Pickup</Label>
+                    <Label>Pickup date</Label>
                     <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} min={new Date().toISOString().slice(0, 10)} />
                   </div>
                   <div>
-                    <Label>Return</Label>
+                    <Label>Return date</Label>
                     <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} min={start || new Date().toISOString().slice(0, 10)} />
+                  </div>
+                  <div>
+                    <Label>Pickup time</Label>
+                    <Input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Drop-off time</Label>
+                    <Input type="time" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} />
                   </div>
                 </div>
 
