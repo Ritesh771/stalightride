@@ -131,7 +131,10 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                     {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-muted-foreground">{b.start_date} → {b.end_date}</div>
+                <div className="mt-2 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
+                  <div>📅 {b.start_date} → {b.end_date}</div>
+                  <div>🕒 {String(b.pickup_time ?? "").slice(0, 5)} → {String(b.dropoff_time ?? "").slice(0, 5)}</div>
+                </div>
                 <div className="mt-1 text-sm">Total: <span className="font-semibold">{currency(b.total_price)}</span></div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -158,9 +161,19 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                 </div>
               </div>
               {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
-                <div className="flex shrink-0 items-center justify-center rounded-lg bg-white p-2">
-                  <QRCodeSVG value={b.qr_code} size={80} />
-                </div>
+                <a
+                  href={`/booking/qr/${b.qr_code}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex shrink-0 flex-col items-center justify-center gap-1 rounded-lg bg-white p-2 ring-1 ring-border transition-transform hover:scale-[1.03]"
+                  title="Scan or open to view booking details"
+                >
+                  <QRCodeSVG
+                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/booking/qr/${b.qr_code}`}
+                    size={96}
+                  />
+                  <span className="text-[10px] font-medium text-muted-foreground">Scan for details</span>
+                </a>
               )}
             </CardContent>
           </Card>

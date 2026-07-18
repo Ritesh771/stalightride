@@ -30,6 +30,8 @@ function VehiclePage() {
   const [activeImg, setActiveImg] = useState(0);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [pickupTime, setPickupTime] = useState("10:00");
+  const [dropoffTime, setDropoffTime] = useState("10:00");
   const [notes, setNotes] = useState("");
   const [booking, setBooking] = useState(false);
   const [wished, setWished] = useState(false);
@@ -77,6 +79,8 @@ function VehiclePage() {
         customer_id: user.id,
         start_date: start,
         end_date: end,
+        pickup_time: pickupTime,
+        dropoff_time: dropoffTime,
         base_price: subtotal,
         security_deposit: v.security_deposit,
         total_price: total,
@@ -168,7 +172,18 @@ function VehiclePage() {
 
             <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">Pickup location</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{mapQuery}</p>
+              <div className="mt-2 flex items-start gap-2 text-sm">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-foreground pin-drop" />
+                <div>
+                  <p className="font-medium">{v.address || v.city}</p>
+                  {v.address && <p className="text-xs text-muted-foreground">{v.city}</p>}
+                  {v.lat && v.lng && (
+                    <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+                      {Number(v.lat).toFixed(5)}, {Number(v.lng).toFixed(5)}
+                    </p>
+                  )}
+                </div>
+              </div>
               <VehicleMap query={mapQuery} lat={v.lat} lng={v.lng} className="mt-4 aspect-[16/9] animate-fade-in" />
             </section>
 
@@ -221,12 +236,20 @@ function VehiclePage() {
 
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <div>
-                    <Label>Pickup</Label>
+                    <Label>Pickup date</Label>
                     <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} min={new Date().toISOString().slice(0, 10)} />
                   </div>
                   <div>
-                    <Label>Return</Label>
+                    <Label>Return date</Label>
                     <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} min={start || new Date().toISOString().slice(0, 10)} />
+                  </div>
+                  <div>
+                    <Label>Pickup time</Label>
+                    <Input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Drop-off time</Label>
+                    <Input type="time" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} />
                   </div>
                 </div>
 

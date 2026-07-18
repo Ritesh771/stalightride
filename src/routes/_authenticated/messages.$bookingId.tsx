@@ -1,35 +1,62 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { SiteHeader } from "@/components/site-header";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Send } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/messages/$bookingId")({ component: MessagesPage });
 
 function MessagesPage() {
   const { bookingId } = Route.useParams();
   const { user } = useSession();
+  const navigate = useNavigate();
   const [booking, setBooking] = useState<any>(null);
+  const [allowed, setAllowed] = useState<boolean | null>(null);
   const [messages, setMessages] = useState<any[] | null>(null);
   const [text, setText] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!user) return;
     (async () => {
-      const { data: b } = await supabase.from("bookings").select("*, vehicles(title)").eq("id", bookingId).maybeSingle();
+      const { data: b } = await supabase
+        .from("bookings")
+        .select("*, vehicles(title)")
+        .eq("id", bookingId)
+        .maybeSingle();
+      if (!b) {
+        toast.error("Booking not found");
+        setAllowed(false);
+        navigate({ to: "/bookings" });
+        return;
+      }
+      const party = b.customer_id === user.id || b.vendor_id === user.id;
+      if (!party) {
+        toast.error("You can only chat about your own bookings");
+        setAllowed(false);
+        navigate({ to: "/bookings" });
+        return;
+      }
       setBooking(b);
-      const { data: m } = await supabase.from("messages").select("*, profiles(full_name,avatar_url)").eq("booking_id", bookingId).order("created_at");
+      setAllowed(true);
+      const { data: m } = await supabase
+        .from("messages")
+        .select("*, profiles(full_name,avatar_url)")
+        .eq("booking_id", bookingId)
+        .order("created_at");
       setMessages(m ?? []);
     })();
-  }, [bookingId]);
+  }, [bookingId, user, navigate]);
 
   useEffect(() => {
+    if (!allowed) return;
     const ch = supabase.channel(`msgs-${bookingId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
         async (payload) => {
@@ -38,17 +65,21 @@ function MessagesPage() {
         })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [bookingId]);
+  }, [bookingId, allowed]);
 
   useEffect(() => { listRef.current?.scrollTo({ top: 999999 }); }, [messages]);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim() || !user) return;
+    if (!text.trim() || !user || !allowed) return;
     const body = text.trim();
     setText("");
-    await supabase.from("messages").insert({ booking_id: bookingId, sender_id: user.id, body });
+    const { error } = await supabase.from("messages").insert({ booking_id: bookingId, sender_id: user.id, body });
+    if (error) toast.error(error.message);
   };
+
+  if (allowed === false) return null;
+
 
   return (
     <div className="min-h-screen">

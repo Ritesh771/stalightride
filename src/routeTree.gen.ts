@@ -18,6 +18,7 @@ import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
+import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_authenticated/vendor.vehicles.new'
 
@@ -66,6 +67,11 @@ const AuthenticatedVendorIndexRoute =
     path: '/vendor/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const BookingQrCodeRoute = BookingQrCodeRouteImport.update({
+  id: '/booking/qr/$code',
+  path: '/booking/qr/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedMessagesBookingIdRoute =
   AuthenticatedMessagesBookingIdRouteImport.update({
     id: '/messages/$bookingId',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/booking/qr/$code': typeof BookingQrCodeRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
   '/_authenticated/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/vehicle/$id'
     | '/messages/$bookingId'
+    | '/booking/qr/$code'
     | '/vendor/'
     | '/vendor/vehicles/new'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/wishlist'
     | '/vehicle/$id'
     | '/messages/$bookingId'
+    | '/booking/qr/$code'
     | '/vendor'
     | '/vendor/vehicles/new'
   id:
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/_authenticated/wishlist'
     | '/vehicle/$id'
     | '/_authenticated/messages/$bookingId'
+    | '/booking/qr/$code'
     | '/_authenticated/vendor/'
     | '/_authenticated/vendor/vehicles/new'
   fileRoutesById: FileRoutesById
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   VehicleIdRoute: typeof VehicleIdRoute
+  BookingQrCodeRoute: typeof BookingQrCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/booking/qr/$code': {
+      id: '/booking/qr/$code'
+      path: '/booking/qr/$code'
+      fullPath: '/booking/qr/$code'
+      preLoaderRoute: typeof BookingQrCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/messages/$bookingId': {
       id: '/_authenticated/messages/$bookingId'
       path: '/messages/$bookingId'
@@ -274,6 +294,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   VehicleIdRoute: VehicleIdRoute,
+  BookingQrCodeRoute: BookingQrCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

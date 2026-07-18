@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logoAsset from "@/assets/rideshare-logo.asset.json";
+import { InstallPwaButton } from "@/components/install-pwa-button";
 
 const linkClass =
   "rounded-md px-3 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground data-[status=active]:text-foreground data-[status=active]:bg-muted";
@@ -52,6 +53,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <InstallPwaButton className="hidden sm:inline-flex" />
           {user ? (
             <>
               <div className="hidden md:block">
