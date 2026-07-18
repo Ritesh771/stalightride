@@ -151,9 +151,18 @@ function NewVehicle() {
             <Section title="Pickup location">
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} required placeholder="Bengaluru" /></Field>
-                <Field label="Full address"><Input value={form.address} onChange={(e) => set("address", e.target.value)} required placeholder="Street, area, landmark" /></Field>
               </div>
-              <MapPicker value={pin} onChange={setPin} className="mt-2" />
+              <div className="mt-2">
+                <Label>Full address</Label>
+                <div className="mt-1">
+                  <MapPicker
+                    value={pin}
+                    address={form.address}
+                    onAddressChange={(v) => set("address", v)}
+                    onChange={(v) => { setPin({ lat: v.lat, lng: v.lng }); if (v.address) set("address", v.address); }}
+                  />
+                </div>
+              </div>
             </Section>
 
             <Section title="Pricing (INR)">
