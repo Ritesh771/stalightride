@@ -72,10 +72,15 @@ function VehiclePage() {
   const subtotal = useMemo(() => (v ? days * Number(v.price_daily) : 0), [days, v]);
   const total = subtotal + (v ? Number(v.security_deposit) : 0);
 
+  const dlOk = myProfile?.dl_status === "approved";
+  const isOwner = user?.id === v?.vendor_id;
+
   const book = async () => {
     if (!user) { navigate({ to: "/auth" }); return; }
+    if (!dlOk) { toast.error("Verify your driving licence in your profile before booking"); navigate({ to: "/profile" }); return; }
     if (!start || !end) { toast.error("Pick dates first"); return; }
     setBooking(true);
+
     try {
       const qrPayload = crypto.randomUUID();
       const { error } = await supabase.from("bookings").insert({
