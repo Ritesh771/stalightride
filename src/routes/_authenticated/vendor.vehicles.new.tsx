@@ -49,10 +49,23 @@ function NewVehicle() {
     if (!user) return;
     if (!form.price_daily) return toast.error("Daily price is required");
     if (!pin.lat || !pin.lng) return toast.error("Drop a pickup pin on the map so renters can find your vehicle");
+    if (!docs.rc || !docs.insurance || !docs.pollution) return toast.error("Upload RC, insurance and pollution certificate");
     setSaving(true);
     try {
       await supabase.from("vendors").upsert({ id: user.id, business_name: user.user_metadata?.full_name || user.email || "Host" });
       await supabase.from("user_roles").upsert({ user_id: user.id, role: "vendor" as const }, { onConflict: "user_id,role" });
+
+      const uploadDoc = async (kind: string, file: File) => {
+        const ext = file.name.split(".").pop();
+        const path = `${user.id}/vehicles/${kind}-${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from("verification-docs").upload(path, file, { upsert: false });
+        if (error) throw error;
+        return path;
+      };
+      const rc_url = await uploadDoc("rc", docs.rc);
+      const insurance_url = await uploadDoc("insurance", docs.insurance);
+      const pollution_url = await uploadDoc("pollution", docs.pollution);
+      const fitness_url = docs.fitness ? await uploadDoc("fitness", docs.fitness) : null;
 
       const insertPayload = {
         vendor_id: user.id,
@@ -75,9 +88,14 @@ function NewVehicle() {
         price_weekly: form.price_weekly ? Number(form.price_weekly) : null,
         security_deposit: Number(form.security_deposit || 0),
         status: "active" as const,
+        rc_url,
+        insurance_url,
+        pollution_url,
+        fitness_url,
+        verification_status: "pending",
       };
 
-      const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload).select("id").single();
+      const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload as any).select("id").single();
       if (error) throw error;
 
       for (let i = 0; i < files.length; i++) {
@@ -89,12 +107,13 @@ function NewVehicle() {
         await supabase.from("vehicle_images").insert({ vehicle_id: vehicle.id, url: path, sort_order: i });
       }
 
-      toast.success("Vehicle published!");
-      navigate({ to: "/vehicle/$id", params: { id: vehicle.id } });
+      toast.success("Submitted for review — you'll be notified once approved.");
+      navigate({ to: "/vendor" });
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create");
     } finally { setSaving(false); }
   };
+
 
   return (
     <div className="min-h-screen">
