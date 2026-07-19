@@ -217,6 +217,16 @@ function NewVehicle() {
               )}
             </Section>
 
+            <Section title="Verification documents">
+              <p className="text-xs text-muted-foreground">Your listing goes live after we verify these. Photos are private.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <DocPick label="RC (required)" file={docs.rc} onChange={(f) => setDocs({ ...docs, rc: f })} />
+                <DocPick label="Insurance (required)" file={docs.insurance} onChange={(f) => setDocs({ ...docs, insurance: f })} />
+                <DocPick label="Pollution certificate (required)" file={docs.pollution} onChange={(f) => setDocs({ ...docs, pollution: f })} />
+                <DocPick label="Fitness certificate (optional)" file={docs.fitness} onChange={(f) => setDocs({ ...docs, fitness: f })} />
+              </div>
+            </Section>
+
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => navigate({ to: "/vendor" })}>Cancel</Button>
               <Button type="submit" disabled={saving}>{saving ? "Publishing…" : "Publish listing"}</Button>
