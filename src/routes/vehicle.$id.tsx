@@ -27,6 +27,7 @@ function VehiclePage() {
   const [vendor, setVendor] = useState<any>(null);
   const [vendorProfile, setVendorProfile] = useState<any>(null);
   const [reviews, setReviews] = useState<any[] | null>(null);
+  const [myProfile, setMyProfile] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
@@ -35,6 +36,7 @@ function VehiclePage() {
   const [notes, setNotes] = useState("");
   const [booking, setBooking] = useState(false);
   const [wished, setWished] = useState(false);
+
 
   useEffect(() => {
     (async () => {
