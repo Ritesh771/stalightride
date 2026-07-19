@@ -208,24 +208,27 @@ export type Database = {
       }
       messages: {
         Row: {
-          body: string
+          body: string | null
           booking_id: string
           created_at: string
           id: string
+          image_url: string | null
           sender_id: string
         }
         Insert: {
-          body: string
+          body?: string | null
           booking_id: string
           created_at?: string
           id?: string
+          image_url?: string | null
           sender_id: string
         }
         Update: {
-          body?: string
+          body?: string | null
           booking_id?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           sender_id?: string
         }
         Relationships: [
@@ -308,6 +311,13 @@ export type Database = {
           avatar_url: string | null
           city: string | null
           created_at: string
+          dl_back_url: string | null
+          dl_expiry: string | null
+          dl_front_url: string | null
+          dl_number: string | null
+          dl_rejection_reason: string | null
+          dl_status: Database["public"]["Enums"]["dl_status"]
+          dl_verified_at: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -317,6 +327,13 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          dl_back_url?: string | null
+          dl_expiry?: string | null
+          dl_front_url?: string | null
+          dl_number?: string | null
+          dl_rejection_reason?: string | null
+          dl_status?: Database["public"]["Enums"]["dl_status"]
+          dl_verified_at?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
@@ -326,6 +343,13 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          dl_back_url?: string | null
+          dl_expiry?: string | null
+          dl_front_url?: string | null
+          dl_number?: string | null
+          dl_rejection_reason?: string | null
+          dl_status?: Database["public"]["Enums"]["dl_status"]
+          dl_verified_at?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -341,7 +365,11 @@ export type Database = {
           customer_id: string
           id: string
           rating: number
+          report_reason: string | null
+          reported: boolean
           vehicle_id: string
+          vendor_response: string | null
+          vendor_response_at: string | null
         }
         Insert: {
           booking_id: string
@@ -350,7 +378,11 @@ export type Database = {
           customer_id: string
           id?: string
           rating: number
+          report_reason?: string | null
+          reported?: boolean
           vehicle_id: string
+          vendor_response?: string | null
+          vendor_response_at?: string | null
         }
         Update: {
           booking_id?: string
@@ -359,7 +391,11 @@ export type Database = {
           customer_id?: string
           id?: string
           rating?: number
+          report_reason?: string | null
+          reported?: boolean
           vehicle_id?: string
+          vendor_response?: string | null
+          vendor_response_at?: string | null
         }
         Relationships: [
           {
@@ -440,15 +476,20 @@ export type Database = {
           city: string
           created_at: string
           description: string | null
+          fitness_url: string | null
           fuel: Database["public"]["Enums"]["fuel_type"]
           id: string
+          insurance_url: string | null
           lat: number | null
           lng: number | null
           mileage_kmpl: number | null
           model: string
+          pollution_url: string | null
           price_daily: number
           price_hourly: number | null
           price_weekly: number | null
+          rc_url: string | null
+          rejection_reason: string | null
           review_count: number
           seats: number | null
           security_deposit: number
@@ -457,6 +498,8 @@ export type Database = {
           transmission: Database["public"]["Enums"]["transmission_type"]
           updated_at: string
           vendor_id: string
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string | null
           year: number
         }
         Insert: {
@@ -467,15 +510,20 @@ export type Database = {
           city: string
           created_at?: string
           description?: string | null
+          fitness_url?: string | null
           fuel?: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          insurance_url?: string | null
           lat?: number | null
           lng?: number | null
           mileage_kmpl?: number | null
           model: string
+          pollution_url?: string | null
           price_daily: number
           price_hourly?: number | null
           price_weekly?: number | null
+          rc_url?: string | null
+          rejection_reason?: string | null
           review_count?: number
           seats?: number | null
           security_deposit?: number
@@ -484,6 +532,8 @@ export type Database = {
           transmission?: Database["public"]["Enums"]["transmission_type"]
           updated_at?: string
           vendor_id: string
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
           year: number
         }
         Update: {
@@ -494,15 +544,20 @@ export type Database = {
           city?: string
           created_at?: string
           description?: string | null
+          fitness_url?: string | null
           fuel?: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          insurance_url?: string | null
           lat?: number | null
           lng?: number | null
           mileage_kmpl?: number | null
           model?: string
+          pollution_url?: string | null
           price_daily?: number
           price_hourly?: number | null
           price_weekly?: number | null
+          rc_url?: string | null
+          rejection_reason?: string | null
           review_count?: number
           seats?: number | null
           security_deposit?: number
@@ -511,6 +566,8 @@ export type Database = {
           transmission?: Database["public"]["Enums"]["transmission_type"]
           updated_at?: string
           vendor_id?: string
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
           year?: number
         }
         Relationships: [
@@ -606,11 +663,13 @@ export type Database = {
         | "rejected"
         | "cancelled"
         | "completed"
+      dl_status: "none" | "pending" | "approved" | "rejected"
       fuel_type: "petrol" | "diesel" | "electric" | "hybrid" | "none"
       kyc_status: "unsubmitted" | "pending" | "approved" | "rejected"
       transmission_type: "manual" | "automatic" | "none"
       vehicle_category: "scooter" | "bike" | "motorcycle" | "car" | "ev"
       vehicle_status: "draft" | "active" | "paused"
+      verification_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -746,11 +805,13 @@ export const Constants = {
         "cancelled",
         "completed",
       ],
+      dl_status: ["none", "pending", "approved", "rejected"],
       fuel_type: ["petrol", "diesel", "electric", "hybrid", "none"],
       kyc_status: ["unsubmitted", "pending", "approved", "rejected"],
       transmission_type: ["manual", "automatic", "none"],
       vehicle_category: ["scooter", "bike", "motorcycle", "car", "ev"],
       vehicle_status: ["draft", "active", "paused"],
+      verification_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
