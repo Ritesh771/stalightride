@@ -83,9 +83,11 @@ function MessagesPage() {
       if (pendingImage) {
         const ext = pendingImage.name.split(".").pop();
         const path = `${user.id}/msg-${bookingId}-${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from("vehicle-images").upload(path, pendingImage);
+        const { error: upErr } = await supabase.storage.from("verification-docs").upload(path, pendingImage);
         if (upErr) throw upErr;
-        image_url = path;
+        const { data: signed, error: sErr } = await supabase.storage.from("verification-docs").createSignedUrl(path, 60 * 60 * 24 * 365);
+        if (sErr || !signed) throw sErr ?? new Error("sign failed");
+        image_url = signed.signedUrl;
       }
       const body = text.trim() || null;
       setText(""); setPendingImage(null);
