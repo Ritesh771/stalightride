@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSignedUrls } from "@/hooks/use-signed-urls";
+
 import { ArrowLeft, ImagePlus, Send, X } from "lucide-react";
 import { toast } from "sonner";
 
