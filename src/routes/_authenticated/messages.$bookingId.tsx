@@ -72,8 +72,6 @@ function MessagesPage() {
 
   useEffect(() => { listRef.current?.scrollTo({ top: 999999 }); }, [messages]);
 
-  const imagePaths = useMemo(() => (messages ?? []).map((m) => m.image_url).filter(Boolean), [messages]);
-  const imgMap = useSignedUrls("vehicle-images", imagePaths);
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
