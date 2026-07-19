@@ -119,9 +119,9 @@ function MessagesPage() {
                 <div key={m.id} className={`flex items-end gap-2 ${mine ? "justify-end" : ""}`}>
                   {!mine && <Avatar className="h-7 w-7"><AvatarImage src={m.profiles?.avatar_url} /><AvatarFallback>{(m.profiles?.full_name || "?").charAt(0)}</AvatarFallback></Avatar>}
                   <div className={`max-w-[80%] space-y-1 rounded-2xl px-3 py-2 text-sm ${mine ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                    {m.image_url && imgMap[m.image_url] && (
-                      <a href={imgMap[m.image_url]} target="_blank" rel="noreferrer">
-                        <img src={imgMap[m.image_url]} alt="attachment" className="max-h-64 rounded-lg" />
+                    {m.image_url && (
+                      <a href={m.image_url} target="_blank" rel="noreferrer">
+                        <img src={m.image_url} alt="attachment" className="max-h-64 rounded-lg" />
                       </a>
                     )}
                     {m.body && <div>{m.body}</div>}
