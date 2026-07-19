@@ -148,6 +148,16 @@ function VehiclePage() {
           </Button>
         </div>
 
+        {isOwner && v.verification_status !== "approved" && (
+          <div className={`mb-4 rounded-lg border p-3 text-sm ${v.verification_status === "rejected" ? "border-destructive/40 bg-destructive/5 text-destructive" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+            {v.verification_status === "rejected"
+              ? <>Listing rejected: {v.rejection_reason ?? "Please update your documents."}</>
+              : "Listing under verification — it will be visible to renters once approved."}
+          </div>
+        )}
+
+
+
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div>
             <div className="overflow-hidden rounded-2xl border border-border bg-card">
