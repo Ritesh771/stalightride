@@ -21,6 +21,7 @@ function NewVehicle() {
   const [saving, setSaving] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [docs, setDocs] = useState<{ rc?: File; insurance?: File; pollution?: File; fitness?: File }>({});
 
   const [form, setForm] = useState({
     title: "", category: "car", brand: "", model: "", year: new Date().getFullYear(),
@@ -29,6 +30,7 @@ function NewVehicle() {
     price_hourly: "", price_daily: "", price_weekly: "", security_deposit: "0",
   });
   const [pin, setPin] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
+
 
   const set = (k: string, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
