@@ -220,14 +220,7 @@ function VehiclePage() {
               {reviews && reviews.length > 0 && (
                 <ul className="mt-4 space-y-4">
                   {reviews.map((r: any) => (
-                    <li key={r.id} className="border-t border-border pt-4 first:border-0 first:pt-0">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-7 w-7"><AvatarImage src={r.profiles?.avatar_url} /><AvatarFallback>{(r.profiles?.full_name || "U").charAt(0)}</AvatarFallback></Avatar>
-                        <span className="text-sm font-medium">{r.profiles?.full_name || "User"}</span>
-                        <span className="ml-2 flex items-center text-xs text-muted-foreground"><Star className="mr-1 h-3 w-3 fill-foreground text-foreground" />{r.rating}</span>
-                      </div>
-                      {r.comment && <p className="mt-1 text-sm text-muted-foreground">{r.comment}</p>}
-                    </li>
+                    <ReviewItem key={r.id} r={r} isOwner={isOwner} userId={user?.id} onChange={(patch) => setReviews((prev) => prev?.map((x) => x.id === r.id ? { ...x, ...patch } : x) ?? null)} />
                   ))}
                 </ul>
               )}
