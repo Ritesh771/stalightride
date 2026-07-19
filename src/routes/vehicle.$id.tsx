@@ -27,6 +27,7 @@ function VehiclePage() {
   const [vendor, setVendor] = useState<any>(null);
   const [vendorProfile, setVendorProfile] = useState<any>(null);
   const [reviews, setReviews] = useState<any[] | null>(null);
+  const [myProfile, setMyProfile] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
@@ -35,6 +36,7 @@ function VehiclePage() {
   const [notes, setNotes] = useState("");
   const [booking, setBooking] = useState(false);
   const [wished, setWished] = useState(false);
+
 
   useEffect(() => {
     (async () => {
@@ -57,7 +59,10 @@ function VehiclePage() {
     if (!user || !id) return;
     supabase.from("wishlists").select("id").eq("user_id", user.id).eq("vehicle_id", id).maybeSingle()
       .then(({ data }) => setWished(!!data));
+    supabase.from("profiles").select("dl_status,dl_expiry").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setMyProfile(data));
   }, [user, id]);
+
 
   const images = (v?.vehicle_images ?? []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
   const urls = useSignedUrls("vehicle-images", images.map((im: any) => im.url));
@@ -67,10 +72,15 @@ function VehiclePage() {
   const subtotal = useMemo(() => (v ? days * Number(v.price_daily) : 0), [days, v]);
   const total = subtotal + (v ? Number(v.security_deposit) : 0);
 
+  const dlOk = myProfile?.dl_status === "approved";
+  const isOwner = user?.id === v?.vendor_id;
+
   const book = async () => {
     if (!user) { navigate({ to: "/auth" }); return; }
+    if (!dlOk) { toast.error("Verify your driving licence in your profile before booking"); navigate({ to: "/profile" }); return; }
     if (!start || !end) { toast.error("Pick dates first"); return; }
     setBooking(true);
+
     try {
       const qrPayload = crypto.randomUUID();
       const { error } = await supabase.from("bookings").insert({
@@ -137,6 +147,16 @@ function VehiclePage() {
             {wished ? "Saved" : "Save"}
           </Button>
         </div>
+
+        {isOwner && v.verification_status !== "approved" && (
+          <div className={`mb-4 rounded-lg border p-3 text-sm ${v.verification_status === "rejected" ? "border-destructive/40 bg-destructive/5 text-destructive" : "border-amber-300 bg-amber-50 text-amber-900"}`}>
+            {v.verification_status === "rejected"
+              ? <>Listing rejected: {v.rejection_reason ?? "Please update your documents."}</>
+              : "Listing under verification — it will be visible to renters once approved."}
+          </div>
+        )}
+
+
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div>
@@ -210,14 +230,7 @@ function VehiclePage() {
               {reviews && reviews.length > 0 && (
                 <ul className="mt-4 space-y-4">
                   {reviews.map((r: any) => (
-                    <li key={r.id} className="border-t border-border pt-4 first:border-0 first:pt-0">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-7 w-7"><AvatarImage src={r.profiles?.avatar_url} /><AvatarFallback>{(r.profiles?.full_name || "U").charAt(0)}</AvatarFallback></Avatar>
-                        <span className="text-sm font-medium">{r.profiles?.full_name || "User"}</span>
-                        <span className="ml-2 flex items-center text-xs text-muted-foreground"><Star className="mr-1 h-3 w-3 fill-foreground text-foreground" />{r.rating}</span>
-                      </div>
-                      {r.comment && <p className="mt-1 text-sm text-muted-foreground">{r.comment}</p>}
-                    </li>
+                    <ReviewItem key={r.id} r={r} isOwner={isOwner} userId={user?.id} onChange={(patch) => setReviews((prev) => prev?.map((x) => x.id === r.id ? { ...x, ...patch } : x) ?? null)} />
                   ))}
                 </ul>
               )}
@@ -268,8 +281,13 @@ function VehiclePage() {
                   </div>
                 )}
 
-                <Button onClick={book} disabled={booking || !start || !end} className="mt-4 w-full">
-                  {booking ? "Requesting…" : user ? "Request to book" : "Sign in to book"}
+                {user && !dlOk && (
+                  <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+                    Verify your driving licence in your profile before booking. <Link to="/profile" className="underline font-medium">Go to profile</Link>
+                  </div>
+                )}
+                <Button onClick={book} disabled={booking || !start || !end || (!!user && !dlOk)} className="mt-4 w-full">
+                  {booking ? "Requesting…" : user ? (dlOk ? "Request to book" : "Verify licence to book") : "Sign in to book"}
                 </Button>
                 <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged until the host accepts.</p>
               </CardContent>
@@ -291,4 +309,66 @@ function Spec({ icon: Icon, label, value }: { icon: any; label: string; value: a
 }
 function Row({ label, value }: { label: string; value: string }) {
   return <div className="flex justify-between"><span className="text-muted-foreground">{label}</span><span>{value}</span></div>;
+}
+
+function ReviewItem({ r, isOwner, userId, onChange }: { r: any; isOwner: boolean; userId?: string; onChange: (patch: any) => void }) {
+  const [reply, setReply] = useState(r.vendor_response ?? "");
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const submitReply = async () => {
+    if (!reply.trim()) return;
+    setSaving(true);
+    const { error } = await supabase.from("reviews").update({ vendor_response: reply.trim(), vendor_response_at: new Date().toISOString() } as any).eq("id", r.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    onChange({ vendor_response: reply.trim(), vendor_response_at: new Date().toISOString() });
+    setEditing(false);
+    toast.success("Response posted");
+  };
+
+  const reportReview = async () => {
+    const reason = window.prompt("Why are you reporting this review?");
+    if (!reason?.trim()) return;
+    const { error } = await supabase.from("reviews").update({ reported: true, report_reason: reason.trim() } as any).eq("id", r.id);
+    if (error) return toast.error(error.message);
+    onChange({ reported: true });
+    toast.success("Reported to admins");
+  };
+
+  return (
+    <li className="border-t border-border pt-4 first:border-0 first:pt-0">
+      <div className="flex items-center gap-2">
+        <Avatar className="h-7 w-7"><AvatarImage src={r.profiles?.avatar_url} /><AvatarFallback>{(r.profiles?.full_name || "U").charAt(0)}</AvatarFallback></Avatar>
+        <span className="text-sm font-medium">{r.profiles?.full_name || "User"}</span>
+        <span className="ml-2 flex items-center text-xs text-muted-foreground"><Star className="mr-1 h-3 w-3 fill-foreground text-foreground" />{r.rating}</span>
+        {userId && !isOwner && r.customer_id !== userId && !r.reported && (
+          <button onClick={reportReview} className="ml-auto text-[11px] text-muted-foreground hover:text-destructive">Report</button>
+        )}
+        {r.reported && <span className="ml-auto text-[11px] text-muted-foreground">Reported</span>}
+      </div>
+      {r.comment && <p className="mt-1 text-sm text-muted-foreground">{r.comment}</p>}
+      {r.vendor_response && !editing && (
+        <div className="mt-2 rounded-md border border-border bg-muted/40 p-2 text-sm">
+          <p className="text-[11px] font-medium uppercase text-muted-foreground">Host reply</p>
+          <p className="mt-0.5">{r.vendor_response}</p>
+        </div>
+      )}
+      {isOwner && (
+        <div className="mt-2">
+          {editing || !r.vendor_response ? (
+            <div className="space-y-2">
+              <Textarea rows={2} value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Reply as the host…" />
+              <div className="flex gap-2">
+                <Button size="sm" onClick={submitReply} disabled={saving}>{saving ? "Posting…" : "Post reply"}</Button>
+                {editing && <Button size="sm" variant="ghost" onClick={() => { setEditing(false); setReply(r.vendor_response ?? ""); }}>Cancel</Button>}
+              </div>
+            </div>
+          ) : (
+            <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit reply</Button>
+          )}
+        </div>
+      )}
+    </li>
+  );
 }

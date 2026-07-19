@@ -21,6 +21,7 @@ function NewVehicle() {
   const [saving, setSaving] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [docs, setDocs] = useState<{ rc?: File; insurance?: File; pollution?: File; fitness?: File }>({});
 
   const [form, setForm] = useState({
     title: "", category: "car", brand: "", model: "", year: new Date().getFullYear(),
@@ -29,6 +30,7 @@ function NewVehicle() {
     price_hourly: "", price_daily: "", price_weekly: "", security_deposit: "0",
   });
   const [pin, setPin] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
+
 
   const set = (k: string, v: any) => setForm((s) => ({ ...s, [k]: v }));
 
@@ -47,10 +49,23 @@ function NewVehicle() {
     if (!user) return;
     if (!form.price_daily) return toast.error("Daily price is required");
     if (!pin.lat || !pin.lng) return toast.error("Drop a pickup pin on the map so renters can find your vehicle");
+    if (!docs.rc || !docs.insurance || !docs.pollution) return toast.error("Upload RC, insurance and pollution certificate");
     setSaving(true);
     try {
       await supabase.from("vendors").upsert({ id: user.id, business_name: user.user_metadata?.full_name || user.email || "Host" });
       await supabase.from("user_roles").upsert({ user_id: user.id, role: "vendor" as const }, { onConflict: "user_id,role" });
+
+      const uploadDoc = async (kind: string, file: File) => {
+        const ext = file.name.split(".").pop();
+        const path = `${user.id}/vehicles/${kind}-${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from("verification-docs").upload(path, file, { upsert: false });
+        if (error) throw error;
+        return path;
+      };
+      const rc_url = await uploadDoc("rc", docs.rc);
+      const insurance_url = await uploadDoc("insurance", docs.insurance);
+      const pollution_url = await uploadDoc("pollution", docs.pollution);
+      const fitness_url = docs.fitness ? await uploadDoc("fitness", docs.fitness) : null;
 
       const insertPayload = {
         vendor_id: user.id,
@@ -73,9 +88,14 @@ function NewVehicle() {
         price_weekly: form.price_weekly ? Number(form.price_weekly) : null,
         security_deposit: Number(form.security_deposit || 0),
         status: "active" as const,
+        rc_url,
+        insurance_url,
+        pollution_url,
+        fitness_url,
+        verification_status: "pending",
       };
 
-      const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload).select("id").single();
+      const { data: vehicle, error } = await supabase.from("vehicles").insert(insertPayload as any).select("id").single();
       if (error) throw error;
 
       for (let i = 0; i < files.length; i++) {
@@ -87,12 +107,13 @@ function NewVehicle() {
         await supabase.from("vehicle_images").insert({ vehicle_id: vehicle.id, url: path, sort_order: i });
       }
 
-      toast.success("Vehicle published!");
-      navigate({ to: "/vehicle/$id", params: { id: vehicle.id } });
+      toast.success("Submitted for review — you'll be notified once approved.");
+      navigate({ to: "/vendor" });
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create");
     } finally { setSaving(false); }
   };
+
 
   return (
     <div className="min-h-screen">
@@ -196,6 +217,16 @@ function NewVehicle() {
               )}
             </Section>
 
+            <Section title="Verification documents">
+              <p className="text-xs text-muted-foreground">Your listing goes live after we verify these. Photos are private.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <DocPick label="RC (required)" file={docs.rc} onChange={(f) => setDocs({ ...docs, rc: f })} />
+                <DocPick label="Insurance (required)" file={docs.insurance} onChange={(f) => setDocs({ ...docs, insurance: f })} />
+                <DocPick label="Pollution certificate (required)" file={docs.pollution} onChange={(f) => setDocs({ ...docs, pollution: f })} />
+                <DocPick label="Fitness certificate (optional)" file={docs.fitness} onChange={(f) => setDocs({ ...docs, fitness: f })} />
+              </div>
+            </Section>
+
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => navigate({ to: "/vendor" })}>Cancel</Button>
               <Button type="submit" disabled={saving}>{saving ? "Publishing…" : "Publish listing"}</Button>
@@ -212,4 +243,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><Label>{label}</Label><div className="mt-1">{children}</div></div>;
+}
+function DocPick({ label, file, onChange }: { label: string; file?: File; onChange: (f: File) => void }) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      <label className="mt-1 flex cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent">
+        <span className="truncate">{file?.name ?? "Choose PDF or image"}</span>
+        <Upload className="h-4 w-4 text-muted-foreground" />
+        <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onChange(f); }} />
+      </label>
+    </div>
+  );
 }
