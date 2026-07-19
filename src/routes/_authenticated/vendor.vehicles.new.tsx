@@ -244,3 +244,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><Label>{label}</Label><div className="mt-1">{children}</div></div>;
 }
+function DocPick({ label, file, onChange }: { label: string; file?: File; onChange: (f: File) => void }) {
+  return (
+    <div>
+      <Label>{label}</Label>
+      <label className="mt-1 flex cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent">
+        <span className="truncate">{file?.name ?? "Choose PDF or image"}</span>
+        <Upload className="h-4 w-4 text-muted-foreground" />
+        <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onChange(f); }} />
+      </label>
+    </div>
+  );
+}
