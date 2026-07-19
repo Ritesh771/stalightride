@@ -59,7 +59,10 @@ function VehiclePage() {
     if (!user || !id) return;
     supabase.from("wishlists").select("id").eq("user_id", user.id).eq("vehicle_id", id).maybeSingle()
       .then(({ data }) => setWished(!!data));
+    supabase.from("profiles").select("dl_status,dl_expiry").eq("id", user.id).maybeSingle()
+      .then(({ data }) => setMyProfile(data));
   }, [user, id]);
+
 
   const images = (v?.vehicle_images ?? []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
   const urls = useSignedUrls("vehicle-images", images.map((im: any) => im.url));
