@@ -281,8 +281,13 @@ function VehiclePage() {
                   </div>
                 )}
 
-                <Button onClick={book} disabled={booking || !start || !end} className="mt-4 w-full">
-                  {booking ? "Requesting…" : user ? "Request to book" : "Sign in to book"}
+                {user && !dlOk && (
+                  <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+                    Verify your driving licence in your profile before booking. <Link to="/profile" className="underline font-medium">Go to profile</Link>
+                  </div>
+                )}
+                <Button onClick={book} disabled={booking || !start || !end || (!!user && !dlOk)} className="mt-4 w-full">
+                  {booking ? "Requesting…" : user ? (dlOk ? "Request to book" : "Verify licence to book") : "Sign in to book"}
                 </Button>
                 <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged until the host accepts.</p>
               </CardContent>
