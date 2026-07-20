@@ -370,6 +370,7 @@ function ReviewItem({ r, isOwner, userId, onChange }: { r: any; isOwner: boolean
           )}
         </div>
       )}
+    </li>
   );
 }
 
