@@ -225,6 +225,7 @@ function VehiclePage() {
 
             <section className="mt-6 rounded-2xl border border-border bg-card p-6">
               <h2 className="font-display text-lg font-semibold">Reviews</h2>
+              {user && !isOwner && <WriteReviewBox vehicleId={id} userId={user.id} reviews={reviews} onCreated={(row) => setReviews((prev) => [row, ...(prev ?? [])])} />}
               {!reviews && <Skeleton className="mt-3 h-16" />}
               {reviews && reviews.length === 0 && <p className="mt-3 text-sm text-muted-foreground">No reviews yet.</p>}
               {reviews && reviews.length > 0 && (
@@ -369,6 +370,64 @@ function ReviewItem({ r, isOwner, userId, onChange }: { r: any; isOwner: boolean
           )}
         </div>
       )}
-    </li>
   );
 }
+
+function WriteReviewBox({ vehicleId, userId, reviews, onCreated }: { vehicleId: string; userId: string; reviews: any[] | null; onCreated: (row: any) => void }) {
+  const [eligibleBooking, setEligibleBooking] = useState<any>(null);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("bookings")
+        .select("id,status,payment_status")
+        .eq("vehicle_id", vehicleId)
+        .eq("customer_id", userId)
+        .in("status", ["completed", "confirmed"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      setEligibleBooking(data ?? null);
+    })();
+  }, [vehicleId, userId]);
+
+  if (!eligibleBooking) return null;
+  const already = reviews?.some((r) => r.customer_id === userId);
+  if (already) return null;
+
+  const submit = async () => {
+    setSubmitting(true);
+    const { data, error } = await supabase.from("reviews").insert({
+      vehicle_id: vehicleId,
+      customer_id: userId,
+      booking_id: eligibleBooking.id,
+      rating,
+      comment: comment.trim() || null,
+    } as any).select("*, profiles(full_name,avatar_url)").maybeSingle();
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    setComment("");
+    if (data) onCreated(data);
+    toast.success("Thanks for your review!");
+  };
+
+  return (
+    <div className="mt-4 rounded-xl border border-border bg-muted/30 p-4">
+      <p className="text-sm font-medium">Rate your experience</p>
+      <div className="mt-2 flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button key={n} type="button" onClick={() => setRating(n)} aria-label={`${n} star`}>
+            <Star className={`h-6 w-6 ${n <= rating ? "fill-foreground text-foreground" : "text-muted-foreground"}`} />
+          </button>
+        ))}
+      </div>
+      <Textarea rows={3} className="mt-2" placeholder="Share how the ride went…" value={comment} onChange={(e) => setComment(e.target.value)} />
+      <div className="mt-2 flex justify-end">
+        <Button size="sm" onClick={submit} disabled={submitting}>{submitting ? "Posting…" : "Post review"}</Button>
+      </div>
+    </div>
+  );
+}
+
