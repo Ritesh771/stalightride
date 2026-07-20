@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useSession } from "@/hooks/use-session";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, MessageSquare } from "lucide-react";
+import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
   DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
@@ -19,6 +20,7 @@ const linkClass =
 
 export function SiteHeader() {
   const { user } = useSession();
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
 
   const signOut = async () => {
@@ -29,12 +31,14 @@ export function SiteHeader() {
   const initial = (user?.user_metadata?.full_name || user?.email || "U")
     .toString().charAt(0).toUpperCase();
 
-  const items: Array<{ to: any; label: string; auth?: boolean }> = [
+  const items: Array<{ to: any; label: string; auth?: boolean; admin?: boolean }> = [
     { to: "/browse", label: "Browse rides" },
     { to: "/bookings", label: "My trips", auth: true },
     { to: "/wishlist", label: "Saved", auth: true },
     { to: "/vendor", label: "Become a host", auth: true },
+    { to: "/admin", label: "Admin", auth: true, admin: true },
   ];
+  const visibleItems = items.filter((i) => (!i.auth || user) && (!i.admin || isAdmin));
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
@@ -45,7 +49,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {items.filter((i) => !i.auth || user).map((i) => (
+          {visibleItems.map((i) => (
             <Link key={i.to} to={i.to} className={linkClass} activeOptions={{ exact: false }}>
               {i.label}
             </Link>
@@ -73,6 +77,9 @@ export function SiteHeader() {
                     <DropdownMenuItem asChild><Link to="/bookings"><CalendarDays className="mr-2 h-4 w-4" />My trips</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/wishlist"><Heart className="mr-2 h-4 w-4" />Saved</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/vendor"><LayoutDashboard className="mr-2 h-4 w-4" />Host dashboard</Link></DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild><Link to="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin panel</Link></DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}><LogOut className="mr-2 h-4 w-4" />Sign out</DropdownMenuItem>
                   </DropdownMenuContent>
@@ -87,7 +94,7 @@ export function SiteHeader() {
                 <SheetContent side="right" className="w-72">
                   <SheetHeader><SheetTitle>Menu</SheetTitle></SheetHeader>
                   <div className="mt-6 flex flex-col gap-1">
-                    {items.map((i) => (
+                    {visibleItems.map((i) => (
                       <SheetClose asChild key={i.to}>
                         <Link to={i.to} className="rounded-md px-3 py-3 text-base hover:bg-muted data-[status=active]:bg-muted data-[status=active]:font-semibold">{i.label}</Link>
                       </SheetClose>
