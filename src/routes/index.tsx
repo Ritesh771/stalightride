@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ShieldCheck, MapPin, Clock, Sparkles, ArrowRight, Star } from "lucide-react";
+import { ShieldCheck, MapPin, Clock, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
 import { CategoryIcon } from "@/components/category-icon";
 import { HeroIllustration } from "@/components/hero-illustration";
@@ -66,11 +66,7 @@ function Index() {
         />
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-24">
           <div className="flex flex-col justify-center">
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Trusted by riders across India
-            </span>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
               Go anywhere.<br />
               <span className="bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
                 Rent anything.
