@@ -13,7 +13,9 @@ import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
-import { MapPin, Star, Search, Filter } from "lucide-react";
+import { MapPin, Star, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+
+const PAGE_SIZE = 12;
 
 const search = z.object({
   q: z.string().optional(),
@@ -22,6 +24,7 @@ const search = z.object({
   transmission: z.string().optional(),
   fuel: z.string().optional(),
   max: z.number().optional(),
+  page: z.number().optional(),
 });
 type Search = z.infer<typeof search>;
 
@@ -41,35 +44,44 @@ function Browse() {
   const params = useSearch({ from: "/browse" });
   const navigate = useNavigate();
   const [items, setItems] = useState<Vehicle[] | null>(null);
+  const [total, setTotal] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(params.max ?? 5000);
+  const page = Math.max(1, params.page ?? 1);
 
   const update = (patch: Partial<Search>) =>
-    navigate({ to: "/browse", search: { ...params, ...patch } as any });
+    navigate({ to: "/browse", search: { ...params, page: 1, ...patch } as any });
 
   useEffect(() => {
     (async () => {
       setItems(null);
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       let q = supabase
         .from("vehicles")
-        .select("id,title,brand,model,year,category,city,price_daily,avg_rating,review_count,transmission,fuel,vehicle_images(url,sort_order)")
+        .select("id,title,brand,model,year,category,city,price_daily,avg_rating,review_count,transmission,fuel,vehicle_images(url,sort_order)", { count: "exact" })
         .eq("status", "active")
         .order("created_at", { ascending: false })
-        .limit(60);
+        .range(from, to);
       if (params.category) q = q.eq("category", params.category as any);
       if (params.transmission) q = q.eq("transmission", params.transmission as any);
       if (params.fuel) q = q.eq("fuel", params.fuel as any);
       if (params.city) q = q.ilike("city", `%${params.city}%`);
       if (params.q) q = q.ilike("title", `%${params.q}%`);
       if (params.max) q = q.lte("price_daily", params.max);
-      const { data } = await q;
+      const { data, count } = await q;
       setItems((data as any) ?? []);
+      setTotal(count ?? 0);
     })();
-  }, [params.category, params.transmission, params.fuel, params.city, params.q, params.max]);
+  }, [params.category, params.transmission, params.fuel, params.city, params.q, params.max, page]);
 
   const paths = (items ?? []).map((v) =>
     v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0]?.url,
   );
   const urls = useSignedUrls("vehicle-images", paths);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const goto = (p: number) =>
+    navigate({ to: "/browse", search: { ...params, page: Math.min(Math.max(1, p), totalPages) } as any });
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,7 +90,9 @@ function Browse() {
         <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <h1 className="font-display text-3xl font-semibold">Browse rides</h1>
-            <p className="text-sm text-muted-foreground">Filter by city, category, and price.</p>
+            <p className="text-sm text-muted-foreground">
+              {items === null ? "Loading rides…" : `${total} ride${total === 1 ? "" : "s"} available`}
+            </p>
           </div>
         </div>
 
@@ -153,7 +167,19 @@ function Browse() {
           <div>
             {!items && (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-72 rounded-2xl" />)}
+                {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                  <Card key={i} className="overflow-hidden">
+                    <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                    <CardContent className="space-y-3 p-4">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
+                      <div className="flex justify-between pt-1">
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
             {items && items.length === 0 && (
@@ -162,13 +188,28 @@ function Browse() {
               </div>
             )}
             {items && items.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {items.map((v) => {
-                  const first = v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
-                  const url = first ? urls[first.url] : null;
-                  return <VehicleCard key={v.id} v={v} imgUrl={url ?? null} />;
-                })}
-              </div>
+              <>
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {items.map((v) => {
+                    const first = v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0];
+                    const url = first ? urls[first.url] : null;
+                    return <VehicleCard key={v.id} v={v} imgUrl={url ?? null} />;
+                  })}
+                </div>
+                {totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => goto(page - 1)} disabled={page <= 1}>
+                      <ChevronLeft className="mr-1 h-4 w-4" />Prev
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      Page {page} of {totalPages}
+                    </span>
+                    <Button variant="outline" size="sm" onClick={() => goto(page + 1)} disabled={page >= totalPages}>
+                      Next<ChevronRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -183,7 +224,7 @@ function VehicleCard({ v, imgUrl }: { v: Vehicle; imgUrl: string | null }) {
       <Card className="overflow-hidden transition group-hover:border-foreground/40">
         <div className="relative aspect-[4/3] bg-muted">
           {imgUrl ? (
-            <img src={imgUrl} alt={v.title} className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
+            <img src={imgUrl} alt={v.title} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-[1.02]" />
           ) : (
             <div className="grid h-full w-full place-items-center text-muted-foreground">No image</div>
           )}
