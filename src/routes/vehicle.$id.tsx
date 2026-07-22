@@ -119,12 +119,27 @@ function VehiclePage() {
 
   if (!v) return (
     <div className="min-h-screen bg-background"><SiteHeader />
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_360px]">
-        <Skeleton className="aspect-[16/10] rounded-2xl" />
-        <Skeleton className="h-80 rounded-2xl" />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <div className="mb-4 space-y-2">
+          <Skeleton className="h-3 w-40" />
+          <Skeleton className="h-8 w-2/3 max-w-md" />
+          <Skeleton className="h-3 w-32" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+          <div className="space-y-6">
+            <Skeleton className="aspect-[16/10] rounded-2xl" />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+            </div>
+            <Skeleton className="h-40 rounded-2xl" />
+            <Skeleton className="aspect-[16/9] rounded-2xl" />
+          </div>
+          <Skeleton className="h-96 rounded-2xl" />
+        </div>
       </div>
     </div>
   );
+
 
   const mapQuery = [v.address, v.city].filter(Boolean).join(", ") || v.city;
 
