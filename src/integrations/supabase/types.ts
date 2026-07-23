@@ -575,6 +575,13 @@ export type Database = {
             foreignKeyName: "vehicles_vendor_id_fkey"
             columns: ["vendor_id"]
             isOneToOne: false
+            referencedRelation: "public_vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicles_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
             referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
@@ -644,7 +651,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          full_name: string | null
+          id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          full_name?: string | null
+          id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          full_name?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
+      public_vendors: {
+        Row: {
+          bio: string | null
+          business_name: string | null
+          created_at: string | null
+          id: string | null
+          kyc_status: Database["public"]["Enums"]["kyc_status"] | null
+        }
+        Insert: {
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          kyc_status?: Database["public"]["Enums"]["kyc_status"] | null
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          kyc_status?: Database["public"]["Enums"]["kyc_status"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
@@ -653,6 +704,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      report_review: {
+        Args: { _reason: string; _review_id: string }
+        Returns: undefined
       }
     }
     Enums: {
