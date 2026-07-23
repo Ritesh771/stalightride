@@ -70,7 +70,7 @@ function MessagesPage() {
     const ch = supabase.channel(`msgs-${bookingId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
         async (payload) => {
-          const { data: prof } = await supabase.from("profiles").select("full_name,avatar_url").eq("id", (payload.new as any).sender_id).maybeSingle();
+          const { data: prof } = await supabase.from("public_profiles" as any).select("full_name,avatar_url").eq("id", (payload.new as any).sender_id).maybeSingle();
           setMessages((prev) => [...(prev ?? []), { ...(payload.new as any), profiles: prof }]);
         })
       .subscribe();
