@@ -51,10 +51,17 @@ function MessagesPage() {
       setAllowed(true);
       const { data: m } = await supabase
         .from("messages")
-        .select("*, profiles(full_name,avatar_url)")
+        .select("*")
         .eq("booking_id", bookingId)
         .order("created_at");
-      setMessages(m ?? []);
+      const rows = m ?? [];
+      const senderIds = Array.from(new Set(rows.map((x: any) => x.sender_id)));
+      let byId: Record<string, any> = {};
+      if (senderIds.length) {
+        const { data: profs } = await supabase.from("public_profiles" as any).select("id,full_name,avatar_url").in("id", senderIds);
+        byId = Object.fromEntries((profs ?? []).map((a: any) => [a.id, a]));
+      }
+      setMessages(rows.map((x: any) => ({ ...x, profiles: byId[x.sender_id] ?? null })));
     })();
   }, [bookingId, user, navigate]);
 
@@ -63,7 +70,7 @@ function MessagesPage() {
     const ch = supabase.channel(`msgs-${bookingId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${bookingId}` },
         async (payload) => {
-          const { data: prof } = await supabase.from("profiles").select("full_name,avatar_url").eq("id", (payload.new as any).sender_id).maybeSingle();
+          const { data: prof } = await supabase.from("public_profiles" as any).select("full_name,avatar_url").eq("id", (payload.new as any).sender_id).maybeSingle();
           setMessages((prev) => [...(prev ?? []), { ...(payload.new as any), profiles: prof }]);
         })
       .subscribe();

@@ -357,6 +357,73 @@ export type Database = {
         }
         Relationships: []
       }
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_vendors: {
+        Row: {
+          bio: string | null
+          business_name: string
+          created_at: string
+          id: string
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          business_name: string
+          created_at?: string
+          id: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string
+          created_at?: string
+          id?: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_vendors_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           booking_id: string
@@ -653,6 +720,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      report_review: {
+        Args: { _reason: string; _review_id: string }
+        Returns: undefined
       }
     }
     Enums: {
