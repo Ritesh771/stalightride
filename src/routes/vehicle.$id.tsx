@@ -45,12 +45,19 @@ function VehiclePage() {
         .eq("id", id).maybeSingle();
       setV(data);
       if (data) {
-        const { data: vend } = await supabase.from("vendors").select("*").eq("id", data.vendor_id).maybeSingle();
+        const { data: vend } = await supabase.from("public_vendors" as any).select("*").eq("id", data.vendor_id).maybeSingle();
         setVendor(vend);
-        const { data: prof } = await supabase.from("profiles").select("*").eq("id", data.vendor_id).maybeSingle();
+        const { data: prof } = await supabase.from("public_profiles" as any).select("*").eq("id", data.vendor_id).maybeSingle();
         setVendorProfile(prof);
-        const { data: r } = await supabase.from("reviews").select("*, profiles(full_name,avatar_url)").eq("vehicle_id", id).order("created_at", { ascending: false }).limit(20);
-        setReviews(r ?? []);
+        const { data: r } = await supabase.from("reviews").select("*").eq("vehicle_id", id).order("created_at", { ascending: false }).limit(20);
+        const rows = r ?? [];
+        const authorIds = Array.from(new Set(rows.map((x: any) => x.customer_id)));
+        let authorsById: Record<string, any> = {};
+        if (authorIds.length) {
+          const { data: authors } = await supabase.from("public_profiles" as any).select("id,full_name,avatar_url").in("id", authorIds);
+          authorsById = Object.fromEntries((authors ?? []).map((a: any) => [a.id, a]));
+        }
+        setReviews(rows.map((x: any) => ({ ...x, profiles: authorsById[x.customer_id] ?? null })));
       }
     })();
   }, [id]);
