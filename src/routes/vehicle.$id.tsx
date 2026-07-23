@@ -353,7 +353,7 @@ function ReviewItem({ r, isOwner, userId, onChange }: { r: any; isOwner: boolean
   const reportReview = async () => {
     const reason = window.prompt("Why are you reporting this review?");
     if (!reason?.trim()) return;
-    const { error } = await supabase.from("reviews").update({ reported: true, report_reason: reason.trim() } as any).eq("id", r.id);
+    const { error } = await supabase.rpc("report_review" as any, { _review_id: r.id, _reason: reason.trim() });
     if (error) return toast.error(error.message);
     onChange({ reported: true });
     toast.success("Reported to admins");
