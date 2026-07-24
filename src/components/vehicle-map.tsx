@@ -14,7 +14,7 @@ function loadGoogleMaps(key: string): Promise<void> {
   const w = window as any;
   if (w.google?.maps) return Promise.resolve();
   if (w.__gmapsLoader__) return w.__gmapsLoader__;
-  w.__gmapsLoader__ = new Promise((resolve, reject) => {
+  w.__gmapsLoader__ = new Promise<void>((resolve, reject) => {
     const s = document.createElement("script");
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
     s.async = true;
@@ -23,7 +23,7 @@ function loadGoogleMaps(key: string): Promise<void> {
     s.onerror = () => reject(new Error("Failed to load Google Maps"));
     document.head.appendChild(s);
   });
-  return window.__gmapsLoader__;
+  return w.__gmapsLoader__;
 }
 
 /**
