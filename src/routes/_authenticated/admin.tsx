@@ -39,9 +39,14 @@ function AdminPage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-semibold">Admin verification</h1>
         <Tabs defaultValue="vehicles" className="mt-6">
-          <TabsList><TabsTrigger value="vehicles">Vehicles</TabsTrigger><TabsTrigger value="licences">Driving licences</TabsTrigger></TabsList>
+          <TabsList>
+            <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+            <TabsTrigger value="licences">Driving licences</TabsTrigger>
+            <TabsTrigger value="disputes">Disputes</TabsTrigger>
+          </TabsList>
           <TabsContent value="vehicles"><VehicleQueue /></TabsContent>
           <TabsContent value="licences"><LicenceQueue /></TabsContent>
+          <TabsContent value="disputes"><DisputeQueue /></TabsContent>
         </Tabs>
       </div>
     </div>
