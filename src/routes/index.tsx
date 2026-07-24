@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
       { title: "RideShare — Rent cars, bikes & EVs near you" },
       { name: "description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Hourly, daily or weekly rentals with instant confirmation and secure payments." },
       { property: "og:title", content: "RideShare — Rent cars, bikes & EVs near you" },
-      { property: "og:description", content: "Verified hosts, transparent pricing, real-time tracking. Ride, share, explore." },
+      { property: "og:description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Hourly, daily or weekly rentals with instant confirmation and secure payments." },
       { property: "og:url", content: "https://stalightride.lovable.app/" },
     ],
     links: [{ rel: "canonical", href: "https://stalightride.lovable.app/" }],
