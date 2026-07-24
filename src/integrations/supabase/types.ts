@@ -62,10 +62,20 @@ export type Database = {
           notes: string | null
           paid_at: string | null
           payment_status: string
+          pickup_checked_at: string | null
+          pickup_fuel_pct: number | null
+          pickup_notes: string | null
+          pickup_odometer: number | null
+          pickup_photos: string[]
           pickup_time: string
           qr_code: string | null
           razorpay_order_id: string | null
           razorpay_payment_id: string | null
+          return_checked_at: string | null
+          return_fuel_pct: number | null
+          return_notes: string | null
+          return_odometer: number | null
+          return_photos: string[]
           security_deposit: number
           start_date: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -86,10 +96,20 @@ export type Database = {
           notes?: string | null
           paid_at?: string | null
           payment_status?: string
+          pickup_checked_at?: string | null
+          pickup_fuel_pct?: number | null
+          pickup_notes?: string | null
+          pickup_odometer?: number | null
+          pickup_photos?: string[]
           pickup_time?: string
           qr_code?: string | null
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
+          return_checked_at?: string | null
+          return_fuel_pct?: number | null
+          return_notes?: string | null
+          return_odometer?: number | null
+          return_photos?: string[]
           security_deposit?: number
           start_date: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -110,10 +130,20 @@ export type Database = {
           notes?: string | null
           paid_at?: string | null
           payment_status?: string
+          pickup_checked_at?: string | null
+          pickup_fuel_pct?: number | null
+          pickup_notes?: string | null
+          pickup_odometer?: number | null
+          pickup_photos?: string[]
           pickup_time?: string
           qr_code?: string | null
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
+          return_checked_at?: string | null
+          return_fuel_pct?: number | null
+          return_notes?: string | null
+          return_odometer?: number | null
+          return_photos?: string[]
           security_deposit?: number
           start_date?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -168,30 +198,39 @@ export type Database = {
       disputes: {
         Row: {
           booking_id: string
+          category: string
           created_at: string
           detail: string | null
           id: string
+          photos: string[]
           raised_by: string
+          resolution: string | null
           status: string
           subject: string
           updated_at: string
         }
         Insert: {
           booking_id: string
+          category?: string
           created_at?: string
           detail?: string | null
           id?: string
+          photos?: string[]
           raised_by: string
+          resolution?: string | null
           status?: string
           subject: string
           updated_at?: string
         }
         Update: {
           booking_id?: string
+          category?: string
           created_at?: string
           detail?: string | null
           id?: string
+          photos?: string[]
           raised_by?: string
+          resolution?: string | null
           status?: string
           subject?: string
           updated_at?: string
@@ -714,6 +753,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_booking_folder: { Args: { _folder: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

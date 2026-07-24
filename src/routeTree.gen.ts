@@ -22,6 +22,8 @@ import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenti
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_authenticated/vendor.vehicles.new'
+import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
+import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
@@ -90,19 +92,33 @@ const AuthenticatedVendorVehiclesNewRoute =
     path: '/vendor/vehicles/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBookingsIdTripRoute =
+  AuthenticatedBookingsIdTripRouteImport.update({
+    id: '/$id/trip',
+    path: '/$id/trip',
+    getParentRoute: () => AuthenticatedBookingsRoute,
+  } as any)
+const AuthenticatedBookingsIdDisputeRoute =
+  AuthenticatedBookingsIdDisputeRouteImport.update({
+    id: '/$id/dispute',
+    path: '/$id/dispute',
+    getParentRoute: () => AuthenticatedBookingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/bookings': typeof AuthenticatedBookingsRoute
+  '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
+  '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
+  '/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRoutesByTo {
@@ -110,13 +126,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/admin': typeof AuthenticatedAdminRoute
-  '/bookings': typeof AuthenticatedBookingsRoute
+  '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
+  '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
+  '/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRoutesById {
@@ -126,13 +144,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
-  '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
+  '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
+  '/_authenticated/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
+  '/_authenticated/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
   '/_authenticated/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRouteTypes {
@@ -149,6 +169,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/booking/qr/$code'
     | '/vendor/'
+    | '/bookings/$id/dispute'
+    | '/bookings/$id/trip'
     | '/vendor/vehicles/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -163,6 +185,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/booking/qr/$code'
     | '/vendor'
+    | '/bookings/$id/dispute'
+    | '/bookings/$id/trip'
     | '/vendor/vehicles/new'
   id:
     | '__root__'
@@ -178,6 +202,8 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$bookingId'
     | '/booking/qr/$code'
     | '/_authenticated/vendor/'
+    | '/_authenticated/bookings/$id/dispute'
+    | '/_authenticated/bookings/$id/trip'
     | '/_authenticated/vendor/vehicles/new'
   fileRoutesById: FileRoutesById
 }
@@ -283,12 +309,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorVehiclesNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bookings/$id/trip': {
+      id: '/_authenticated/bookings/$id/trip'
+      path: '/$id/trip'
+      fullPath: '/bookings/$id/trip'
+      preLoaderRoute: typeof AuthenticatedBookingsIdTripRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
+    }
+    '/_authenticated/bookings/$id/dispute': {
+      id: '/_authenticated/bookings/$id/dispute'
+      path: '/$id/dispute'
+      fullPath: '/bookings/$id/dispute'
+      preLoaderRoute: typeof AuthenticatedBookingsIdDisputeRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
+    }
   }
 }
 
+interface AuthenticatedBookingsRouteChildren {
+  AuthenticatedBookingsIdDisputeRoute: typeof AuthenticatedBookingsIdDisputeRoute
+  AuthenticatedBookingsIdTripRoute: typeof AuthenticatedBookingsIdTripRoute
+}
+
+const AuthenticatedBookingsRouteChildren: AuthenticatedBookingsRouteChildren = {
+  AuthenticatedBookingsIdDisputeRoute: AuthenticatedBookingsIdDisputeRoute,
+  AuthenticatedBookingsIdTripRoute: AuthenticatedBookingsIdTripRoute,
+}
+
+const AuthenticatedBookingsRouteWithChildren =
+  AuthenticatedBookingsRoute._addFileChildren(
+    AuthenticatedBookingsRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
+  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
@@ -298,7 +353,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
+  AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
