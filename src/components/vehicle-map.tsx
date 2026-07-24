@@ -9,17 +9,12 @@ interface Props {
   className?: string;
 }
 
-declare global {
-  interface Window {
-    __gmapsLoader__?: Promise<void>;
-  }
-}
-
 function loadGoogleMaps(key: string): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
-  if ((window as any).google?.maps) return Promise.resolve();
-  if (window.__gmapsLoader__) return window.__gmapsLoader__;
-  window.__gmapsLoader__ = new Promise((resolve, reject) => {
+  const w = window as any;
+  if (w.google?.maps) return Promise.resolve();
+  if (w.__gmapsLoader__) return w.__gmapsLoader__;
+  w.__gmapsLoader__ = new Promise((resolve, reject) => {
     const s = document.createElement("script");
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
     s.async = true;
