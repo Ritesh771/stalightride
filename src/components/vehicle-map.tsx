@@ -57,7 +57,7 @@ export function VehicleMap({ query, lat, lng, className }: Props) {
       try {
         await loadGoogleMaps(key);
         if (cancelled || !ref.current) return;
-        const google = window.google;
+        const google = (window as any).google;
         const center = hasHost ? { lat: Number(lat), lng: Number(lng) } : { lat: 20.5937, lng: 78.9629 };
         const map = new google.maps.Map(ref.current, {
           center,
