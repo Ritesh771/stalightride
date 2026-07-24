@@ -158,6 +158,19 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                   <Button asChild size="sm" variant="ghost">
                     <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
                   </Button>
+                  {b.status === "confirmed" && b.payment_status === "paid" && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/bookings/$id/trip" params={{ id: b.id }}>
+                        <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                        {b.return_checked_at ? "Trip summary" : b.pickup_checked_at ? "End trip" : "Start trip"}
+                      </Link>
+                    </Button>
+                  )}
+                  <Button asChild size="sm" variant="ghost" className="text-destructive">
+                    <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
+                      <AlertTriangle className="mr-1.5 h-4 w-4" />Report
+                    </Link>
+                  </Button>
                 </div>
               </div>
               {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
