@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Navigation, LocateFixed, MapPin } from "lucide-react";
-import { toast } from "sonner";
+import { Navigation, MapPin } from "lucide-react";
 
 interface Props {
   query?: string;
@@ -10,56 +9,99 @@ interface Props {
   className?: string;
 }
 
-type Coords = { lat: number; lng: number };
+declare global {
+  interface Window {
+    google?: any;
+    __gmapsLoader__?: Promise<void>;
+  }
+}
 
-/** Google Maps Embed with live user location tracking and driving directions to the host. */
+function loadGoogleMaps(key: string): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.google?.maps) return Promise.resolve();
+  if (window.__gmapsLoader__) return window.__gmapsLoader__;
+  window.__gmapsLoader__ = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
+    s.async = true;
+    s.defer = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Failed to load Google Maps"));
+    document.head.appendChild(s);
+  });
+  return window.__gmapsLoader__;
+}
+
+/**
+ * Interactive map showing the host's exact pickup location with a red pin.
+ * Click the pin (or the button) to open Google Maps directions from the user's
+ * current location in a new tab.
+ */
 export function VehicleMap({ query, lat, lng, className }: Props) {
   const key = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as string | undefined;
-  const [me, setMe] = useState<Coords | null>(null);
-  const [showRoute, setShowRoute] = useState(false);
-  const [tracking, setTracking] = useState(false);
-  const watchId = useRef<number | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [ready, setReady] = useState(false);
 
   const hasHost =
     typeof lat === "number" && typeof lng === "number" && !Number.isNaN(lat) && !Number.isNaN(lng);
 
+  const directionsUrl = hasHost
+    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
+    : query
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}&travelmode=driving`
+    : null;
+
   useEffect(() => {
-    return () => {
-      if (watchId.current !== null && navigator.geolocation) {
-        navigator.geolocation.clearWatch(watchId.current);
+    if (!key || !ref.current) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        await loadGoogleMaps(key);
+        if (cancelled || !ref.current) return;
+        const google = window.google;
+        const center = hasHost ? { lat: Number(lat), lng: Number(lng) } : { lat: 20.5937, lng: 78.9629 };
+        const map = new google.maps.Map(ref.current, {
+          center,
+          zoom: hasHost ? 15 : 5,
+          disableDefaultUI: true,
+          zoomControl: true,
+          gestureHandling: "greedy",
+          clickableIcons: false,
+        });
+        if (hasHost) {
+          const marker = new google.maps.Marker({
+            position: center,
+            map,
+            title: "Pickup location — click for directions",
+            animation: google.maps.Animation.DROP,
+          });
+          const info = new google.maps.InfoWindow({
+            content: `<div style="font:500 13px system-ui;padding:2px 4px;">Pickup point<br/><a href="${directionsUrl}" target="_blank" rel="noreferrer" style="color:#111;text-decoration:underline">Get directions →</a></div>`,
+          });
+          marker.addListener("click", () => {
+            info.open({ anchor: marker, map });
+            if (directionsUrl) window.open(directionsUrl, "_blank", "noreferrer");
+          });
+          info.open({ anchor: marker, map });
+        } else if (query) {
+          // Geocode fallback
+          new google.maps.Geocoder().geocode({ address: query }, (results: any[], status: string) => {
+            if (status === "OK" && results[0]) {
+              map.setCenter(results[0].geometry.location);
+              map.setZoom(14);
+              new google.maps.Marker({ position: results[0].geometry.location, map, animation: google.maps.Animation.DROP });
+            }
+          });
+        }
+        setReady(true);
+      } catch {
+        setReady(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-  }, []);
-
-  const startTracking = () => {
-    if (!("geolocation" in navigator)) {
-      toast.error("Location not supported on this device");
-      return;
-    }
-    setTracking(true);
-    navigator.geolocation.getCurrentPosition(
-      (p) => setMe({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      (err) => {
-        setTracking(false);
-        toast.error(err.message || "Could not get your location");
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-    watchId.current = navigator.geolocation.watchPosition(
-      (p) => setMe({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      () => {},
-      { enableHighAccuracy: true, maximumAge: 5000 },
-    );
-  };
-
-  const stopTracking = () => {
-    if (watchId.current !== null && navigator.geolocation) {
-      navigator.geolocation.clearWatch(watchId.current);
-      watchId.current = null;
-    }
-    setTracking(false);
-    setShowRoute(false);
-  };
+  }, [key, lat, lng, query, hasHost, directionsUrl]);
 
   if (!key) {
     return (
@@ -71,80 +113,30 @@ export function VehicleMap({ query, lat, lng, className }: Props) {
     );
   }
 
-  const src = (() => {
-    if (showRoute && me && hasHost) {
-      return `https://www.google.com/maps/embed/v1/directions?key=${encodeURIComponent(key)}&origin=${me.lat},${me.lng}&destination=${lat},${lng}&mode=driving`;
-    }
-    if (hasHost) {
-      return `https://www.google.com/maps/embed/v1/view?key=${encodeURIComponent(key)}&center=${lat},${lng}&zoom=15&maptype=roadmap`;
-    }
-    return `https://www.google.com/maps/embed/v1/place?key=${encodeURIComponent(key)}&q=${encodeURIComponent(query ?? "")}`;
-  })();
-
-  const externalDirections =
-    hasHost && me
-      ? `https://www.google.com/maps/dir/?api=1&origin=${me.lat},${me.lng}&destination=${lat},${lng}&travelmode=driving`
-      : hasHost
-      ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
-      : null;
-
   return (
     <div className={className}>
       <div className="relative h-full w-full">
-        <iframe
-          key={src}
-          title="Location"
-          src={src}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="h-full w-full rounded-xl border border-border"
-          allowFullScreen
-        />
-        <div className="pointer-events-none absolute inset-x-2 bottom-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="pointer-events-auto flex gap-2">
-            {!tracking ? (
-              <Button size="sm" variant="secondary" onClick={startTracking} className="shadow">
-                <LocateFixed className="mr-1.5 h-4 w-4" />
-                Track my location
-              </Button>
-            ) : (
-              <Button size="sm" variant="secondary" onClick={stopTracking} className="shadow">
-                <MapPin className="mr-1.5 h-4 w-4" />
-                Stop tracking
-              </Button>
-            )}
-            {hasHost && me && (
-              <Button
-                size="sm"
-                variant={showRoute ? "default" : "secondary"}
-                onClick={() => setShowRoute((s) => !s)}
-                className="shadow"
-              >
-                <Navigation className="mr-1.5 h-4 w-4" />
-                {showRoute ? "Hide route" : "Show route"}
-              </Button>
-            )}
+        <div ref={ref} className="h-full w-full overflow-hidden rounded-xl border border-border bg-muted" />
+        {!ready && (
+          <div className="pointer-events-none absolute inset-0 grid place-items-center text-xs text-muted-foreground">
+            <MapPin className="h-4 w-4 animate-pulse" />
           </div>
-          {externalDirections && (
-            <a
-              href={externalDirections}
-              target="_blank"
-              rel="noreferrer"
-              className="pointer-events-auto rounded-md bg-background/90 px-2.5 py-1 text-xs font-medium shadow ring-1 ring-border hover:bg-background"
+        )}
+        <div className="pointer-events-none absolute inset-x-2 bottom-2 flex justify-end">
+          {directionsUrl && (
+            <Button
+              size="sm"
+              className="pointer-events-auto shadow"
+              onClick={() => window.open(directionsUrl, "_blank", "noreferrer")}
             >
-              Open in Google Maps
-            </a>
+              <Navigation className="mr-1.5 h-4 w-4" /> Directions
+            </Button>
           )}
         </div>
       </div>
-      {me && (
+      {hasHost && (
         <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-          You: {me.lat.toFixed(5)}, {me.lng.toFixed(5)}
-          {hasHost && (
-            <>
-              {" · "}Host: {Number(lat).toFixed(5)}, {Number(lng).toFixed(5)}
-            </>
-          )}
+          Host: {Number(lat).toFixed(5)}, {Number(lng).toFixed(5)}
         </p>
       )}
     </div>
