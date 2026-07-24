@@ -181,3 +181,74 @@ function DocLink({ label, url }: { label: string; url: string | null | undefined
   if (!url) return <span className="rounded border border-dashed border-border px-2 py-1 text-muted-foreground">{label}: —</span>;
   return <a className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 hover:bg-accent" href={url} target="_blank" rel="noreferrer">{label}<ExternalLink className="h-3 w-3" /></a>;
 }
+
+function DisputeQueue() {
+  const [items, setItems] = useState<any[] | null>(null);
+  const load = async () => {
+    const { data } = await supabase
+      .from("disputes")
+      .select("*, bookings(id,vehicles(title))")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setItems((data as any) ?? []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const resolve = async (id: string) => {
+    const resolution = window.prompt("Resolution notes (visible to both parties)?");
+    if (!resolution?.trim()) return;
+    const { error } = await supabase.from("disputes").update({ status: "resolved", resolution: resolution.trim() } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Dispute resolved");
+    load();
+  };
+
+  if (!items) return <Skeleton className="mt-4 h-40" />;
+  if (items.length === 0) return <p className="mt-6 text-sm text-muted-foreground">No disputes filed.</p>;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {items.map((d) => (
+        <DisputeCard key={d.id} d={d} onResolve={() => resolve(d.id)} />
+      ))}
+    </div>
+  );
+}
+
+function DisputeCard({ d, onResolve }: { d: any; onResolve: () => void }) {
+  const urls = useSignedUrls("trip-photos", d.photos ?? []);
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div>
+            <p className="font-medium">{d.subject}</p>
+            <p className="text-xs text-muted-foreground">
+              {d.category} · {d.bookings?.vehicles?.title ?? "—"} · {new Date(d.created_at).toLocaleString()}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={d.status === "resolved" ? "secondary" : "outline"}>{d.status}</Badge>
+            {d.status !== "resolved" && <Button size="sm" onClick={onResolve}><ShieldCheck className="mr-1 h-3 w-3" />Resolve</Button>}
+          </div>
+        </div>
+        <p className="mt-2 whitespace-pre-line text-sm">{d.detail}</p>
+        {d.photos && d.photos.length > 0 && (
+          <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {d.photos.map((p: string) => (
+              <a key={p} href={urls[p] ?? "#"} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden rounded-lg border">
+                {urls[p] && <img src={urls[p]!} alt="" className="h-full w-full object-cover" />}
+              </a>
+            ))}
+          </div>
+        )}
+        {d.resolution && (
+          <div className="mt-3 rounded-md bg-muted p-3 text-sm">
+            <span className="text-xs font-semibold uppercase text-muted-foreground">Resolution</span>
+            <p className="mt-1 whitespace-pre-line">{d.resolution}</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
