@@ -11,7 +11,6 @@ interface Props {
 
 declare global {
   interface Window {
-    google?: any;
     __gmapsLoader__?: Promise<void>;
   }
 }
