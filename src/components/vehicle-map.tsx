@@ -17,7 +17,7 @@ declare global {
 
 function loadGoogleMaps(key: string): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
-  if (window.google?.maps) return Promise.resolve();
+  if ((window as any).google?.maps) return Promise.resolve();
   if (window.__gmapsLoader__) return window.__gmapsLoader__;
   window.__gmapsLoader__ = new Promise((resolve, reject) => {
     const s = document.createElement("script");
