@@ -111,6 +111,33 @@ function TripInspection() {
         </div>
 
         <div className="grid gap-6">
+          {(role === "customer" || role === "vendor") && b.pickup_checked_at && !b.return_checked_at && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div>
+                    <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+                      <Radio className="h-4 w-4 text-red-600" /> Live GPS tracking
+                    </h2>
+                    <p className="text-xs text-muted-foreground">
+                      {role === "customer"
+                        ? "Share your phone GPS so the host can see your live position during the trip."
+                        : "The customer's live phone position updates here while they're sharing."}
+                    </p>
+                  </div>
+                  <Badge className="bg-red-600 text-white">Active trip</Badge>
+                </div>
+                <LiveTracker
+                  bookingId={b.id}
+                  userId={user!.id}
+                  role={role}
+                  hostLat={b.pickup_lat ?? null}
+                  hostLng={b.pickup_lng ?? null}
+                />
+              </CardContent>
+            </Card>
+          )}
+
           <Section
             title="Pickup check-in"
             subtitle="Record fuel, odometer and photos before starting the trip."
