@@ -12,9 +12,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
-import { Upload, X, Fuel, Gauge, Camera, ShieldAlert } from "lucide-react";
+import { Upload, X, Fuel, Gauge, Camera, ShieldAlert, Radio } from "lucide-react";
+import { LiveTracker } from "@/components/live-tracker";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
+
+const DAMAGE_AREAS = [
+  "Front bumper",
+  "Rear bumper",
+  "Left side panels",
+  "Right side panels",
+  "Windshield",
+  "Wheels & tyres",
+  "Headlights & tail-lights",
+  "Interior & seats",
+  "Dashboard warning lights",
+];
+type DamageEntry = { area: string; condition: "ok" | "minor" | "major"; note?: string };
 
 type Phase = "pickup" | "return";
 
@@ -28,7 +42,7 @@ function TripInspection() {
   const load = async () => {
     const { data } = await supabase
       .from("bookings")
-      .select("*, vehicles(title,brand,model,year)")
+      .select("*, vehicles(title,brand,model,year,lat,lng)")
       .eq("id", id)
       .maybeSingle();
     setB(data);
@@ -97,6 +111,33 @@ function TripInspection() {
         </div>
 
         <div className="grid gap-6">
+          {(role === "customer" || role === "vendor") && b.pickup_checked_at && !b.return_checked_at && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div>
+                    <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+                      <Radio className="h-4 w-4 text-red-600" /> Live GPS tracking
+                    </h2>
+                    <p className="text-xs text-muted-foreground">
+                      {role === "customer"
+                        ? "Share your phone GPS so the host can see your live position during the trip."
+                        : "The customer's live phone position updates here while they're sharing."}
+                    </p>
+                  </div>
+                  <Badge className="bg-red-600 text-white">Active trip</Badge>
+                </div>
+                <LiveTracker
+                  bookingId={b.id}
+                  userId={user!.id}
+                  role={role}
+                  hostLat={b.vehicles?.lat ?? null}
+                  hostLng={b.vehicles?.lng ?? null}
+                />
+              </CardContent>
+            </Card>
+          )}
+
           <Section
             title="Pickup check-in"
             subtitle="Record fuel, odometer and photos before starting the trip."
@@ -109,6 +150,7 @@ function TripInspection() {
                 odo={b.pickup_odometer}
                 photos={b.pickup_photos}
                 notes={b.pickup_notes}
+                damage={b.pickup_damage}
                 at={b.pickup_checked_at}
                 phase="pickup"
               />
@@ -126,6 +168,7 @@ function TripInspection() {
                       pickup_odometer: payload.odo,
                       pickup_photos: payload.photoPaths,
                       pickup_notes: payload.notes || null,
+                      pickup_damage: payload.damage as any,
                       pickup_checked_at: new Date().toISOString(),
                     } as any)
                     .eq("id", b.id);
@@ -154,6 +197,7 @@ function TripInspection() {
                 odo={b.return_odometer}
                 photos={b.return_photos}
                 notes={b.return_notes}
+                damage={b.return_damage}
                 at={b.return_checked_at}
                 phase="return"
               />
@@ -171,6 +215,7 @@ function TripInspection() {
                       return_odometer: payload.odo,
                       return_photos: payload.photoPaths,
                       return_notes: payload.notes || null,
+                      return_damage: payload.damage as any,
                       return_checked_at: new Date().toISOString(),
                     } as any)
                     .eq("id", b.id);
@@ -265,7 +310,7 @@ function InspectionForm({
   bookingId: string;
   phase: Phase;
   saving: boolean;
-  onSave: (p: { fuel: number; odo: number; photoPaths: string[]; notes: string }) => void;
+  onSave: (p: { fuel: number; odo: number; photoPaths: string[]; notes: string; damage: DamageEntry[] }) => void;
 }) {
   const [fuel, setFuel] = useState(50);
   const [odo, setOdo] = useState<string>("");
@@ -273,6 +318,9 @@ function InspectionForm({
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [damage, setDamage] = useState<DamageEntry[]>(
+    DAMAGE_AREAS.map((area) => ({ area, condition: "ok" })),
+  );
 
   const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = Array.from(e.target.files ?? []).slice(0, 8);
@@ -287,6 +335,9 @@ function InspectionForm({
   const submit = async () => {
     if (!odo) return toast.error("Enter odometer reading");
     if (files.length === 0) return toast.error("Add at least one photo");
+    const flagged = damage.filter((d) => d.condition !== "ok");
+    const missingNote = flagged.find((d) => !d.note?.trim());
+    if (missingNote) return toast.error(`Add a note for "${missingNote.area}"`);
     setUploading(true);
     try {
       const paths: string[] = [];
@@ -298,7 +349,7 @@ function InspectionForm({
         if (error) throw error;
         paths.push(path);
       }
-      onSave({ fuel, odo: Number(odo), photoPaths: paths, notes });
+      onSave({ fuel, odo: Number(odo), photoPaths: paths, notes, damage });
     } catch (e: any) {
       toast.error(e.message ?? "Upload failed");
     } finally {
@@ -369,6 +420,51 @@ function InspectionForm({
         )}
       </div>
       <div>
+        <Label className="flex items-center gap-2">
+          <ShieldAlert className="h-4 w-4" /> Damage checklist
+        </Label>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Walk around the vehicle and mark each area. Add a note for anything not OK.
+        </p>
+        <ul className="mt-2 space-y-2">
+          {damage.map((d, idx) => (
+            <li key={d.area} className="rounded-lg border border-border p-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-medium">{d.area}</span>
+                <div className="flex gap-1">
+                  {(["ok", "minor", "major"] as const).map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setDamage((prev) => prev.map((x, i) => (i === idx ? { ...x, condition: c } : x)))}
+                      className={`rounded-md px-2 py-0.5 text-xs capitalize ${
+                        d.condition === c
+                          ? c === "ok"
+                            ? "bg-emerald-600 text-white"
+                            : c === "minor"
+                            ? "bg-amber-500 text-white"
+                            : "bg-red-600 text-white"
+                          : "border border-border bg-background"
+                      }`}
+                    >
+                      {c === "ok" ? "OK" : c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {d.condition !== "ok" && (
+                <Input
+                  className="mt-2"
+                  placeholder="Describe (e.g. scratch on left door, dent near rear light)"
+                  value={d.note ?? ""}
+                  onChange={(e) => setDamage((prev) => prev.map((x, i) => (i === idx ? { ...x, note: e.target.value } : x)))}
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
         <Label>Notes</Label>
         <Textarea
           rows={3}
@@ -391,6 +487,7 @@ function ReadOnlySnapshot({
   odo,
   photos,
   notes,
+  damage,
   at,
   phase,
 }: {
@@ -399,10 +496,12 @@ function ReadOnlySnapshot({
   odo: number | null;
   photos: string[] | null;
   notes: string | null;
+  damage?: DamageEntry[] | null;
   at: string;
   phase: Phase;
 }) {
   const urls = useSignedUrls("trip-photos", photos ?? []);
+  const flagged = (damage ?? []).filter((d) => d.condition !== "ok");
   return (
     <div className="grid gap-3">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -417,6 +516,26 @@ function ReadOnlySnapshot({
               {urls[p] && <img src={urls[p]!} alt={`${phase} photo`} className="h-full w-full object-cover" />}
             </a>
           ))}
+        </div>
+      )}
+      {damage && damage.length > 0 && (
+        <div className="rounded-md border border-border p-3">
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Damage checklist</p>
+          {flagged.length === 0 ? (
+            <p className="mt-1 text-sm text-emerald-700">All areas marked OK.</p>
+          ) : (
+            <ul className="mt-2 space-y-1 text-sm">
+              {flagged.map((d) => (
+                <li key={d.area} className="flex flex-wrap items-center gap-2">
+                  <Badge className={d.condition === "major" ? "bg-red-600 text-white" : "bg-amber-500 text-white"}>
+                    {d.condition}
+                  </Badge>
+                  <span className="font-medium">{d.area}</span>
+                  {d.note && <span className="text-muted-foreground">— {d.note}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
       {notes && <p className="whitespace-pre-line rounded-md bg-muted p-3 text-sm">{notes}</p>}

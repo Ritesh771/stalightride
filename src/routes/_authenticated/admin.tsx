@@ -197,9 +197,18 @@ function DisputeQueue() {
   const resolve = async (id: string) => {
     const resolution = window.prompt("Resolution notes (visible to both parties)?");
     if (!resolution?.trim()) return;
-    const { error } = await supabase.from("disputes").update({ status: "resolved", resolution: resolution.trim() } as any).eq("id", id);
+    const { error } = await supabase
+      .from("disputes")
+      .update({ status: "resolved", resolution: resolution.trim(), resolved_at: new Date().toISOString() } as any)
+      .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Dispute resolved");
+    load();
+  };
+  const startReview = async (id: string) => {
+    const { error } = await supabase.from("disputes").update({ status: "in_review" } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Marked in review");
     load();
   };
 
@@ -209,13 +218,13 @@ function DisputeQueue() {
   return (
     <div className="mt-4 space-y-3">
       {items.map((d) => (
-        <DisputeCard key={d.id} d={d} onResolve={() => resolve(d.id)} />
+        <DisputeCard key={d.id} d={d} onResolve={() => resolve(d.id)} onReview={() => startReview(d.id)} />
       ))}
     </div>
   );
 }
 
-function DisputeCard({ d, onResolve }: { d: any; onResolve: () => void }) {
+function DisputeCard({ d, onResolve, onReview }: { d: any; onResolve: () => void; onReview: () => void }) {
   const urls = useSignedUrls("trip-photos", d.photos ?? []);
   return (
     <Card>
@@ -227,8 +236,9 @@ function DisputeCard({ d, onResolve }: { d: any; onResolve: () => void }) {
               {d.category} · {d.bookings?.vehicles?.title ?? "—"} · {new Date(d.created_at).toLocaleString()}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant={d.status === "resolved" ? "secondary" : "outline"}>{d.status}</Badge>
+            {d.status === "open" && <Button size="sm" variant="outline" onClick={onReview}>Mark in review</Button>}
             {d.status !== "resolved" && <Button size="sm" onClick={onResolve}><ShieldCheck className="mr-1 h-3 w-3" />Resolve</Button>}
           </div>
         </div>
