@@ -487,6 +487,7 @@ function ReadOnlySnapshot({
   odo,
   photos,
   notes,
+  damage,
   at,
   phase,
 }: {
@@ -495,10 +496,12 @@ function ReadOnlySnapshot({
   odo: number | null;
   photos: string[] | null;
   notes: string | null;
+  damage?: DamageEntry[] | null;
   at: string;
   phase: Phase;
 }) {
   const urls = useSignedUrls("trip-photos", photos ?? []);
+  const flagged = (damage ?? []).filter((d) => d.condition !== "ok");
   return (
     <div className="grid gap-3">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -515,7 +518,28 @@ function ReadOnlySnapshot({
           ))}
         </div>
       )}
+      {damage && damage.length > 0 && (
+        <div className="rounded-md border border-border p-3">
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Damage checklist</p>
+          {flagged.length === 0 ? (
+            <p className="mt-1 text-sm text-emerald-700">All areas marked OK.</p>
+          ) : (
+            <ul className="mt-2 space-y-1 text-sm">
+              {flagged.map((d) => (
+                <li key={d.area} className="flex flex-wrap items-center gap-2">
+                  <Badge className={d.condition === "major" ? "bg-red-600 text-white" : "bg-amber-500 text-white"}>
+                    {d.condition}
+                  </Badge>
+                  <span className="font-medium">{d.area}</span>
+                  {d.note && <span className="text-muted-foreground">— {d.note}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       {notes && <p className="whitespace-pre-line rounded-md bg-muted p-3 text-sm">{notes}</p>}
     </div>
   );
+}
 }
