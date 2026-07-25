@@ -213,6 +213,7 @@ function TripInspection() {
                       return_odometer: payload.odo,
                       return_photos: payload.photoPaths,
                       return_notes: payload.notes || null,
+                      return_damage: payload.damage as any,
                       return_checked_at: new Date().toISOString(),
                     } as any)
                     .eq("id", b.id);
