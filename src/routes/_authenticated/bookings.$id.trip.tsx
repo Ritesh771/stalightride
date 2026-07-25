@@ -197,6 +197,7 @@ function TripInspection() {
                 odo={b.return_odometer}
                 photos={b.return_photos}
                 notes={b.return_notes}
+                damage={b.return_damage}
                 at={b.return_checked_at}
                 phase="return"
               />
