@@ -167,6 +167,7 @@ function TripInspection() {
                       pickup_odometer: payload.odo,
                       pickup_photos: payload.photoPaths,
                       pickup_notes: payload.notes || null,
+                      pickup_damage: payload.damage as any,
                       pickup_checked_at: new Date().toISOString(),
                     } as any)
                     .eq("id", b.id);
