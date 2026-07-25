@@ -42,7 +42,7 @@ function TripInspection() {
   const load = async () => {
     const { data } = await supabase
       .from("bookings")
-      .select("*, vehicles(title,brand,model,year)")
+      .select("*, vehicles(title,brand,model,year,lat,lng)")
       .eq("id", id)
       .maybeSingle();
     setB(data);
