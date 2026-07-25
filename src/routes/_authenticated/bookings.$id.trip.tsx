@@ -12,9 +12,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
-import { Upload, X, Fuel, Gauge, Camera, ShieldAlert } from "lucide-react";
+import { Upload, X, Fuel, Gauge, Camera, ShieldAlert, Radio } from "lucide-react";
+import { LiveTracker } from "@/components/live-tracker";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
+
+const DAMAGE_AREAS = [
+  "Front bumper",
+  "Rear bumper",
+  "Left side panels",
+  "Right side panels",
+  "Windshield",
+  "Wheels & tyres",
+  "Headlights & tail-lights",
+  "Interior & seats",
+  "Dashboard warning lights",
+];
+type DamageEntry = { area: string; condition: "ok" | "minor" | "major"; note?: string };
 
 type Phase = "pickup" | "return";
 
