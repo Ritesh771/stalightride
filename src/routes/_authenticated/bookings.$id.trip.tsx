@@ -131,8 +131,8 @@ function TripInspection() {
                   bookingId={b.id}
                   userId={user!.id}
                   role={role}
-                  hostLat={b.pickup_lat ?? null}
-                  hostLng={b.pickup_lng ?? null}
+                  hostLat={b.vehicles?.lat ?? null}
+                  hostLng={b.vehicles?.lng ?? null}
                 />
               </CardContent>
             </Card>
