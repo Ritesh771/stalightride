@@ -236,8 +236,9 @@ function DisputeCard({ d, onResolve, onReview }: { d: any; onResolve: () => void
               {d.category} · {d.bookings?.vehicles?.title ?? "—"} · {new Date(d.created_at).toLocaleString()}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant={d.status === "resolved" ? "secondary" : "outline"}>{d.status}</Badge>
+            {d.status === "open" && <Button size="sm" variant="outline" onClick={onReview}>Mark in review</Button>}
             {d.status !== "resolved" && <Button size="sm" onClick={onResolve}><ShieldCheck className="mr-1 h-3 w-3" />Resolve</Button>}
           </div>
         </div>
