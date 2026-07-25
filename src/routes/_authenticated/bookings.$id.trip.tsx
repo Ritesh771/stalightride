@@ -150,6 +150,7 @@ function TripInspection() {
                 odo={b.pickup_odometer}
                 photos={b.pickup_photos}
                 notes={b.pickup_notes}
+                damage={b.pickup_damage}
                 at={b.pickup_checked_at}
                 phase="pickup"
               />
