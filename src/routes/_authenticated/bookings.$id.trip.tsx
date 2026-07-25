@@ -306,7 +306,7 @@ function InspectionForm({
   bookingId: string;
   phase: Phase;
   saving: boolean;
-  onSave: (p: { fuel: number; odo: number; photoPaths: string[]; notes: string }) => void;
+  onSave: (p: { fuel: number; odo: number; photoPaths: string[]; notes: string; damage: DamageEntry[] }) => void;
 }) {
   const [fuel, setFuel] = useState(50);
   const [odo, setOdo] = useState<string>("");
@@ -314,6 +314,9 @@ function InspectionForm({
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [damage, setDamage] = useState<DamageEntry[]>(
+    DAMAGE_AREAS.map((area) => ({ area, condition: "ok" })),
+  );
 
   const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = Array.from(e.target.files ?? []).slice(0, 8);
@@ -328,6 +331,9 @@ function InspectionForm({
   const submit = async () => {
     if (!odo) return toast.error("Enter odometer reading");
     if (files.length === 0) return toast.error("Add at least one photo");
+    const flagged = damage.filter((d) => d.condition !== "ok");
+    const missingNote = flagged.find((d) => !d.note?.trim());
+    if (missingNote) return toast.error(`Add a note for "${missingNote.area}"`);
     setUploading(true);
     try {
       const paths: string[] = [];
@@ -339,7 +345,7 @@ function InspectionForm({
         if (error) throw error;
         paths.push(path);
       }
-      onSave({ fuel, odo: Number(odo), photoPaths: paths, notes });
+      onSave({ fuel, odo: Number(odo), photoPaths: paths, notes, damage });
     } catch (e: any) {
       toast.error(e.message ?? "Upload failed");
     } finally {
