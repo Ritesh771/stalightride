@@ -416,6 +416,51 @@ function InspectionForm({
         )}
       </div>
       <div>
+        <Label className="flex items-center gap-2">
+          <ShieldAlert className="h-4 w-4" /> Damage checklist
+        </Label>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Walk around the vehicle and mark each area. Add a note for anything not OK.
+        </p>
+        <ul className="mt-2 space-y-2">
+          {damage.map((d, idx) => (
+            <li key={d.area} className="rounded-lg border border-border p-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-medium">{d.area}</span>
+                <div className="flex gap-1">
+                  {(["ok", "minor", "major"] as const).map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setDamage((prev) => prev.map((x, i) => (i === idx ? { ...x, condition: c } : x)))}
+                      className={`rounded-md px-2 py-0.5 text-xs capitalize ${
+                        d.condition === c
+                          ? c === "ok"
+                            ? "bg-emerald-600 text-white"
+                            : c === "minor"
+                            ? "bg-amber-500 text-white"
+                            : "bg-red-600 text-white"
+                          : "border border-border bg-background"
+                      }`}
+                    >
+                      {c === "ok" ? "OK" : c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {d.condition !== "ok" && (
+                <Input
+                  className="mt-2"
+                  placeholder="Describe (e.g. scratch on left door, dent near rear light)"
+                  value={d.note ?? ""}
+                  onChange={(e) => setDamage((prev) => prev.map((x, i) => (i === idx ? { ...x, note: e.target.value } : x)))}
+                />
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
         <Label>Notes</Label>
         <Textarea
           rows={3}
