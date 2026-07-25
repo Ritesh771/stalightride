@@ -49,6 +49,50 @@ export type Database = {
           },
         ]
       }
+      booking_locations: {
+        Row: {
+          accuracy: number | null
+          booking_id: string
+          created_at: string
+          heading: number | null
+          id: string
+          lat: number
+          lng: number
+          speed: number | null
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          booking_id: string
+          created_at?: string
+          heading?: number | null
+          id?: string
+          lat: number
+          lng: number
+          speed?: number | null
+          user_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          booking_id?: string
+          created_at?: string
+          heading?: number | null
+          id?: string
+          lat?: number
+          lng?: number
+          speed?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_locations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           base_price: number
@@ -63,6 +107,7 @@ export type Database = {
           paid_at: string | null
           payment_status: string
           pickup_checked_at: string | null
+          pickup_damage: Json | null
           pickup_fuel_pct: number | null
           pickup_notes: string | null
           pickup_odometer: number | null
@@ -72,6 +117,7 @@ export type Database = {
           razorpay_order_id: string | null
           razorpay_payment_id: string | null
           return_checked_at: string | null
+          return_damage: Json | null
           return_fuel_pct: number | null
           return_notes: string | null
           return_odometer: number | null
@@ -97,6 +143,7 @@ export type Database = {
           paid_at?: string | null
           payment_status?: string
           pickup_checked_at?: string | null
+          pickup_damage?: Json | null
           pickup_fuel_pct?: number | null
           pickup_notes?: string | null
           pickup_odometer?: number | null
@@ -106,6 +153,7 @@ export type Database = {
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
           return_checked_at?: string | null
+          return_damage?: Json | null
           return_fuel_pct?: number | null
           return_notes?: string | null
           return_odometer?: number | null
@@ -131,6 +179,7 @@ export type Database = {
           paid_at?: string | null
           payment_status?: string
           pickup_checked_at?: string | null
+          pickup_damage?: Json | null
           pickup_fuel_pct?: number | null
           pickup_notes?: string | null
           pickup_odometer?: number | null
@@ -140,6 +189,7 @@ export type Database = {
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
           return_checked_at?: string | null
+          return_damage?: Json | null
           return_fuel_pct?: number | null
           return_notes?: string | null
           return_odometer?: number | null
@@ -205,6 +255,8 @@ export type Database = {
           photos: string[]
           raised_by: string
           resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
           status: string
           subject: string
           updated_at: string
@@ -218,6 +270,8 @@ export type Database = {
           photos?: string[]
           raised_by: string
           resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
           status?: string
           subject: string
           updated_at?: string
@@ -231,6 +285,8 @@ export type Database = {
           photos?: string[]
           raised_by?: string
           resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
           status?: string
           subject?: string
           updated_at?: string
