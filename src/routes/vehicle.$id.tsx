@@ -10,14 +10,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { currency, daysBetween } from "@/lib/format";
+import { calculateRentalPrice, currency, rentalDurationHours } from "@/lib/format";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { VehicleMap } from "@/components/vehicle-map";
 import { toast } from "sonner";
 import { Star, MapPin, Users, Fuel, Cog, Gauge, Heart, ShieldCheck } from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 
-export const Route = createFileRoute("/vehicle/$id")({ component: VehiclePage });
+export const Route = createFileRoute("/vehicle/$id")({
+  component: VehiclePage,
+  head: () => ({
+    meta: [
+      { title: "Vehicle rental details — RideShare" },
+      { name: "description", content: "View verified vehicle details, pricing, pickup location, reviews, and secure booking options on RideShare." },
+      { property: "og:title", content: "Vehicle rental details — RideShare" },
+      { property: "og:description", content: "Check vehicle photos, verified host details, exact pickup map, and rental rates before booking." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+});
 
 function VehiclePage() {
   const { id } = Route.useParams();
@@ -75,8 +87,17 @@ function VehiclePage() {
   const urls = useSignedUrls("vehicle-images", images.map((im: any) => im.url));
   const imgUrl = images[activeImg] ? urls[images[activeImg].url] : null;
 
-  const days = start && end ? daysBetween(start, end) : 0;
-  const subtotal = useMemo(() => (v ? days * Number(v.price_daily) : 0), [days, v]);
+  const rentalHours = useMemo(() => rentalDurationHours(start, end, pickupTime, dropoffTime), [dropoffTime, end, pickupTime, start]);
+  const priceBreakdown = useMemo(() => v ? calculateRentalPrice({
+    startDate: start,
+    endDate: end,
+    pickupTime,
+    dropoffTime,
+    priceHourly: v.price_hourly,
+    priceDaily: v.price_daily,
+    priceWeekly: v.price_weekly,
+  }) : calculateRentalPrice({ startDate: "", endDate: "", pickupTime: "", dropoffTime: "" }), [dropoffTime, end, pickupTime, start, v]);
+  const subtotal = priceBreakdown.subtotal;
   const total = subtotal + (v ? Number(v.security_deposit) : 0);
 
   const dlOk = myProfile?.dl_status === "approved";
@@ -86,6 +107,7 @@ function VehiclePage() {
     if (!user) { navigate({ to: "/auth" }); return; }
     if (!dlOk) { toast.error("Verify your driving licence in your profile before booking"); navigate({ to: "/profile" }); return; }
     if (!start || !end) { toast.error("Pick dates first"); return; }
+    if (rentalHours <= 0) { toast.error("Drop-off must be after pickup"); return; }
     setBooking(true);
 
     try {
@@ -294,10 +316,13 @@ function VehiclePage() {
                   <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything the host should know?" />
                 </div>
 
-                {days > 0 && (
+                {rentalHours > 0 && (
                   <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
-                    <Row label={`${currency(v.price_daily)} × ${days} day${days > 1 ? "s" : ""}`} value={currency(subtotal)} />
+                    {priceBreakdown.lines.map((line) => (
+                      <Row key={line.label} label={line.label} value={currency(line.value)} />
+                    ))}
                     <Row label="Security deposit" value={currency(v.security_deposit)} />
+                    <Row label="Duration" value={`${rentalHours.toFixed(rentalHours % 1 === 0 ? 0 : 1)} hours`} />
                     <div className="mt-2 flex justify-between border-t border-border pt-2 text-base font-semibold">
                       <span>Total</span><span>{currency(total)}</span>
                     </div>
@@ -408,7 +433,7 @@ function WriteReviewBox({ vehicleId, userId, reviews, onCreated }: { vehicleId: 
         .select("id,status,payment_status")
         .eq("vehicle_id", vehicleId)
         .eq("customer_id", userId)
-        .in("status", ["completed", "confirmed"])
+        .eq("status", "completed")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -428,11 +453,14 @@ function WriteReviewBox({ vehicleId, userId, reviews, onCreated }: { vehicleId: 
       booking_id: eligibleBooking.id,
       rating,
       comment: comment.trim() || null,
-    } as any).select("*, profiles(full_name,avatar_url)").maybeSingle();
+    } as any).select("*").maybeSingle();
     setSubmitting(false);
     if (error) return toast.error(error.message);
     setComment("");
-    if (data) onCreated(data);
+    if (data) {
+      const { data: profile } = await supabase.from("public_profiles" as any).select("id,full_name,avatar_url").eq("id", userId).maybeSingle();
+      onCreated({ ...data, profiles: profile ?? null });
+    }
     toast.success("Thanks for your review!");
   };
 
