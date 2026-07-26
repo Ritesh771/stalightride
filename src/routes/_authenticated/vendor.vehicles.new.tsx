@@ -87,7 +87,7 @@ function NewVehicle() {
         price_daily: Number(form.price_daily),
         price_weekly: form.price_weekly ? Number(form.price_weekly) : null,
         security_deposit: Number(form.security_deposit || 0),
-        status: "active" as const,
+        status: "draft" as const,
         rc_url,
         insurance_url,
         pollution_url,
@@ -229,7 +229,7 @@ function NewVehicle() {
 
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => navigate({ to: "/vendor" })}>Cancel</Button>
-              <Button type="submit" disabled={saving}>{saving ? "Publishing…" : "Publish listing"}</Button>
+              <Button type="submit" disabled={saving}>{saving ? "Submitting…" : "Submit for review"}</Button>
             </div>
           </form>
         </CardContent></Card>

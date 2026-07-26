@@ -152,12 +152,14 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                   {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                   )}
-                  {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && (
+                  {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
                   )}
-                  <Button asChild size="sm" variant="ghost">
-                    <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
-                  </Button>
+                  {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
+                    <Button asChild size="sm" variant="ghost">
+                      <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
+                    </Button>
+                  )}
                   {b.status === "confirmed" && b.payment_status === "paid" && (
                     <Button asChild size="sm" variant="outline">
                       <Link to="/bookings/$id/trip" params={{ id: b.id }}>
@@ -166,11 +168,13 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                       </Link>
                     </Button>
                   )}
-                  <Button asChild size="sm" variant="ghost" className="text-destructive">
-                    <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
-                      <AlertTriangle className="mr-1.5 h-4 w-4" />Report
-                    </Link>
-                  </Button>
+                  {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
+                    <Button asChild size="sm" variant="ghost" className="text-destructive">
+                      <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
+                        <AlertTriangle className="mr-1.5 h-4 w-4" />Report
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
               {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (

@@ -217,11 +217,12 @@ function TripInspection() {
                       return_notes: payload.notes || null,
                       return_damage: payload.damage as any,
                       return_checked_at: new Date().toISOString(),
+                      status: "completed",
                     } as any)
                     .eq("id", b.id);
                   setSaving(null);
                   if (error) return toast.error(error.message);
-                  toast.success("Return recorded");
+                  toast.success("Return recorded — trip completed");
                   load();
                 }}
               />
@@ -250,11 +251,20 @@ function TripInspection() {
           )}
 
           <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline">
-              <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
-                Report damage or dispute
-              </Link>
-            </Button>
+            {b.status !== "completed" && (
+              <Button asChild variant="outline">
+                <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
+                  Report damage or dispute
+                </Link>
+              </Button>
+            )}
+            {b.status === "completed" && role === "customer" && b.vehicle_id && (
+              <Button asChild variant="outline">
+                <Link to="/vehicle/$id" params={{ id: b.vehicle_id }}>
+                  Review this ride
+                </Link>
+              </Button>
+            )}
             <Button asChild variant="ghost" onClick={() => navigate({ to: "/bookings" })}>
               <span>Done</span>
             </Button>
