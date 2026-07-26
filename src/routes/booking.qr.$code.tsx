@@ -12,7 +12,16 @@ import { CalendarDays, Clock, MapPin, ShieldCheck, CheckCircle2 } from "lucide-r
 
 export const Route = createFileRoute("/booking/qr/$code")({
   component: QrPage,
-  head: () => ({ meta: [{ title: "Booking details — RideShare" }] }),
+  head: () => ({
+    meta: [
+      { title: "Booking QR receipt — RideShare" },
+      { name: "description", content: "Scan a RideShare booking QR code to verify vehicle, renter, host, schedule, payment, and trip status details." },
+      { property: "og:title", content: "Booking QR receipt — RideShare" },
+      { property: "og:description", content: "Verified RideShare booking details for scanned vehicle QR receipts." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
 });
 
 function QrPage() {
@@ -73,8 +82,13 @@ function QrPage() {
                   <span className="capitalize">{data.vehicle?.transmission}</span>
                 </p>
                 <div className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5" />{data.vehicle?.city}
+                  <MapPin className="h-3.5 w-3.5" />{data.vehicle?.address || data.vehicle?.city}
                 </div>
+                {data.vehicle?.lat && data.vehicle?.lng && (
+                  <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+                    {Number(data.vehicle.lat).toFixed(5)}, {Number(data.vehicle.lng).toFixed(5)}
+                  </p>
+                )}
               </section>
 
               <section className="grid gap-4 sm:grid-cols-2">
@@ -99,6 +113,7 @@ function QrPage() {
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Amount paid</p>
                   <p className="mt-1 text-2xl font-semibold">{currency(data.totalPrice)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Fare {currency(data.basePrice)} + deposit {currency(data.securityDeposit)}</p>
                 </div>
                 {data.paidAt && (
                   <div className="text-right text-xs text-muted-foreground">
@@ -106,6 +121,16 @@ function QrPage() {
                   </div>
                 )}
               </section>
+
+              {(data.pickupCheckedAt || data.returnCheckedAt) && (
+                <section className="rounded-xl border border-border bg-muted/30 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Trip inspection</p>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {data.pickupCheckedAt && <Inspection label="Pickup" at={data.pickupCheckedAt} fuel={data.pickupFuelPct} odo={data.pickupOdometer} />}
+                    {data.returnCheckedAt && <Inspection label="Return" at={data.returnCheckedAt} fuel={data.returnFuelPct} odo={data.returnOdometer} />}
+                  </div>
+                </section>
+              )}
 
               <p className="text-center text-xs text-muted-foreground">
                 Powered by RideShare · This receipt was generated from a scanned QR code.
@@ -142,7 +167,22 @@ function Detail({ icon: Icon, label, children }: { icon: any; label: string; chi
   );
 }
 
+function Inspection({ label, at, fuel, odo }: { label: string; at: string; fuel?: number | null; odo?: number | null }) {
+  return (
+    <div className="rounded-lg border border-border bg-background p-3 text-sm">
+      <p className="font-medium">{label}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(at)}</p>
+      <p className="mt-2 text-xs">Fuel: {fuel != null ? `${fuel}%` : "—"} · Odometer: {odo != null ? `${odo} km` : "—"}</p>
+    </div>
+  );
+}
+
 function formatDate(s: string) {
   try { return new Date(s).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }
+  catch { return s; }
+}
+
+function formatDateTime(s: string) {
+  try { return new Date(s).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
   catch { return s; }
 }

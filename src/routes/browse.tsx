@@ -31,6 +31,16 @@ type Search = z.infer<typeof search>;
 export const Route = createFileRoute("/browse")({
   validateSearch: search,
   component: Browse,
+  head: () => ({
+    meta: [
+      { title: "Browse verified rentals — RideShare" },
+      { name: "description", content: "Search verified cars, bikes, scooters, and EVs by city, category, fuel type, transmission, and daily price." },
+      { property: "og:title", content: "Browse verified rentals — RideShare" },
+      { property: "og:description", content: "Find verified local vehicle rentals with exact pickup maps, ratings, and secure booking." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
 });
 
 type Vehicle = {
@@ -46,6 +56,7 @@ function Browse() {
   const [items, setItems] = useState<Vehicle[] | null>(null);
   const [total, setTotal] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(params.max ?? 5000);
+  const [cities, setCities] = useState<string[]>([]);
   const page = Math.max(1, params.page ?? 1);
 
   const update = (patch: Partial<Search>) =>
@@ -73,6 +84,18 @@ function Browse() {
       setTotal(count ?? 0);
     })();
   }, [params.category, params.transmission, params.fuel, params.city, params.q, params.max, page]);
+
+  useEffect(() => {
+    supabase
+      .from("vehicles")
+      .select("city")
+      .eq("status", "active")
+      .order("city", { ascending: true })
+      .limit(300)
+      .then(({ data }) => {
+        setCities(Array.from(new Set((data ?? []).map((row) => row.city).filter(Boolean))));
+      });
+  }, []);
 
   const paths = (items ?? []).map((v) =>
     v.vehicle_images?.slice().sort((a, b) => a.sort_order - b.sort_order)[0]?.url,
@@ -110,7 +133,10 @@ function Browse() {
 
             <div>
               <Label>City</Label>
-              <Input className="mt-1" placeholder="Any city" defaultValue={params.city} onBlur={(e) => update({ city: e.target.value || undefined })} />
+              <Input className="mt-1" list="browse-cities" placeholder="Search city" defaultValue={params.city} onBlur={(e) => update({ city: e.target.value || undefined })} />
+              <datalist id="browse-cities">
+                {cities.map((city) => <option key={city} value={city} />)}
+              </datalist>
             </div>
 
             <div>
