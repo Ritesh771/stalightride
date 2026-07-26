@@ -75,7 +75,10 @@ function VehicleQueue() {
       if (!reason) return;
     }
     const { error } = await supabase.from("vehicles").update({
-      verification_status: status, rejection_reason: reason, verified_at: status === "approved" ? new Date().toISOString() : null,
+      verification_status: status,
+      rejection_reason: reason,
+      verified_at: status === "approved" ? new Date().toISOString() : null,
+      status: status === "approved" ? "active" : "draft",
     } as any).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Vehicle ${status}`);

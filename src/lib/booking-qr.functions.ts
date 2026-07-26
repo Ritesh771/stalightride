@@ -16,7 +16,7 @@ export const getBookingByQr = createServerFn({ method: "GET" })
     const { data: booking, error } = await supabaseAdmin
       .from("bookings")
       .select(
-        "id, status, payment_status, start_date, end_date, pickup_time, dropoff_time, total_price, paid_at, vehicle_id, customer_id, vendor_id",
+        "id, status, payment_status, start_date, end_date, pickup_time, dropoff_time, base_price, security_deposit, total_price, paid_at, vehicle_id, customer_id, vendor_id, pickup_fuel_pct, return_fuel_pct, pickup_odometer, return_odometer, pickup_checked_at, return_checked_at",
       )
       .eq("qr_code", data.code)
       .maybeSingle();
@@ -25,7 +25,7 @@ export const getBookingByQr = createServerFn({ method: "GET" })
     if (!booking) return null;
 
     const [{ data: vehicle }, { data: customer }, { data: vendor }] = await Promise.all([
-      supabaseAdmin.from("vehicles").select("title, brand, model, year, city, category, fuel, transmission").eq("id", booking.vehicle_id).maybeSingle(),
+      supabaseAdmin.from("vehicles").select("title, brand, model, year, city, address, lat, lng, category, fuel, transmission").eq("id", booking.vehicle_id).maybeSingle(),
       supabaseAdmin.from("profiles").select("full_name, avatar_url").eq("id", booking.customer_id).maybeSingle(),
       supabaseAdmin.from("profiles").select("full_name, avatar_url").eq("id", booking.vendor_id).maybeSingle(),
     ]);
@@ -38,8 +38,16 @@ export const getBookingByQr = createServerFn({ method: "GET" })
       endDate: booking.end_date,
       pickupTime: booking.pickup_time,
       dropoffTime: booking.dropoff_time,
+      basePrice: Number(booking.base_price),
+      securityDeposit: Number(booking.security_deposit),
       totalPrice: Number(booking.total_price),
       paidAt: booking.paid_at,
+      pickupFuelPct: booking.pickup_fuel_pct,
+      returnFuelPct: booking.return_fuel_pct,
+      pickupOdometer: booking.pickup_odometer,
+      returnOdometer: booking.return_odometer,
+      pickupCheckedAt: booking.pickup_checked_at,
+      returnCheckedAt: booking.return_checked_at,
       vehicle,
       customer,
       vendor,
