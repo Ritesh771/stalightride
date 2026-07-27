@@ -39,15 +39,18 @@ function AdminPage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-semibold">Admin verification</h1>
         <Tabs defaultValue="vehicles" className="mt-6">
-          <TabsList>
+          <TabsList className="flex w-full flex-wrap justify-start">
             <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+            <TabsTrigger value="hosts">Hosts (KYC)</TabsTrigger>
             <TabsTrigger value="licences">Driving licences</TabsTrigger>
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
           </TabsList>
           <TabsContent value="vehicles"><VehicleQueue /></TabsContent>
+          <TabsContent value="hosts"><HostQueue /></TabsContent>
           <TabsContent value="licences"><LicenceQueue /></TabsContent>
           <TabsContent value="disputes"><DisputeQueue /></TabsContent>
         </Tabs>
+
       </div>
     </div>
   );
@@ -56,12 +59,14 @@ function AdminPage() {
 function VehicleQueue() {
   const [items, setItems] = useState<any[] | null>(null);
   const load = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("vehicles")
-      .select("id,title,brand,model,year,city,vendor_id,rc_url,insurance_url,pollution_url,fitness_url,verification_status,rejection_reason,created_at,profiles:vendor_id(full_name)" as any)
+      .select("id,title,brand,model,year,city,vendor_id,rc_url,insurance_url,pollution_url,fitness_url,verification_status,rejection_reason,created_at,vendors:vendor_id(business_name,kyc_status)" as any)
       .order("created_at", { ascending: false })
       .limit(200);
+    if (error) toast.error(error.message);
     setItems((data as any) ?? []);
+
   };
   useEffect(() => { load(); }, []);
 
@@ -98,7 +103,7 @@ function VehicleQueue() {
                 <Link to="/vehicle/$id" params={{ id: v.id }} className="font-medium hover:underline">{v.title}</Link>
                 <StatusBadge status={v.verification_status} />
               </div>
-              <p className="text-xs text-muted-foreground">{v.brand} {v.model} · {v.year} · {v.city} · Host: {v.profiles?.full_name ?? v.vendor_id.slice(0, 8)}</p>
+              <p className="text-xs text-muted-foreground">{v.brand} {v.model} · {v.year} · {v.city} · Host: {v.vendors?.business_name ?? v.vendor_id.slice(0, 8)} · KYC: {v.vendors?.kyc_status ?? "—"}</p>
             </div>
             <div className="flex gap-2">
               {v.verification_status !== "approved" && <Button size="sm" onClick={() => decide(v.id, "approved")}><ShieldCheck className="mr-1 h-3 w-3" />Approve</Button>}
@@ -263,5 +268,57 @@ function DisputeCard({ d, onResolve, onReview }: { d: any; onResolve: () => void
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function HostQueue() {
+  const [items, setItems] = useState<any[] | null>(null);
+  const load = async () => {
+    const { data, error } = await supabase
+      .from("vendors")
+      .select("id,business_name,bio,kyc_status,id_document_url,payout_email,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) toast.error(error.message);
+    setItems((data as any) ?? []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const paths = (items ?? []).map((v) => v.id_document_url).filter(Boolean);
+  const signed = useSignedUrls("kyc-docs", paths);
+
+  const decide = async (id: string, status: "approved" | "rejected") => {
+    const { error } = await supabase.from("vendors").update({ kyc_status: status } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Host ${status}`);
+    load();
+  };
+
+  if (!items) return <Skeleton className="mt-4 h-40" />;
+  if (items.length === 0) return <p className="mt-6 text-sm text-muted-foreground">No hosts yet.</p>;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {items.map((v) => (
+        <Card key={v.id}><CardContent className="p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{v.business_name}</p>
+                <Badge variant={v.kyc_status === "approved" ? "secondary" : v.kyc_status === "rejected" ? "destructive" : "outline"}>{v.kyc_status}</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">{v.bio || "No bio"} · Joined {new Date(v.created_at).toLocaleDateString()}</p>
+            </div>
+            <div className="flex gap-2">
+              {v.kyc_status !== "approved" && <Button size="sm" onClick={() => decide(v.id, "approved")}><ShieldCheck className="mr-1 h-3 w-3" />Approve host</Button>}
+              {v.kyc_status !== "rejected" && <Button size="sm" variant="outline" onClick={() => decide(v.id, "rejected")}>Reject</Button>}
+            </div>
+          </div>
+          <div className="mt-3 text-xs">
+            <DocLink label="ID document" url={v.id_document_url ? signed[v.id_document_url] : null} />
+          </div>
+        </CardContent></Card>
+      ))}
+    </div>
   );
 }
