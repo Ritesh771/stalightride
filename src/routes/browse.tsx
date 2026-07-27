@@ -4,6 +4,8 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { Input } from "@/components/ui/input";
+import { CitySearch } from "@/components/city-search";
+
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,8 +95,16 @@ function Browse() {
       .order("city", { ascending: true })
       .limit(300)
       .then(({ data }) => {
-        setCities(Array.from(new Set((data ?? []).map((row) => row.city).filter(Boolean))));
+        const seen = new Map<string, string>();
+        for (const row of data ?? []) {
+          const raw = (row.city ?? "").trim();
+          if (!raw) continue;
+          const key = raw.toLowerCase();
+          if (!seen.has(key)) seen.set(key, raw.replace(/\b\w/g, (m) => m.toUpperCase()));
+        }
+        setCities(Array.from(seen.values()).sort((a, b) => a.localeCompare(b)));
       });
+
   }, []);
 
   const paths = (items ?? []).map((v) =>
@@ -133,11 +143,9 @@ function Browse() {
 
             <div>
               <Label>City</Label>
-              <Input className="mt-1" list="browse-cities" placeholder="Search city" defaultValue={params.city} onBlur={(e) => update({ city: e.target.value || undefined })} />
-              <datalist id="browse-cities">
-                {cities.map((city) => <option key={city} value={city} />)}
-              </datalist>
+              <CitySearch value={params.city} cities={cities} onChange={(city) => update({ city })} />
             </div>
+
 
             <div>
               <Label>Category</Label>

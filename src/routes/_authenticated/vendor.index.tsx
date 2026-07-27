@@ -104,16 +104,8 @@ function VendorDashboard() {
           <Stat icon={DollarSign} label="Earnings" value={currency(earnings)} />
         </div>
 
-        {vendor.kyc_status !== "approved" && (
-          <div className="mt-6 flex items-center justify-between gap-3 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
-            <div className="flex items-center gap-3"><ShieldCheck className="h-5 w-5 text-yellow-400" />
-              <div>
-                <p className="text-sm font-medium">Identity verification: {vendor.kyc_status}</p>
-                <p className="text-xs text-muted-foreground">Verified hosts get a badge and higher visibility.</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <KycCard vendor={vendor} userId={user.id} onDone={load} />
+
 
         <section className="mt-8">
           <h2 className="font-display text-xl font-semibold">Your vehicles</h2>
@@ -176,7 +168,10 @@ function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
                   <div className="truncate font-medium">{v.title}</div>
                   <div className="truncate text-xs text-muted-foreground">{v.city}</div>
                 </div>
-                <Badge variant="outline">{v.status}</Badge>
+                <Badge variant={v.verification_status === "approved" ? "secondary" : v.verification_status === "rejected" ? "destructive" : "outline"}>
+                  {v.verification_status === "approved" ? (v.status === "active" ? "Live" : v.status) : v.verification_status === "rejected" ? "Rejected" : "Pending review"}
+                </Badge>
+
               </div>
               <div className="mt-2 flex justify-between text-sm">
                 <span>{currency(v.price_daily)} / day</span>
@@ -186,6 +181,69 @@ function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
           </Card>
         );
       })}
+    </div>
+  );
+}
+
+function KycCard({ vendor, userId, onDone }: { vendor: any; userId: string; onDone: () => void }) {
+  const [uploading, setUploading] = useState(false);
+  const status = vendor.kyc_status as string;
+
+  const upload = async (file: File) => {
+    setUploading(true);
+    const path = `${userId}/id-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
+    const { error: upErr } = await supabase.storage.from("kyc-docs").upload(path, file, { upsert: true });
+    if (upErr) { setUploading(false); return toast.error(upErr.message); }
+    const { error } = await supabase.from("vendors").update({ id_document_url: path, kyc_status: "pending" } as any).eq("id", userId);
+    setUploading(false);
+    if (error) return toast.error(error.message);
+    toast.success("Document submitted for verification");
+    onDone();
+  };
+
+  if (status === "approved") {
+    return (
+      <div className="mt-6 flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+        <ShieldCheck className="h-5 w-5 text-emerald-500" />
+        <div>
+          <p className="text-sm font-medium">Verified host</p>
+          <p className="text-xs text-muted-foreground">Your identity has been approved by our team.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="h-5 w-5 text-yellow-500" />
+          <div>
+            <p className="text-sm font-medium">
+              Identity verification: {status === "pending" ? "under review" : status}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {status === "pending"
+                ? "Our team is reviewing your document. Listings stay in draft until approval."
+                : "Upload a government ID (Aadhaar / passport / driving licence) to get verified."}
+            </p>
+            {status === "rejected" && <p className="text-xs text-destructive">Rejected — please upload a clearer document.</p>}
+          </div>
+        </div>
+        {status !== "pending" && (
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); }}
+            />
+            <span className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground">
+              {uploading ? "Uploading…" : "Upload ID"}
+            </span>
+          </label>
+        )}
+      </div>
     </div>
   );
 }
