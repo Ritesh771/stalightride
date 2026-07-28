@@ -100,17 +100,26 @@ function Bookings() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <h1 className="font-display text-3xl font-semibold">Bookings</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-3xl font-semibold">Bookings</h1>
+          <Link
+            to="/wallet"
+            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <WalletIcon className="h-4 w-4" />
+            Wallet: {walletBalance === null ? "…" : currency(walletBalance)}
+          </Link>
+        </div>
         <Tabs defaultValue="customer" className="mt-6">
           <TabsList>
             <TabsTrigger value="customer">As renter</TabsTrigger>
             <TabsTrigger value="vendor">As host</TabsTrigger>
           </TabsList>
           <TabsContent value="customer" className="mt-4">
-            <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} paying={paying} />
+            <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
           <TabsContent value="vendor" className="mt-4">
-            <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} paying={paying} />
+            <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
         </Tabs>
       </div>
@@ -118,11 +127,12 @@ function Bookings() {
   );
 }
 
-function List({ items, role, onAction, onPay, paying }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void; onPay: (b: any) => void; paying: string | null }) {
+function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void; onPay: (b: any) => void; onWalletPay: (b: any) => void; walletBalance: number | null; paying: string | null }) {
   const paths = (items ?? []).map((b) =>
     b.vehicles?.vehicle_images?.slice().sort((a: any, x: any) => a.sort_order - x.sort_order)[0]?.url,
   );
   const urls = useSignedUrls("vehicle-images", paths);
+
 
   if (!items) return <div className="grid gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>;
   if (items.length === 0) return <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">No bookings yet.</div>;
