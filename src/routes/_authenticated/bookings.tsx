@@ -13,7 +13,7 @@ import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { useSession } from "@/hooks/use-session";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle } from "lucide-react";
+import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -173,10 +173,26 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                     </>
                   )}
                   {canPay && (
-                    <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
-                      <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onWalletPay(b)}
+                        disabled={paying === b.id || (walletBalance ?? 0) < Number(b.total_price)}
+                        title={(walletBalance ?? 0) < Number(b.total_price) ? "Not enough wallet balance" : undefined}
+                      >
+                        <WalletIcon className="mr-1.5 h-4 w-4" />
+                        {paying === b.id ? "Paying…" : "Pay with wallet"}
+                      </Button>
+                      <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
+                        <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
+                      </Button>
+                    </>
                   )}
+                  {canPay && (walletBalance ?? 0) < Number(b.total_price) && (
+                    <Link to="/wallet" className="text-xs text-muted-foreground underline">Add money</Link>
+                  )}
+
                   {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                   )}
