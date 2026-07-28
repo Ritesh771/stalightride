@@ -3,7 +3,7 @@ import { useSession } from "@/hooks/use-session";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
+import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, ShieldCheck, Wallet as WalletIcon } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
   DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
@@ -78,7 +78,9 @@ export function SiteHeader() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild><Link to="/profile"><UserIcon className="mr-2 h-4 w-4" />Profile</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/bookings"><CalendarDays className="mr-2 h-4 w-4" />My trips</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to="/wallet"><WalletIcon className="mr-2 h-4 w-4" />Wallet</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/wishlist"><Heart className="mr-2 h-4 w-4" />Saved</Link></DropdownMenuItem>
+
                     <DropdownMenuItem asChild><Link to="/vendor"><LayoutDashboard className="mr-2 h-4 w-4" />Host dashboard</Link></DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild><Link to="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin panel</Link></DropdownMenuItem>
