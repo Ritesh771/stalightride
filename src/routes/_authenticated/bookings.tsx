@@ -24,18 +24,21 @@ function Bookings() {
   const [asCustomer, setAsCustomer] = useState<any[] | null>(null);
   const [asVendor, setAsVendor] = useState<any[] | null>(null);
   const [paying, setPaying] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const createOrder = useServerFn(createRazorpayOrder);
   const verifyPayment = useServerFn(verifyRazorpayPayment);
 
   const load = async () => {
     if (!user) return;
     const sel = "*, vehicles(id,title,city,vehicle_images(url,sort_order))";
-    const [c, v] = await Promise.all([
+    const [c, v, w] = await Promise.all([
       supabase.from("bookings").select(sel).eq("customer_id", user.id).order("created_at", { ascending: false }),
       supabase.from("bookings").select(sel).eq("vendor_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("wallets").select("balance").eq("user_id", user.id).maybeSingle(),
     ]);
     setAsCustomer(c.data ?? []);
     setAsVendor(v.data ?? []);
+    setWalletBalance(Number(w.data?.balance ?? 0));
   };
   useEffect(() => { load(); }, [user?.id]);
 
@@ -46,6 +49,21 @@ function Bookings() {
     toast.success(`Booking ${status}`);
     load();
   };
+
+  const payWithWallet = async (b: any) => {
+    setPaying(b.id);
+    try {
+      const { error } = await supabase.rpc("wallet_pay_booking", { _booking_id: b.id });
+      if (error) throw error;
+      toast.success("Paid from wallet");
+      await load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Wallet payment failed");
+    } finally {
+      setPaying(null);
+    }
+  };
+
 
   const payNow = async (b: any) => {
     if (!user) return;
