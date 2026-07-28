@@ -82,6 +82,7 @@ export const verifyRazorpayPayment = createServerFn({ method: "POST" })
       .from("bookings")
       .update({
         payment_status: "paid",
+        payment_method: "razorpay",
         razorpay_payment_id: data.razorpay_payment_id,
         paid_at: new Date().toISOString(),
       })
