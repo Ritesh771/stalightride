@@ -35,6 +35,7 @@ export function SiteHeader() {
   const items: Array<{ to: any; label: string; auth?: boolean; admin?: boolean }> = [
     { to: "/browse", label: "Browse rides" },
     { to: "/bookings", label: "My trips", auth: true },
+    { to: "/wallet", label: "Wallet", auth: true },
     { to: "/wishlist", label: "Saved", auth: true },
     { to: "/vendor", label: "Become a host", auth: true },
     { to: "/admin", label: "Admin", auth: true, admin: true },
