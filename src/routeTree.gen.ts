@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
+import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -52,6 +53,11 @@ const VehicleIdRoute = VehicleIdRouteImport.update({
 const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
+  '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/profile': typeof AuthenticatedProfileRoute
+  '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bookings'
     | '/profile'
+    | '/wallet'
     | '/wishlist'
     | '/vehicle/$id'
     | '/messages/$bookingId'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bookings'
     | '/profile'
+    | '/wallet'
     | '/wishlist'
     | '/vehicle/$id'
     | '/messages/$bookingId'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
     | '/_authenticated/profile'
+    | '/_authenticated/wallet'
     | '/_authenticated/wishlist'
     | '/vehicle/$id'
     | '/_authenticated/messages/$bookingId'
@@ -258,6 +270,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof AuthenticatedWishlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wallet': {
+      id: '/_authenticated/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedWalletRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -345,6 +364,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
@@ -355,6 +375,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,

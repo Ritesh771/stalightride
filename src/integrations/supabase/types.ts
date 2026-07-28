@@ -105,6 +105,7 @@ export type Database = {
           id: string
           notes: string | null
           paid_at: string | null
+          payment_method: string | null
           payment_status: string
           pickup_checked_at: string | null
           pickup_damage: Json | null
@@ -141,6 +142,7 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string | null
+          payment_method?: string | null
           payment_status?: string
           pickup_checked_at?: string | null
           pickup_damage?: Json | null
@@ -177,6 +179,7 @@ export type Database = {
           id?: string
           notes?: string | null
           paid_at?: string | null
+          payment_method?: string | null
           payment_status?: string
           pickup_checked_at?: string | null
           pickup_damage?: Json | null
@@ -775,6 +778,104 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_topups: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          booking_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          reference: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          reference?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          booking_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          reference?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wishlists: {
         Row: {
           created_at: string
@@ -821,6 +922,18 @@ export type Database = {
         Args: { _reason: string; _review_id: string }
         Returns: undefined
       }
+      wallet_apply: {
+        Args: {
+          _amount: number
+          _booking_id?: string
+          _description?: string
+          _kind: string
+          _reference?: string
+          _user_id: string
+        }
+        Returns: number
+      }
+      wallet_pay_booking: { Args: { _booking_id: string }; Returns: number }
     }
     Enums: {
       app_role: "customer" | "vendor" | "admin"

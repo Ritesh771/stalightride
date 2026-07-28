@@ -13,7 +13,7 @@ import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { useSession } from "@/hooks/use-session";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle } from "lucide-react";
+import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -24,18 +24,21 @@ function Bookings() {
   const [asCustomer, setAsCustomer] = useState<any[] | null>(null);
   const [asVendor, setAsVendor] = useState<any[] | null>(null);
   const [paying, setPaying] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const createOrder = useServerFn(createRazorpayOrder);
   const verifyPayment = useServerFn(verifyRazorpayPayment);
 
   const load = async () => {
     if (!user) return;
     const sel = "*, vehicles(id,title,city,vehicle_images(url,sort_order))";
-    const [c, v] = await Promise.all([
+    const [c, v, w] = await Promise.all([
       supabase.from("bookings").select(sel).eq("customer_id", user.id).order("created_at", { ascending: false }),
       supabase.from("bookings").select(sel).eq("vendor_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("wallets").select("balance").eq("user_id", user.id).maybeSingle(),
     ]);
     setAsCustomer(c.data ?? []);
     setAsVendor(v.data ?? []);
+    setWalletBalance(Number(w.data?.balance ?? 0));
   };
   useEffect(() => { load(); }, [user?.id]);
 
@@ -46,6 +49,21 @@ function Bookings() {
     toast.success(`Booking ${status}`);
     load();
   };
+
+  const payWithWallet = async (b: any) => {
+    setPaying(b.id);
+    try {
+      const { error } = await supabase.rpc("wallet_pay_booking", { _booking_id: b.id });
+      if (error) throw error;
+      toast.success("Paid from wallet");
+      await load();
+    } catch (e: any) {
+      toast.error(e.message ?? "Wallet payment failed");
+    } finally {
+      setPaying(null);
+    }
+  };
+
 
   const payNow = async (b: any) => {
     if (!user) return;
@@ -82,17 +100,26 @@ function Bookings() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <h1 className="font-display text-3xl font-semibold">Bookings</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-3xl font-semibold">Bookings</h1>
+          <Link
+            to="/wallet"
+            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <WalletIcon className="h-4 w-4" />
+            Wallet: {walletBalance === null ? "…" : currency(walletBalance)}
+          </Link>
+        </div>
         <Tabs defaultValue="customer" className="mt-6">
           <TabsList>
             <TabsTrigger value="customer">As renter</TabsTrigger>
             <TabsTrigger value="vendor">As host</TabsTrigger>
           </TabsList>
           <TabsContent value="customer" className="mt-4">
-            <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} paying={paying} />
+            <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
           <TabsContent value="vendor" className="mt-4">
-            <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} paying={paying} />
+            <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
         </Tabs>
       </div>
@@ -100,11 +127,12 @@ function Bookings() {
   );
 }
 
-function List({ items, role, onAction, onPay, paying }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void; onPay: (b: any) => void; paying: string | null }) {
+function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying }: { items: any[] | null; role: "customer" | "vendor"; onAction: (id: string, status: any) => void; onPay: (b: any) => void; onWalletPay: (b: any) => void; walletBalance: number | null; paying: string | null }) {
   const paths = (items ?? []).map((b) =>
     b.vehicles?.vehicle_images?.slice().sort((a: any, x: any) => a.sort_order - x.sort_order)[0]?.url,
   );
   const urls = useSignedUrls("vehicle-images", paths);
+
 
   if (!items) return <div className="grid gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>;
   if (items.length === 0) return <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">No bookings yet.</div>;
@@ -145,10 +173,26 @@ function List({ items, role, onAction, onPay, paying }: { items: any[] | null; r
                     </>
                   )}
                   {canPay && (
-                    <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
-                      <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onWalletPay(b)}
+                        disabled={paying === b.id || (walletBalance ?? 0) < Number(b.total_price)}
+                        title={(walletBalance ?? 0) < Number(b.total_price) ? "Not enough wallet balance" : undefined}
+                      >
+                        <WalletIcon className="mr-1.5 h-4 w-4" />
+                        {paying === b.id ? "Paying…" : "Pay with wallet"}
+                      </Button>
+                      <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
+                        <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
+                      </Button>
+                    </>
                   )}
+                  {canPay && (walletBalance ?? 0) < Number(b.total_price) && (
+                    <Link to="/wallet" className="text-xs text-muted-foreground underline">Add money</Link>
+                  )}
+
                   {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                     <Button size="sm" variant="outline" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                   )}
