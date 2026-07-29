@@ -325,3 +325,70 @@ function HostQueue() {
     </div>
   );
 }
+
+function DriverQueue() {
+  const [items, setItems] = useState<any[] | null>(null);
+  const load = async () => {
+    const { data, error } = await supabase
+      .from("drivers")
+      .select("id,full_name,city,phone,experience_years,hourly_rate,daily_rate,dl_number,dl_expiry,dl_front_url,dl_back_url,id_document_url,verification_status,status,rejection_reason,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) toast.error(error.message);
+    setItems((data as any) ?? []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const paths = (items ?? []).flatMap((d) => [d.dl_front_url, d.dl_back_url, d.id_document_url].filter(Boolean));
+  const signed = useSignedUrls("verification-docs", paths);
+
+  const decide = async (id: string, status: "approved" | "rejected") => {
+    let reason: string | null = null;
+    if (status === "rejected") {
+      reason = window.prompt("Rejection reason?") || null;
+      if (!reason) return;
+    }
+    const { error } = await supabase.from("drivers").update({
+      verification_status: status,
+      rejection_reason: reason,
+      verified_at: status === "approved" ? new Date().toISOString() : null,
+      status: status === "approved" ? "active" : "draft",
+    } as any).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(`Driver ${status}`);
+    load();
+  };
+
+  if (!items) return <Skeleton className="mt-4 h-40" />;
+  if (items.length === 0) return <p className="mt-6 text-sm text-muted-foreground">No driver applications yet.</p>;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {items.map((d) => (
+        <Card key={d.id}><CardContent className="p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{d.full_name}</p>
+                <StatusBadge status={d.verification_status} />
+                <Badge variant="outline">{d.status}</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {d.city} · {d.experience_years} yrs · ₹{d.hourly_rate}/hr · ₹{d.daily_rate}/day · Licence {d.dl_number ?? "—"} (exp {d.dl_expiry ?? "—"})
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {d.verification_status !== "approved" && <Button size="sm" onClick={() => decide(d.id, "approved")}><ShieldCheck className="mr-1 h-3 w-3" />Approve</Button>}
+              {d.verification_status !== "rejected" && <Button size="sm" variant="outline" onClick={() => decide(d.id, "rejected")}>Reject</Button>}
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <DocLink label="Licence front" url={d.dl_front_url ? signed[d.dl_front_url] : null} />
+            <DocLink label="Licence back" url={d.dl_back_url ? signed[d.dl_back_url] : null} />
+            <DocLink label="Government ID" url={d.id_document_url ? signed[d.id_document_url] : null} />
+          </div>
+        </CardContent></Card>
+      ))}
+    </div>
+  );
+}
