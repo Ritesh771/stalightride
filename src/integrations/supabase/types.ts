@@ -304,6 +304,228 @@ export type Database = {
           },
         ]
       }
+      driver_bookings: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          customer_id: string
+          days: number
+          driver_id: string
+          end_date: string
+          end_time: string
+          hours: number
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string
+          pickup_address: string | null
+          rate_type: string
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          start_date: string
+          start_time: string
+          status: Database["public"]["Enums"]["booking_status"]
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          customer_id: string
+          days?: number
+          driver_id: string
+          end_date: string
+          end_time?: string
+          hours?: number
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          pickup_address?: string | null
+          rate_type?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          start_date: string
+          start_time?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_price: number
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          customer_id?: string
+          days?: number
+          driver_id?: string
+          end_date?: string
+          end_time?: string
+          hours?: number
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          pickup_address?: string | null
+          rate_type?: string
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          start_date?: string
+          start_time?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_bookings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_bookings_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          customer_id: string
+          driver_booking_id: string
+          driver_id: string
+          driver_response: string | null
+          driver_response_at: string | null
+          id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          customer_id: string
+          driver_booking_id: string
+          driver_id: string
+          driver_response?: string | null
+          driver_response_at?: string | null
+          id?: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          customer_id?: string
+          driver_booking_id?: string
+          driver_id?: string
+          driver_response?: string | null
+          driver_response_at?: string | null
+          id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_reviews_driver_booking_id_fkey"
+            columns: ["driver_booking_id"]
+            isOneToOne: true
+            referencedRelation: "driver_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_reviews_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drivers: {
+        Row: {
+          avg_rating: number
+          bio: string | null
+          city: string
+          created_at: string
+          daily_rate: number
+          dl_back_url: string | null
+          dl_expiry: string | null
+          dl_front_url: string | null
+          dl_number: string | null
+          experience_years: number
+          full_name: string
+          hourly_rate: number
+          id: string
+          id_document_url: string | null
+          languages: string[]
+          phone: string | null
+          photo_url: string | null
+          rejection_reason: string | null
+          review_count: number
+          status: Database["public"]["Enums"]["vehicle_status"]
+          updated_at: string
+          vehicle_types: string[]
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string | null
+        }
+        Insert: {
+          avg_rating?: number
+          bio?: string | null
+          city: string
+          created_at?: string
+          daily_rate: number
+          dl_back_url?: string | null
+          dl_expiry?: string | null
+          dl_front_url?: string | null
+          dl_number?: string | null
+          experience_years?: number
+          full_name: string
+          hourly_rate?: number
+          id: string
+          id_document_url?: string | null
+          languages?: string[]
+          phone?: string | null
+          photo_url?: string | null
+          rejection_reason?: string | null
+          review_count?: number
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          updated_at?: string
+          vehicle_types?: string[]
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
+        }
+        Update: {
+          avg_rating?: number
+          bio?: string | null
+          city?: string
+          created_at?: string
+          daily_rate?: number
+          dl_back_url?: string | null
+          dl_expiry?: string | null
+          dl_front_url?: string | null
+          dl_number?: string | null
+          experience_years?: number
+          full_name?: string
+          hourly_rate?: number
+          id?: string
+          id_document_url?: string | null
+          languages?: string[]
+          phone?: string | null
+          photo_url?: string | null
+          rejection_reason?: string | null
+          review_count?: number
+          status?: Database["public"]["Enums"]["vehicle_status"]
+          updated_at?: string
+          vehicle_types?: string[]
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string | null
@@ -452,6 +674,57 @@ export type Database = {
           id?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      public_drivers: {
+        Row: {
+          avg_rating: number
+          bio: string | null
+          city: string
+          created_at: string
+          daily_rate: number
+          experience_years: number
+          full_name: string
+          hourly_rate: number
+          id: string
+          languages: string[]
+          photo_url: string | null
+          review_count: number
+          updated_at: string
+          vehicle_types: string[]
+        }
+        Insert: {
+          avg_rating?: number
+          bio?: string | null
+          city: string
+          created_at?: string
+          daily_rate: number
+          experience_years?: number
+          full_name: string
+          hourly_rate?: number
+          id: string
+          languages?: string[]
+          photo_url?: string | null
+          review_count?: number
+          updated_at?: string
+          vehicle_types?: string[]
+        }
+        Update: {
+          avg_rating?: number
+          bio?: string | null
+          city?: string
+          created_at?: string
+          daily_rate?: number
+          experience_years?: number
+          full_name?: string
+          hourly_rate?: number
+          id?: string
+          languages?: string[]
+          photo_url?: string | null
+          review_count?: number
+          updated_at?: string
+          vehicle_types?: string[]
         }
         Relationships: []
       }
@@ -934,6 +1207,10 @@ export type Database = {
         Returns: number
       }
       wallet_pay_booking: { Args: { _booking_id: string }; Returns: number }
+      wallet_pay_driver_booking: {
+        Args: { _driver_booking_id: string }
+        Returns: number
+      }
     }
     Enums: {
       app_role: "customer" | "vendor" | "admin"

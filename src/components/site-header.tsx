@@ -3,7 +3,7 @@ import { useSession } from "@/hooks/use-session";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, ShieldCheck, Wallet as WalletIcon } from "lucide-react";
+import { Menu, Heart, CalendarDays, LayoutDashboard, LogOut, User as UserIcon, ShieldCheck, Wallet as WalletIcon, UserRound, CarFront as Steering } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
   DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
@@ -34,10 +34,13 @@ export function SiteHeader() {
 
   const items: Array<{ to: any; label: string; auth?: boolean; admin?: boolean }> = [
     { to: "/browse", label: "Browse rides" },
+    { to: "/drivers", label: "Hire a driver" },
     { to: "/bookings", label: "My trips", auth: true },
+    { to: "/hires", label: "My drivers", auth: true },
     { to: "/wallet", label: "Wallet", auth: true },
     { to: "/wishlist", label: "Saved", auth: true },
     { to: "/vendor", label: "Become a host", auth: true },
+    { to: "/driver-dashboard", label: "Drive with us", auth: true },
     { to: "/admin", label: "Admin", auth: true, admin: true },
   ];
   const visibleItems = items.filter((i) => (!i.auth || user) && (!i.admin || isAdmin));
@@ -81,7 +84,9 @@ export function SiteHeader() {
                     <DropdownMenuItem asChild><Link to="/wallet"><WalletIcon className="mr-2 h-4 w-4" />Wallet</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/wishlist"><Heart className="mr-2 h-4 w-4" />Saved</Link></DropdownMenuItem>
 
+                    <DropdownMenuItem asChild><Link to="/hires"><UserRound className="mr-2 h-4 w-4" />My drivers</Link></DropdownMenuItem>
                     <DropdownMenuItem asChild><Link to="/vendor"><LayoutDashboard className="mr-2 h-4 w-4" />Host dashboard</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link to="/driver-dashboard"><Steering className="mr-2 h-4 w-4" />Driver dashboard</Link></DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild><Link to="/admin"><ShieldCheck className="mr-2 h-4 w-4" />Admin panel</Link></DropdownMenuItem>
                     )}

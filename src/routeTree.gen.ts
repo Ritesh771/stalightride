@@ -9,14 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
+import { Route as DriverIdRouteImport } from './routes/driver.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
+import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
@@ -26,6 +30,11 @@ import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_au
 import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
 import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
+const DriversRoute = DriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
@@ -50,6 +59,11 @@ const VehicleIdRoute = VehicleIdRouteImport.update({
   path: '/vehicle/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DriverIdRoute = DriverIdRouteImport.update({
+  id: '/driver/$id',
+  path: '/driver/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
@@ -65,6 +79,17 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHiresRoute = AuthenticatedHiresRouteImport.update({
+  id: '/hires',
+  path: '/hires',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDriverDashboardRoute =
+  AuthenticatedDriverDashboardRouteImport.update({
+    id: '/driver-dashboard',
+    path: '/driver-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
@@ -115,11 +140,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/drivers': typeof DriversRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
+  '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -132,11 +161,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/drivers': typeof DriversRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
+  '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -151,11 +184,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/drivers': typeof DriversRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
+  '/_authenticated/hires': typeof AuthenticatedHiresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -170,11 +207,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/drivers'
     | '/admin'
     | '/bookings'
+    | '/driver-dashboard'
+    | '/hires'
     | '/profile'
     | '/wallet'
     | '/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
     | '/booking/qr/$code'
@@ -187,11 +228,15 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/drivers'
     | '/admin'
     | '/bookings'
+    | '/driver-dashboard'
+    | '/hires'
     | '/profile'
     | '/wallet'
     | '/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
     | '/booking/qr/$code'
@@ -205,11 +250,15 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/browse'
+    | '/drivers'
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
+    | '/_authenticated/driver-dashboard'
+    | '/_authenticated/hires'
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
     | '/_authenticated/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/_authenticated/messages/$bookingId'
     | '/booking/qr/$code'
@@ -224,12 +273,21 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
+  DriversRoute: typeof DriversRoute
+  DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
   BookingQrCodeRoute: typeof BookingQrCodeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/drivers': {
+      id: '/drivers'
+      path: '/drivers'
+      fullPath: '/drivers'
+      preLoaderRoute: typeof DriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/browse': {
       id: '/browse'
       path: '/browse'
@@ -265,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VehicleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/driver/$id': {
+      id: '/driver/$id'
+      path: '/driver/$id'
+      fullPath: '/driver/$id'
+      preLoaderRoute: typeof DriverIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/wishlist': {
       id: '/_authenticated/wishlist'
       path: '/wishlist'
@@ -284,6 +349,20 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hires': {
+      id: '/_authenticated/hires'
+      path: '/hires'
+      fullPath: '/hires'
+      preLoaderRoute: typeof AuthenticatedHiresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/driver-dashboard': {
+      id: '/_authenticated/driver-dashboard'
+      path: '/driver-dashboard'
+      fullPath: '/driver-dashboard'
+      preLoaderRoute: typeof AuthenticatedDriverDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/bookings': {
@@ -363,6 +442,8 @@ const AuthenticatedBookingsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
+  AuthenticatedDriverDashboardRoute: typeof AuthenticatedDriverDashboardRoute
+  AuthenticatedHiresRoute: typeof AuthenticatedHiresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
@@ -374,6 +455,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
+  AuthenticatedDriverDashboardRoute: AuthenticatedDriverDashboardRoute,
+  AuthenticatedHiresRoute: AuthenticatedHiresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
@@ -390,6 +473,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
+  DriversRoute: DriversRoute,
+  DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
   BookingQrCodeRoute: BookingQrCodeRoute,
 }
