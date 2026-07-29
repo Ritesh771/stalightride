@@ -42,13 +42,16 @@ function AdminPage() {
           <TabsList className="flex w-full flex-wrap justify-start">
             <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
             <TabsTrigger value="hosts">Hosts (KYC)</TabsTrigger>
+            <TabsTrigger value="drivers">Drivers</TabsTrigger>
             <TabsTrigger value="licences">Driving licences</TabsTrigger>
             <TabsTrigger value="disputes">Disputes</TabsTrigger>
           </TabsList>
           <TabsContent value="vehicles"><VehicleQueue /></TabsContent>
           <TabsContent value="hosts"><HostQueue /></TabsContent>
+          <TabsContent value="drivers"><DriverQueue /></TabsContent>
           <TabsContent value="licences"><LicenceQueue /></TabsContent>
           <TabsContent value="disputes"><DisputeQueue /></TabsContent>
+
         </Tabs>
 
       </div>

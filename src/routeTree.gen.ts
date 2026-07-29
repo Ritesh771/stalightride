@@ -20,6 +20,7 @@ import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
+import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
@@ -83,6 +84,12 @@ const AuthenticatedHiresRoute = AuthenticatedHiresRouteImport.update({
   path: '/hires',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDriverDashboardRoute =
+  AuthenticatedDriverDashboardRouteImport.update({
+    id: '/driver-dashboard',
+    path: '/driver-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
   id: '/bookings',
   path: '/bookings',
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/drivers': typeof DriversRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
@@ -156,6 +164,7 @@ export interface FileRoutesByTo {
   '/drivers': typeof DriversRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/drivers': typeof DriversRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
+  '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/_authenticated/hires': typeof AuthenticatedHiresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/admin'
     | '/bookings'
+    | '/driver-dashboard'
     | '/hires'
     | '/profile'
     | '/wallet'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/admin'
     | '/bookings'
+    | '/driver-dashboard'
     | '/hires'
     | '/profile'
     | '/wallet'
@@ -241,6 +253,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
+    | '/_authenticated/driver-dashboard'
     | '/_authenticated/hires'
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHiresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/driver-dashboard': {
+      id: '/_authenticated/driver-dashboard'
+      path: '/driver-dashboard'
+      fullPath: '/driver-dashboard'
+      preLoaderRoute: typeof AuthenticatedDriverDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/bookings': {
       id: '/_authenticated/bookings'
       path: '/bookings'
@@ -422,6 +442,7 @@ const AuthenticatedBookingsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
+  AuthenticatedDriverDashboardRoute: typeof AuthenticatedDriverDashboardRoute
   AuthenticatedHiresRoute: typeof AuthenticatedHiresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
@@ -434,6 +455,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
+  AuthenticatedDriverDashboardRoute: AuthenticatedDriverDashboardRoute,
   AuthenticatedHiresRoute: AuthenticatedHiresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
