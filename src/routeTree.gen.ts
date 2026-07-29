@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
+import { Route as DriverIdRouteImport } from './routes/driver.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
@@ -54,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
 const VehicleIdRoute = VehicleIdRouteImport.update({
   id: '/vehicle/$id',
   path: '/vehicle/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriverIdRoute = DriverIdRouteImport.update({
+  id: '/driver/$id',
+  path: '/driver/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
+  '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/wallet'
     | '/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
     | '/booking/qr/$code'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/wallet'
     | '/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
     | '/booking/qr/$code'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
     | '/_authenticated/wishlist'
+    | '/driver/$id'
     | '/vehicle/$id'
     | '/_authenticated/messages/$bookingId'
     | '/booking/qr/$code'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   DriversRoute: typeof DriversRoute
+  DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
   BookingQrCodeRoute: typeof BookingQrCodeRoute
 }
@@ -283,6 +296,13 @@ declare module '@tanstack/react-router' {
       path: '/vehicle/$id'
       fullPath: '/vehicle/$id'
       preLoaderRoute: typeof VehicleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/driver/$id': {
+      id: '/driver/$id'
+      path: '/driver/$id'
+      fullPath: '/driver/$id'
+      preLoaderRoute: typeof DriverIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/wishlist': {
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   DriversRoute: DriversRoute,
+  DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
   BookingQrCodeRoute: BookingQrCodeRoute,
 }
