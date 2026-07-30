@@ -55,10 +55,27 @@ function HiresPage() {
   };
   useEffect(() => { load(); }, [user?.id]);
 
-  const cancel = async (id: string) => {
-    const { error } = await supabase.from("driver_bookings").update({ status: "cancelled" }).eq("id", id);
+  const cancel = async (b: any) => {
+    const paid = b.payment_status === "paid";
+    const pct = refundPercent(b);
+    const msg = paid
+      ? pct === 100
+        ? `Cancel this hire? You'll get a full refund of ${currency(b.total_price)} to your wallet.`
+        : pct === 50
+          ? `Cancel this hire? It starts in under 24 hours, so 50% (${currency(Number(b.total_price) / 2)}) will be refunded to your wallet.`
+          : "Cancel this hire? It starts in under 2 hours, so no refund is available."
+      : "Cancel this hire request?";
+    if (!window.confirm(msg)) return;
+
+    setBusy(b.id);
+    const { data, error } = await supabase.rpc("cancel_driver_booking", {
+      _driver_booking_id: b.id,
+      _reason: null,
+    } as any);
+    setBusy(null);
     if (error) return toast.error(error.message);
-    toast.success("Hire cancelled");
+    const refund = Number((data as any)?.refund ?? 0);
+    toast.success(refund > 0 ? `Hire cancelled — ${currency(refund)} refunded to your wallet` : "Hire cancelled");
     load();
   };
 
