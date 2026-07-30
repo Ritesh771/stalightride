@@ -30,6 +30,15 @@ export const Route = createFileRoute("/_authenticated/hires")({
   }),
 });
 
+/** Refund policy for a customer cancellation: 100% >24h before start, 50% >2h, else 0. */
+function refundPercent(b: any) {
+  const start = new Date(`${b.start_date}T${String(b.start_time).slice(0, 8)}`);
+  const hoursLeft = (start.getTime() - Date.now()) / 3600000;
+  if (hoursLeft >= 24) return 100;
+  if (hoursLeft >= 2) return 50;
+  return 0;
+}
+
 function HiresPage() {
   const { user } = useSession();
   const [items, setItems] = useState<any[] | null>(null);
@@ -55,10 +64,27 @@ function HiresPage() {
   };
   useEffect(() => { load(); }, [user?.id]);
 
-  const cancel = async (id: string) => {
-    const { error } = await supabase.from("driver_bookings").update({ status: "cancelled" }).eq("id", id);
+  const cancel = async (b: any) => {
+    const paid = b.payment_status === "paid";
+    const pct = refundPercent(b);
+    const msg = paid
+      ? pct === 100
+        ? `Cancel this hire? You'll get a full refund of ${currency(b.total_price)} to your wallet.`
+        : pct === 50
+          ? `Cancel this hire? It starts in under 24 hours, so 50% (${currency(Number(b.total_price) / 2)}) will be refunded to your wallet.`
+          : "Cancel this hire? It starts in under 2 hours, so no refund is available."
+      : "Cancel this hire request?";
+    if (!window.confirm(msg)) return;
+
+    setBusy(b.id);
+    const { data, error } = await supabase.rpc("cancel_driver_booking", {
+      _driver_booking_id: b.id,
+      _reason: null,
+    } as any);
+    setBusy(null);
     if (error) return toast.error(error.message);
-    toast.success("Hire cancelled");
+    const refund = Number((data as any)?.refund ?? 0);
+    toast.success(refund > 0 ? `Hire cancelled — ${currency(refund)} refunded to your wallet` : "Hire cancelled");
     load();
   };
 
@@ -147,6 +173,8 @@ function HiresPage() {
                   <div className="flex items-center gap-2">
                     <StatusBadge s={b.status} />
                     {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
+                    {b.payment_status === "refunded" && <Badge variant="outline" className="border-emerald-300 text-emerald-700">Refunded</Badge>}
+                    {b.payment_status === "partially_refunded" && <Badge variant="outline" className="border-amber-300 text-amber-700">Partly refunded</Badge>}
                   </div>
                 </div>
 
@@ -157,6 +185,12 @@ function HiresPage() {
                   {b.pickup_address && <div>📍 {b.pickup_address}</div>}
                 </div>
                 <p className="mt-1 text-sm">Total: <span className="font-semibold">{currency(b.total_price)}</span></p>
+                {Number(b.refund_amount ?? 0) > 0 && (
+                  <p className="text-sm text-emerald-700">Refunded {currency(b.refund_amount)} to your wallet</p>
+                )}
+                {b.status === "cancelled" && Number(b.refund_amount ?? 0) === 0 && b.paid_at && (
+                  <p className="text-sm text-muted-foreground">Cancelled within 2 hours of start — no refund</p>
+                )}
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {canPay && (
@@ -170,8 +204,11 @@ function HiresPage() {
                       {(wallet ?? 0) < Number(b.total_price) && <Link to="/wallet" className="text-xs underline text-muted-foreground">Add money</Link>}
                     </>
                   )}
-                  {(b.status === "pending" || canPay) && (
-                    <Button size="sm" variant="ghost" onClick={() => cancel(b.id)}>Cancel</Button>
+                  {canPay && (
+                    <span className="text-xs text-muted-foreground">Free cancellation up to 24h before start</span>
+                  )}
+                  {(b.status === "pending" || b.status === "confirmed") && (
+                    <Button size="sm" variant="ghost" disabled={busy === b.id} onClick={() => cancel(b)}>Cancel</Button>
                   )}
                 </div>
 
