@@ -32,9 +32,9 @@ export function SiteHeader() {
       <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="-ml-1" aria-label="Toggle navigation" />
-          <Link to="/" className="group flex items-center gap-2">
-            <img src={logoAsset.url} alt="RideShare" className="h-9 w-9 rounded-md object-contain transition-transform group-hover:-translate-y-0.5" />
-            <span className="font-display text-lg font-bold tracking-tight text-foreground">RideShare</span>
+          <Link to="/" className="group flex items-center gap-2 md:hidden">
+            <img src={logoAsset.url} alt="RideShare" className="h-8 w-8 rounded-md object-contain" />
+            <span className="font-display text-base font-bold tracking-tight text-foreground">RideShare</span>
           </Link>
         </div>
 
