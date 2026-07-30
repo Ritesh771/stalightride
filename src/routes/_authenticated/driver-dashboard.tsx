@@ -130,6 +130,18 @@ function DriverDashboard() {
     load();
   };
 
+  const cancelHire = async (h: any) => {
+    const paid = h.payment_status === "paid";
+    if (!window.confirm(paid
+      ? `Cancel this hire? The customer gets a full refund of ${currency(h.total_price)}, deducted from your wallet.`
+      : "Cancel this hire?")) return;
+    const { data, error } = await supabase.rpc("cancel_driver_booking", { _driver_booking_id: h.id, _reason: null } as any);
+    if (error) return toast.error(error.message);
+    const refund = Number((data as any)?.refund ?? 0);
+    toast.success(refund > 0 ? `Hire cancelled — ${currency(refund)} refunded to the customer` : "Hire cancelled");
+    load();
+  };
+
   if (!user || !loaded) return <div className="min-h-screen"><SiteHeader /><div className="p-8"><Skeleton className="h-64 rounded-2xl" /></div></div>;
 
   const vs = driver?.verification_status ?? "none";
@@ -248,6 +260,8 @@ function DriverDashboard() {
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{h.status}</Badge>
                     {h.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
+                    {h.payment_status === "refunded" && <Badge variant="outline" className="border-emerald-300 text-emerald-700">Refunded</Badge>}
+                    {h.payment_status === "partially_refunded" && <Badge variant="outline" className="border-amber-300 text-amber-700">Partly refunded</Badge>}
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -259,6 +273,9 @@ function DriverDashboard() {
                   )}
                   {h.status === "confirmed" && h.payment_status === "paid" && (
                     <Button size="sm" variant="outline" onClick={() => decide(h.id, "completed")}>Mark completed</Button>
+                  )}
+                  {h.status === "confirmed" && (
+                    <Button size="sm" variant="ghost" onClick={() => cancelHire(h)}>Cancel hire</Button>
                   )}
                 </div>
               </CardContent></Card>
