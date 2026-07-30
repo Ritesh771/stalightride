@@ -307,6 +307,9 @@ export type Database = {
       driver_bookings: {
         Row: {
           booking_id: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           created_at: string
           customer_id: string
           days: number
@@ -323,6 +326,7 @@ export type Database = {
           rate_type: string
           razorpay_order_id: string | null
           razorpay_payment_id: string | null
+          refund_amount: number
           start_date: string
           start_time: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -331,6 +335,9 @@ export type Database = {
         }
         Insert: {
           booking_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           created_at?: string
           customer_id: string
           days?: number
@@ -347,6 +354,7 @@ export type Database = {
           rate_type?: string
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
+          refund_amount?: number
           start_date: string
           start_time?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -355,6 +363,9 @@ export type Database = {
         }
         Update: {
           booking_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           created_at?: string
           customer_id?: string
           days?: number
@@ -371,6 +382,7 @@ export type Database = {
           rate_type?: string
           razorpay_order_id?: string | null
           razorpay_payment_id?: string | null
+          refund_amount?: number
           start_date?: string
           start_time?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -1184,6 +1196,10 @@ export type Database = {
     }
     Functions: {
       can_access_booking_folder: { Args: { _folder: string }; Returns: boolean }
+      cancel_driver_booking: {
+        Args: { _driver_booking_id: string; _reason?: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
