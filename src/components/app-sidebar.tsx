@@ -45,7 +45,8 @@ export function AppSidebar() {
   const collapsed = state === "collapsed" && !isMobile;
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
-  const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
+  const isActive = (to: string) =>
+    to === "/" || to === "/wash" ? pathname === to : pathname.startsWith(to);
   const close = () => { if (isMobile) setOpenMobile(false); };
 
   const signOut = async () => {
