@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
 import { Route as DriverIdRouteImport } from './routes/driver.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
+import { Route as AuthenticatedWashesRouteImport } from './routes/_authenticated/washes'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
@@ -73,6 +74,11 @@ const DriverIdRoute = DriverIdRouteImport.update({
 const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWashesRoute = AuthenticatedWashesRouteImport.update({
+  id: '/washes',
+  path: '/washes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/_authenticated/hires': typeof AuthenticatedHiresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/_authenticated/washes': typeof AuthenticatedWashesRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/hires'
     | '/profile'
     | '/wallet'
+    | '/washes'
     | '/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/hires'
     | '/profile'
     | '/wallet'
+    | '/washes'
     | '/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/_authenticated/hires'
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
+    | '/_authenticated/washes'
     | '/_authenticated/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -355,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof AuthenticatedWishlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/washes': {
+      id: '/_authenticated/washes'
+      path: '/washes'
+      fullPath: '/washes'
+      preLoaderRoute: typeof AuthenticatedWashesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wallet': {
@@ -466,6 +485,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHiresRoute: typeof AuthenticatedHiresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
+  AuthenticatedWashesRoute: typeof AuthenticatedWashesRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
@@ -479,6 +499,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHiresRoute: AuthenticatedHiresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
+  AuthenticatedWashesRoute: AuthenticatedWashesRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
