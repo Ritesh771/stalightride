@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { toast } from "sonner";
-import { Droplets, Clock, ShieldCheck, Sparkle, MapPin, CalendarClock } from "lucide-react";
+import { Droplets, Clock, ShieldCheck, MapPin, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/wash")({
   component: WashPage,
@@ -119,7 +119,7 @@ function WashPage() {
             {[
               { icon: CalendarClock, t: "1. Request a slot", d: "Choose package, date, time and address." },
               { icon: ShieldCheck, t: "2. Team approval", d: "We assign a washer partner and approve it." },
-              { icon: Sparkle, t: "3. Pay & relax", d: "Pay by wallet or card, then we clean it." },
+              { icon: Droplets, t: "3. Pay & relax", d: "Pay by wallet or card, then we clean it." },
             ].map((s) => (
               <div key={s.t} className="rounded-2xl border border-border bg-card p-4">
                 <s.icon className="h-5 w-5 text-primary" />
