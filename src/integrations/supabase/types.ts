@@ -1161,6 +1161,202 @@ export type Database = {
         }
         Relationships: []
       }
+      wash_bookings: {
+        Row: {
+          address: string
+          admin_note: string | null
+          assigned_vendor_id: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          city: string
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          lat: number | null
+          lng: number | null
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          payment_status: string
+          price: number
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          refund_amount: number
+          rejection_reason: string | null
+          service_id: string
+          slot_date: string
+          slot_time: string
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+          vehicle_id: string | null
+          vehicle_label: string | null
+        }
+        Insert: {
+          address: string
+          admin_note?: string | null
+          assigned_vendor_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          city: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          price: number
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          refund_amount?: number
+          rejection_reason?: string | null
+          service_id: string
+          slot_date: string
+          slot_time: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Update: {
+          address?: string
+          admin_note?: string | null
+          assigned_vendor_id?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          city?: string
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          price?: number
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          refund_amount?: number
+          rejection_reason?: string | null
+          service_id?: string
+          slot_date?: string
+          slot_time?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wash_bookings_assigned_vendor_id_fkey"
+            columns: ["assigned_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "wash_vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wash_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "wash_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wash_bookings_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wash_services: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          name: string
+          price: number
+          sort_order: number
+          updated_at: string
+          vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          name: string
+          price: number
+          sort_order?: number
+          updated_at?: string
+          vehicle_category?: Database["public"]["Enums"]["vehicle_category"]
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          name?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+          vehicle_category?: Database["public"]["Enums"]["vehicle_category"]
+        }
+        Relationships: []
+      }
+      wash_vendors: {
+        Row: {
+          active: boolean
+          city: string
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          daily_capacity: number
+          id: string
+          name: string
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          city: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          daily_capacity?: number
+          id?: string
+          name: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          city?: string
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          daily_capacity?: number
+          id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       wishlists: {
         Row: {
           created_at: string
@@ -1195,9 +1391,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_decide_wash_booking: {
+        Args: {
+          _decision: string
+          _note?: string
+          _vendor_id?: string
+          _wash_booking_id: string
+        }
+        Returns: undefined
+      }
       can_access_booking_folder: { Args: { _folder: string }; Returns: boolean }
       cancel_driver_booking: {
         Args: { _driver_booking_id: string; _reason?: string }
+        Returns: Json
+      }
+      cancel_wash_booking: {
+        Args: { _reason?: string; _wash_booking_id: string }
         Returns: Json
       }
       has_role: {
@@ -1225,6 +1434,10 @@ export type Database = {
       wallet_pay_booking: { Args: { _booking_id: string }; Returns: number }
       wallet_pay_driver_booking: {
         Args: { _driver_booking_id: string }
+        Returns: number
+      }
+      wallet_pay_wash_booking: {
+        Args: { _wash_booking_id: string }
         Returns: number
       }
     }

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WashRouteImport } from './routes/wash'
 import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -17,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
 import { Route as DriverIdRouteImport } from './routes/driver.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
+import { Route as AuthenticatedWashesRouteImport } from './routes/_authenticated/washes'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
@@ -30,6 +32,11 @@ import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_au
 import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
 import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
+const WashRoute = WashRouteImport.update({
+  id: '/wash',
+  path: '/wash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
@@ -67,6 +74,11 @@ const DriverIdRoute = DriverIdRouteImport.update({
 const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWashesRoute = AuthenticatedWashesRouteImport.update({
+  id: '/washes',
+  path: '/washes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
@@ -141,12 +153,14 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -162,12 +176,14 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/wallet': typeof AuthenticatedWalletRoute
+  '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -185,12 +201,14 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/_authenticated/hires': typeof AuthenticatedHiresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/_authenticated/washes': typeof AuthenticatedWashesRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
@@ -208,12 +226,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
     | '/hires'
     | '/profile'
     | '/wallet'
+    | '/washes'
     | '/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -229,12 +249,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
     | '/hires'
     | '/profile'
     | '/wallet'
+    | '/washes'
     | '/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -251,12 +273,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
     | '/_authenticated/driver-dashboard'
     | '/_authenticated/hires'
     | '/_authenticated/profile'
     | '/_authenticated/wallet'
+    | '/_authenticated/washes'
     | '/_authenticated/wishlist'
     | '/driver/$id'
     | '/vehicle/$id'
@@ -274,6 +298,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   DriversRoute: typeof DriversRoute
+  WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
   BookingQrCodeRoute: typeof BookingQrCodeRoute
@@ -281,6 +306,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wash': {
+      id: '/wash'
+      path: '/wash'
+      fullPath: '/wash'
+      preLoaderRoute: typeof WashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drivers': {
       id: '/drivers'
       path: '/drivers'
@@ -335,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/wishlist'
       preLoaderRoute: typeof AuthenticatedWishlistRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/washes': {
+      id: '/_authenticated/washes'
+      path: '/washes'
+      fullPath: '/washes'
+      preLoaderRoute: typeof AuthenticatedWashesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wallet': {
@@ -446,6 +485,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHiresRoute: typeof AuthenticatedHiresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
+  AuthenticatedWashesRoute: typeof AuthenticatedWashesRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
@@ -459,6 +499,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHiresRoute: AuthenticatedHiresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
+  AuthenticatedWashesRoute: AuthenticatedWashesRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
@@ -474,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   DriversRoute: DriversRoute,
+  WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
   BookingQrCodeRoute: BookingQrCodeRoute,
@@ -481,13 +523,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
