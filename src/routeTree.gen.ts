@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WashRouteImport } from './routes/wash'
 import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -30,6 +31,11 @@ import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_au
 import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
 import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
+const WashRoute = WashRouteImport.update({
+  id: '/wash',
+  path: '/wash',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/wash': typeof WashRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/wash'
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
     | '/_authenticated/driver-dashboard'
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   DriversRoute: typeof DriversRoute
+  WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
   BookingQrCodeRoute: typeof BookingQrCodeRoute
@@ -281,6 +294,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wash': {
+      id: '/wash'
+      path: '/wash'
+      fullPath: '/wash'
+      preLoaderRoute: typeof WashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/drivers': {
       id: '/drivers'
       path: '/drivers'
@@ -474,6 +494,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   DriversRoute: DriversRoute,
+  WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
   BookingQrCodeRoute: BookingQrCodeRoute,
