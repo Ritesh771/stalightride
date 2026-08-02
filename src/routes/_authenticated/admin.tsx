@@ -395,3 +395,113 @@ function DriverQueue() {
     </div>
   );
 }
+
+function WashQueue() {
+  const [items, setItems] = useState<any[] | null>(null);
+  const [partners, setPartners] = useState<any[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [assign, setAssign] = useState<Record<string, string>>({});
+
+  const load = async () => {
+    const [{ data, error }, { data: p }] = await Promise.all([
+      supabase
+        .from("wash_bookings")
+        .select("*, wash_services:service_id(name,duration_minutes,vehicle_category), wash_vendors:assigned_vendor_id(name,contact_phone,city)")
+        .order("created_at", { ascending: false })
+        .limit(200),
+      supabase.from("wash_vendors").select("id,name,city,daily_capacity,contact_phone,active").eq("active", true).order("name"),
+    ]);
+    if (error) toast.error(error.message);
+    setItems((data as any) ?? []);
+    setPartners((p as any) ?? []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const decide = async (b: any, decision: "confirmed" | "rejected" | "completed") => {
+    let note: string | null = null;
+    let vendorId: string | null = null;
+    if (decision === "confirmed") {
+      vendorId = assign[b.id] ?? null;
+      if (!vendorId) return toast.error("Assign a washer partner first");
+      note = window.prompt("Note for the customer (optional)?") || null;
+    }
+    if (decision === "rejected") {
+      note = window.prompt("Reason (no washer available, out of area, ...)?") || null;
+      if (!note) return;
+    }
+    setBusy(b.id);
+    const { error } = await supabase.rpc("admin_decide_wash_booking", {
+      _wash_booking_id: b.id,
+      _decision: decision,
+      _vendor_id: vendorId,
+      _note: note,
+    } as any);
+    setBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(decision === "confirmed" ? "Approved — customer can pay now" : decision === "rejected" ? "Rejected" : "Marked completed");
+    load();
+  };
+
+  if (!items) return <Skeleton className="mt-4 h-40" />;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {partners.length === 0 && (
+        <p className="rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground">
+          No active washer partners yet — add them in the backend `wash_vendors` table to approve bookings.
+        </p>
+      )}
+      {items.length === 0 && <p className="mt-6 text-sm text-muted-foreground">No wash bookings yet.</p>}
+      {items.map((b) => (
+        <Card key={b.id}><CardContent className="p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{b.wash_services?.name ?? "Vehicle wash"}</p>
+                <Badge variant={b.status === "confirmed" ? "secondary" : b.status === "rejected" ? "destructive" : "outline"}>{b.status}</Badge>
+                {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
+                {(b.payment_status === "refunded" || b.payment_status === "partially_refunded") && <Badge variant="outline">{b.payment_status}</Badge>}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {b.slot_date} at {String(b.slot_time).slice(0, 5)} · {b.city} · ₹{b.price}
+                {b.wash_vendors?.name ? ` · Partner: ${b.wash_vendors.name}` : ""}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">📍 {b.address}{b.vehicle_label ? ` · ${b.vehicle_label}` : ""}</p>
+              {b.notes && <p className="mt-1 text-xs">📝 {b.notes}</p>}
+              {b.rejection_reason && <p className="mt-1 text-xs text-destructive">Rejected: {b.rejection_reason}</p>}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {b.status === "pending" && (
+                <>
+                  <select
+                    aria-label="Assign washer partner"
+                    className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+                    value={assign[b.id] ?? ""}
+                    onChange={(e) => setAssign({ ...assign, [b.id]: e.target.value })}
+                  >
+                    <option value="">Assign washer…</option>
+                    {partners.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name} · {p.city} ({p.daily_capacity}/day)</option>
+                    ))}
+                  </select>
+                  <Button size="sm" disabled={busy === b.id} onClick={() => decide(b, "confirmed")}>
+                    <ShieldCheck className="mr-1 h-3 w-3" />Approve
+                  </Button>
+                  <Button size="sm" variant="outline" disabled={busy === b.id} onClick={() => decide(b, "rejected")}>Reject</Button>
+                </>
+              )}
+              {b.status === "confirmed" && (
+                <>
+                  {b.payment_status === "paid"
+                    ? <Button size="sm" disabled={busy === b.id} onClick={() => decide(b, "completed")}>Mark completed</Button>
+                    : <span className="text-xs text-muted-foreground">Waiting for customer payment</span>}
+                  <Button size="sm" variant="outline" disabled={busy === b.id} onClick={() => decide(b, "rejected")}>Cancel & refund</Button>
+                </>
+              )}
+            </div>
+          </div>
+        </CardContent></Card>
+      ))}
+    </div>
+  );
+}
