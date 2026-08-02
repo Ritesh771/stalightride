@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -20,11 +20,13 @@ const exploreItems: Item[] = [
   { to: "/", label: "Home", icon: Home },
   { to: "/browse", label: "Browse rides", icon: Car },
   { to: "/drivers", label: "Hire a driver", icon: UserRound },
+  { to: "/wash", label: "Vehicle wash", icon: Droplets },
 ];
 
 const accountItems: Item[] = [
   { to: "/bookings", label: "My trips", icon: CalendarDays },
   { to: "/hires", label: "My drivers", icon: UserRound },
+  { to: "/washes", label: "My washes", icon: Droplets },
   { to: "/wallet", label: "Wallet", icon: WalletIcon },
   { to: "/wishlist", label: "Saved", icon: Heart },
   { to: "/profile", label: "Profile", icon: UserIcon },
