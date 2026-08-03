@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currency } from "@/lib/format";
 import { toast } from "sonner";
-import { CreditCard, Wallet as WalletIcon, Star, UserRound } from "lucide-react";
+import { CreditCard, Wallet as WalletIcon, Star, UserRound, ReceiptText } from "lucide-react";
 import { createDriverRazorpayOrder, verifyDriverRazorpayPayment } from "@/lib/driver-payments.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 

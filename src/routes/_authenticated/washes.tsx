@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { toast } from "sonner";
-import { CreditCard, Wallet as WalletIcon, Droplets } from "lucide-react";
+import { CreditCard, Wallet as WalletIcon, Droplets, ReceiptText } from "lucide-react";
 import { createWashRazorpayOrder, verifyWashRazorpayPayment } from "@/lib/wash-payments.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
