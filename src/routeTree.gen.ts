@@ -29,6 +29,7 @@ import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenti
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_authenticated/vendor.vehicles.new'
+import { Route as AuthenticatedReceiptKindIdRouteImport } from './routes/_authenticated/receipt.$kind.$id'
 import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
 import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
@@ -135,6 +136,12 @@ const AuthenticatedVendorVehiclesNewRoute =
     path: '/vendor/vehicles/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedReceiptKindIdRoute =
+  AuthenticatedReceiptKindIdRouteImport.update({
+    id: '/receipt/$kind/$id',
+    path: '/receipt/$kind/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBookingsIdTripRoute =
   AuthenticatedBookingsIdTripRouteImport.update({
     id: '/$id/trip',
@@ -169,6 +176,7 @@ export interface FileRoutesByFullPath {
   '/vendor/': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
   '/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
+  '/receipt/$kind/$id': typeof AuthenticatedReceiptKindIdRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRoutesByTo {
@@ -192,6 +200,7 @@ export interface FileRoutesByTo {
   '/vendor': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
   '/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
+  '/receipt/$kind/$id': typeof AuthenticatedReceiptKindIdRoute
   '/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRoutesById {
@@ -217,6 +226,7 @@ export interface FileRoutesById {
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
   '/_authenticated/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
   '/_authenticated/bookings/$id/trip': typeof AuthenticatedBookingsIdTripRoute
+  '/_authenticated/receipt/$kind/$id': typeof AuthenticatedReceiptKindIdRoute
   '/_authenticated/vendor/vehicles/new': typeof AuthenticatedVendorVehiclesNewRoute
 }
 export interface FileRouteTypes {
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/vendor/'
     | '/bookings/$id/dispute'
     | '/bookings/$id/trip'
+    | '/receipt/$kind/$id'
     | '/vendor/vehicles/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/vendor'
     | '/bookings/$id/dispute'
     | '/bookings/$id/trip'
+    | '/receipt/$kind/$id'
     | '/vendor/vehicles/new'
   id:
     | '__root__'
@@ -289,6 +301,7 @@ export interface FileRouteTypes {
     | '/_authenticated/vendor/'
     | '/_authenticated/bookings/$id/dispute'
     | '/_authenticated/bookings/$id/trip'
+    | '/_authenticated/receipt/$kind/$id'
     | '/_authenticated/vendor/vehicles/new'
   fileRoutesById: FileRoutesById
 }
@@ -446,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorVehiclesNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/receipt/$kind/$id': {
+      id: '/_authenticated/receipt/$kind/$id'
+      path: '/receipt/$kind/$id'
+      fullPath: '/receipt/$kind/$id'
+      preLoaderRoute: typeof AuthenticatedReceiptKindIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/bookings/$id/trip': {
       id: '/_authenticated/bookings/$id/trip'
       path: '/$id/trip'
@@ -489,6 +509,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
+  AuthenticatedReceiptKindIdRoute: typeof AuthenticatedReceiptKindIdRoute
   AuthenticatedVendorVehiclesNewRoute: typeof AuthenticatedVendorVehiclesNewRoute
 }
 
@@ -503,6 +524,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
+  AuthenticatedReceiptKindIdRoute: AuthenticatedReceiptKindIdRoute,
   AuthenticatedVendorVehiclesNewRoute: AuthenticatedVendorVehiclesNewRoute,
 }
 

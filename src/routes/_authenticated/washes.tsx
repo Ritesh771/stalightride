@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { toast } from "sonner";
-import { CreditCard, Wallet as WalletIcon, Droplets } from "lucide-react";
+import { CreditCard, Wallet as WalletIcon, Droplets, ReceiptText } from "lucide-react";
 import { createWashRazorpayOrder, verifyWashRazorpayPayment } from "@/lib/wash-payments.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -245,6 +245,13 @@ function WashesPage() {
                     {canCancel && (
                       <Button size="sm" variant="ghost" disabled={busy === b.id} onClick={() => cancel(b)}>
                         Cancel
+                      </Button>
+                    )}
+                    {(b.payment_status === "paid" || b.paid_at || Number(b.refund_amount ?? 0) > 0) && (
+                      <Button asChild size="sm" variant="outline">
+                        <Link to="/receipt/$kind/$id" params={{ kind: "wash", id: b.id }}>
+                          <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
+                        </Link>
                       </Button>
                     )}
                   </div>

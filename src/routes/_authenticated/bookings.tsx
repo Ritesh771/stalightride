@@ -13,7 +13,7 @@ import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { useSession } from "@/hooks/use-session";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon } from "lucide-react";
+import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -209,6 +209,13 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                       <Link to="/bookings/$id/trip" params={{ id: b.id }}>
                         <ClipboardCheck className="mr-1.5 h-4 w-4" />
                         {b.return_checked_at ? "Trip summary" : b.pickup_checked_at ? "End trip" : "Start trip"}
+                      </Link>
+                    </Button>
+                  )}
+                  {(b.payment_status === "paid" || b.paid_at) && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/receipt/$kind/$id" params={{ kind: "vehicle", id: b.id }}>
+                        <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
                       </Link>
                     </Button>
                   )}
