@@ -193,7 +193,7 @@ export function HomeActivity() {
                       <Button asChild size="sm" variant="ghost">
                         <Link
                           to="/receipt/$kind/$id"
-                          params={{ kind: it.kind === "rental" ? "booking" : it.kind === "hire" ? "driver" : "wash", id: it.id }}
+                          params={{ kind: it.kind === "rental" ? "vehicle" : it.kind === "hire" ? "driver" : "wash", id: it.id }}
                         >
                           <ReceiptText className="h-4 w-4" />
                           <span className="sr-only">Receipt</span>
