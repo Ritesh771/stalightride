@@ -2,10 +2,28 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ShieldCheck, MapPin, Clock, ArrowRight, Star } from "lucide-react";
+import {
+  ShieldCheck,
+  MapPin,
+  Clock,
+  ArrowRight,
+  Star,
+  Car,
+  UserRound,
+  Droplets,
+  Wallet,
+  Navigation,
+  ReceiptText,
+  MessageSquare,
+  BadgeCheck,
+  CircleAlert,
+  QrCode,
+} from "lucide-react";
 import { useState } from "react";
 import { CategoryIcon } from "@/components/category-icon";
 import { HeroIllustration } from "@/components/hero-illustration";
+import { HomeActivity } from "@/components/home-activity";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
