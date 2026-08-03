@@ -212,6 +212,13 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                       </Link>
                     </Button>
                   )}
+                  {(b.payment_status === "paid" || b.paid_at) && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/receipt/$kind/$id" params={{ kind: "vehicle", id: b.id }}>
+                        <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
+                      </Link>
+                    </Button>
+                  )}
                   {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
                     <Button asChild size="sm" variant="ghost" className="text-destructive">
                       <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
