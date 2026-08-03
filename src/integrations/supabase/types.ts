@@ -1420,6 +1420,7 @@ export type Database = {
         Args: { _reason: string; _review_id: string }
         Returns: undefined
       }
+      validate_coupon: { Args: { _code: string }; Returns: Json }
       wallet_apply: {
         Args: {
           _amount: number
