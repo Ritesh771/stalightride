@@ -210,6 +210,13 @@ function HiresPage() {
                   {(b.status === "pending" || b.status === "confirmed") && (
                     <Button size="sm" variant="ghost" disabled={busy === b.id} onClick={() => cancel(b)}>Cancel</Button>
                   )}
+                  {(b.payment_status === "paid" || b.paid_at || Number(b.refund_amount ?? 0) > 0) && (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/receipt/$kind/$id" params={{ kind: "driver", id: b.id }}>
+                        <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
+                      </Link>
+                    </Button>
+                  )}
                 </div>
 
                 {b.status === "completed" && !b.reviewed && (
