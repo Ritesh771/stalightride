@@ -148,6 +148,73 @@ function Index() {
         </div>
       </section>
 
+      {/* Services */}
+      <section className="border-b border-border py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-8">
+            <h2 className="font-display text-2xl font-bold sm:text-3xl">Everything you need on one platform</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Rent a vehicle, hire a verified driver, or book a doorstep wash — pay by card or wallet.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { to: "/browse", icon: Car, title: "Rent a vehicle", body: "Cars, bikes, scooters and EVs by hour, day or week.", cta: "Browse rides" },
+              { to: "/drivers", icon: UserRound, title: "Hire a driver", body: "Licence-verified drivers on hourly or daily rates.", cta: "Find drivers" },
+              { to: "/wash", icon: Droplets, title: "Vehicle wash", body: "Pick a slot at your address — approved by our team.", cta: "Book a wash" },
+              { to: "/wallet", icon: Wallet, title: "RideShare wallet", body: "Top up once, pay instantly, get refunds back in seconds.", cta: "Open wallet" },
+            ].map((s, i) => (
+              <Link
+                key={s.title}
+                to={s.to}
+                className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-foreground/40 hover:shadow-lg"
+                style={{ animation: `rs-pin-drop 500ms ${i * 90}ms both` }}
+              >
+                <div className="grid h-12 w-12 place-items-center rounded-xl bg-muted transition-colors group-hover:bg-foreground group-hover:text-background">
+                  <s.icon className="h-5 w-5" aria-hidden />
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+                <p className="mt-1 flex-1 text-sm text-muted-foreground">{s.body}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium">
+                  {s.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Your bookings */}
+      <HomeActivity />
+
+      {/* Trip experience */}
+      <section className="border-b border-border py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-8">
+            <h2 className="font-display text-2xl font-bold sm:text-3xl">Built for every step of the trip</h2>
+            <p className="mt-1 text-sm text-muted-foreground">From pickup checks to bills — nothing left to paperwork.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { icon: QrCode, title: "QR check-in & check-out", body: "Scan at pickup and return to confirm the handover instantly." },
+              { icon: BadgeCheck, title: "Fuel & damage inspection", body: "Log fuel level, odometer and photos of any damage, both ways." },
+              { icon: Navigation, title: "Live GPS tracking", body: "Share your live location during an active trip with turn-by-turn directions." },
+              { icon: MessageSquare, title: "In-trip chat", body: "Message your host with photos — unlocked once a booking exists." },
+              { icon: CircleAlert, title: "Disputes & damage claims", body: "Raise an issue with evidence; our team resolves it end to end." },
+              { icon: ReceiptText, title: "Invoices & refunds", body: "Printable GST-style bill for every paid booking, refunds tracked to the rupee." },
+            ].map((f) => (
+              <div key={f.title} className="rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-md">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-muted">
+                  <f.icon className="h-5 w-5" aria-hidden />
+                </div>
+                <h3 className="mt-4 text-base font-semibold">{f.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
       <section className="border-b border-border py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
