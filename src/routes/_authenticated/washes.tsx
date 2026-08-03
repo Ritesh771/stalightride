@@ -247,6 +247,13 @@ function WashesPage() {
                         Cancel
                       </Button>
                     )}
+                    {(b.payment_status === "paid" || b.paid_at || Number(b.refund_amount ?? 0) > 0) && (
+                      <Button asChild size="sm" variant="outline">
+                        <Link to="/receipt/$kind/$id" params={{ kind: "wash", id: b.id }}>
+                          <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
