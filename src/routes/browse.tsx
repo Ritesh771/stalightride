@@ -189,7 +189,7 @@ function Browse() {
           <Input
             type="date" min={today} className="mt-1.5 rounded-xl"
             value={params.from ?? ""}
-            onChange={(e) => update({ from: e.target.value || undefined, to: params.to ?? e.target.value || undefined })}
+            onChange={(e) => update({ from: e.target.value || undefined, to: params.to ?? (e.target.value || undefined) })}
           />
         </div>
         <div>
@@ -197,7 +197,7 @@ function Browse() {
           <Input
             type="date" min={params.from ?? today} className="mt-1.5 rounded-xl"
             value={params.to ?? ""}
-            onChange={(e) => update({ to: e.target.value || undefined, from: params.from ?? e.target.value || undefined })}
+            onChange={(e) => update({ to: e.target.value || undefined, from: params.from ?? (e.target.value || undefined) })}
           />
         </div>
       </div>
