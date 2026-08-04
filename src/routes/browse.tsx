@@ -19,7 +19,7 @@ import { currency } from "@/lib/format";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import {
   MapPin, Star, Search, Filter, ChevronLeft, ChevronRight,
-  Fuel, Settings2, CalendarDays, ShieldCheck, Sparkle,
+  Fuel, Settings2, CalendarDays, ShieldCheck, CarFront,
 } from "lucide-react";
 
 const PAGE_SIZE = 12;
@@ -344,7 +344,7 @@ function Browse() {
 
             {items && items.length === 0 && (
               <div className="surface-card p-12 text-center">
-                <Sparkle className="mx-auto mb-3 h-6 w-6 text-brand" />
+                <CarFront className="mx-auto mb-3 h-6 w-6 text-brand" />
                 <p className="font-display text-lg">No vehicles for this selection</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Try widening your dates, city or price range — booked vehicles are hidden automatically.
