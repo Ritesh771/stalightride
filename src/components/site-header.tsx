@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import logoAsset from "@/assets/rideshare-logo.asset.json";
+import synchooMark from "@/assets/synchoo-mark.png";
 import { InstallPwaButton } from "@/components/install-pwa-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CitySelector } from "@/components/city-selector";
 
 export function SiteHeader() {
   const { user } = useSession();
@@ -28,19 +29,20 @@ export function SiteHeader() {
     .toString().charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="-ml-1" aria-label="Toggle navigation" />
-          <Link to="/" className="group flex items-center gap-2 md:hidden">
-            <img src={logoAsset.url} alt="RideShare" className="h-8 w-8 rounded-md object-contain" />
-            <span className="font-display text-base font-bold tracking-tight text-foreground">RideShare</span>
+    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-xl supports-[backdrop-filter]:bg-background/65">
+      <div className="grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2">
+          <SidebarTrigger className="-ml-1 shrink-0" aria-label="Toggle navigation" />
+          <Link to="/" className="flex min-w-0 items-center gap-2 md:hidden">
+            <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
+            <span className="truncate font-display text-base font-bold tracking-tight text-foreground">Synchoo</span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <CitySelector />
           <ThemeToggle className="hidden sm:inline-flex" />
-          <InstallPwaButton className="hidden sm:inline-flex" />
+          <InstallPwaButton className="hidden lg:inline-flex" />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -71,7 +73,7 @@ export function SiteHeader() {
           ) : (
             <>
               <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex"><Link to="/auth">Sign in</Link></Button>
-              <Button asChild size="sm"><Link to="/auth" search={{ mode: "signup" } as any}>Get started</Link></Button>
+              <Button asChild size="sm" className="rounded-full bg-brand text-brand-foreground hover:bg-brand/90"><Link to="/auth" search={{ mode: "signup" } as any}>Get started</Link></Button>
             </>
           )}
         </div>
@@ -79,4 +81,3 @@ export function SiteHeader() {
     </header>
   );
 }
-

@@ -21,9 +21,9 @@ export const Route = createFileRoute("/_authenticated/driver-dashboard")({
   component: DriverDashboard,
   head: () => ({
     meta: [
-      { title: "Driver dashboard — RideShare" },
-      { name: "description", content: "Manage your driver profile, licence verification, hire requests and earnings on RideShare." },
-      { property: "og:title", content: "Driver dashboard — RideShare" },
+      { title: "Driver dashboard — Synchoo" },
+      { name: "description", content: "Manage your driver profile, licence verification, hire requests and earnings on Synchoo." },
+      { property: "og:title", content: "Driver dashboard — Synchoo" },
       { property: "og:description", content: "Manage your driver profile, verification, hire requests and earnings." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

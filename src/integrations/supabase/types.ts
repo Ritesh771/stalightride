@@ -1400,6 +1400,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      booked_vehicle_ids: {
+        Args: { _end: string; _start: string }
+        Returns: string[]
+      }
       can_access_booking_folder: { Args: { _folder: string }; Returns: boolean }
       cancel_driver_booking: {
         Args: { _driver_booking_id: string; _reason?: string }

@@ -75,7 +75,7 @@ function Bookings() {
         amount: order.amount,
         currency: order.currency,
         orderId: order.orderId,
-        name: "RideShare",
+        name: "Synchoo",
         description: b.vehicles?.title ?? "Vehicle rental",
         prefill: { email: user.email ?? undefined, name: user.user_metadata?.full_name ?? undefined },
         onSuccess: async (resp) => {

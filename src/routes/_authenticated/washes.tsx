@@ -18,9 +18,9 @@ export const Route = createFileRoute("/_authenticated/washes")({
   component: WashesPage,
   head: () => ({
     meta: [
-      { title: "My vehicle washes — RideShare" },
+      { title: "My vehicle washes — Synchoo" },
       { name: "description", content: "Track your doorstep wash slots, see approval status and pay by wallet or card." },
-      { property: "og:title", content: "My vehicle washes — RideShare" },
+      { property: "og:title", content: "My vehicle washes — Synchoo" },
       { property: "og:description", content: "Track wash slot approvals and pay securely." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -110,7 +110,7 @@ function WashesPage() {
         amount: order.amount,
         currency: order.currency,
         orderId: order.orderId,
-        name: "RideShare",
+        name: "Synchoo",
         description: `Vehicle wash — ${b.wash_services?.name ?? ""}`,
         prefill: { email: user.email ?? undefined, name: user.user_metadata?.full_name ?? undefined },
         onSuccess: async (resp) => {

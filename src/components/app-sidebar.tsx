@@ -12,7 +12,7 @@ import { useSession } from "@/hooks/use-session";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import logoAsset from "@/assets/rideshare-logo.asset.json";
+import synchooMark from "@/assets/synchoo-mark.png";
 
 type Item = { to: string; label: string; icon: any };
 
@@ -81,8 +81,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" onClick={close} className="flex items-center gap-2 px-1 py-1.5">
-          <img src={logoAsset.url} alt="RideShare" className="h-8 w-8 shrink-0 rounded-md object-contain" />
-          {!collapsed && <span className="font-display text-base font-bold tracking-tight">RideShare</span>}
+          <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
+          {!collapsed && <span className="font-display text-base font-bold tracking-tight">Synchoo</span>}
         </Link>
       </SidebarHeader>
 

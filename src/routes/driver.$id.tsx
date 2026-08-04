@@ -21,10 +21,10 @@ export const Route = createFileRoute("/driver/$id")({
   component: DriverProfile,
   head: () => ({
     meta: [
-      { title: "Driver profile — Hire a verified driver | RideShare" },
-      { name: "description", content: "View a verified RideShare driver's experience, languages, rating and rates, then book them by the hour or day." },
-      { property: "og:title", content: "Driver profile — Hire a verified driver | RideShare" },
-      { property: "og:description", content: "View a verified RideShare driver's experience, languages, rating and rates, then book them." },
+      { title: "Driver profile — Hire a verified driver | Synchoo" },
+      { name: "description", content: "View a verified Synchoo driver's experience, languages, rating and rates, then book them by the hour or day." },
+      { property: "og:title", content: "Driver profile — Hire a verified driver | Synchoo" },
+      { property: "og:description", content: "View a verified Synchoo driver's experience, languages, rating and rates, then book them." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -173,7 +173,7 @@ function DriverProfile() {
 
               <div className="mt-4 flex items-start gap-2 rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                Driving licence and identity documents verified by the RideShare team before this profile went live.
+                Driving licence and identity documents verified by the Synchoo team before this profile went live.
               </div>
             </CardContent></Card>
 

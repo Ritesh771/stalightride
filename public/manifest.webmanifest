@@ -1,16 +1,16 @@
 {
-  "name": "RideShare — Peer-to-peer vehicle rentals",
-  "short_name": "RideShare",
+  "name": "Synchoo — Peer-to-peer vehicle rentals",
+  "short_name": "Synchoo",
   "description": "Rent scooters, bikes, motorcycles, cars, and EVs from trusted local hosts.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0f172a",
+  "theme_color": "#111a33",
   "orientation": "portrait",
   "icons": [
-    { "src": "/favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon" },
-    { "src": "/favicon.ico", "sizes": "192x192", "type": "image/x-icon", "purpose": "any maskable" },
-    { "src": "/favicon.ico", "sizes": "512x512", "type": "image/x-icon", "purpose": "any maskable" }
+    { "src": "/favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

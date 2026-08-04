@@ -114,7 +114,7 @@ export function HomeActivity() {
             <h2 className="font-display text-2xl font-bold sm:text-3xl">Your bookings, all in one place</h2>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
               Sign in to see your rentals, driver hires and wash slots, track live trips, download bills and pay from your
-              RideShare wallet.
+              Synchoo wallet.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button asChild>
