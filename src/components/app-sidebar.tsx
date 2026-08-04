@@ -12,7 +12,7 @@ import { useSession } from "@/hooks/use-session";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import logoAsset from "@/assets/rideshare-logo.asset.json";
+import synchooMark from "@/assets/synchoo-mark.png";
 
 type Item = { to: string; label: string; icon: any };
 
