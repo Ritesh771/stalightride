@@ -71,13 +71,13 @@ function Index() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="gradient-hero relative overflow-hidden border-b border-border">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.4] dark:opacity-[0.15]"
+          className="pointer-events-none absolute inset-0 opacity-[0.35] dark:opacity-[0.12]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, oklch(0.9 0 0) 1px, transparent 1px), linear-gradient(to bottom, oklch(0.9 0 0) 1px, transparent 1px)",
+              "linear-gradient(to right, oklch(0.86 0.02 258) 1px, transparent 1px), linear-gradient(to bottom, oklch(0.86 0.02 258) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
             maskImage: "radial-gradient(ellipse at top, black 40%, transparent 75%)",
           }}
@@ -86,9 +86,7 @@ function Index() {
           <div className="flex flex-col justify-center">
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl">
               Go anywhere.<br />
-              <span className="bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-                Rent anything.
-              </span>
+              <span className="text-gradient">Rent anything.</span>
             </h1>
             <p className="mt-5 max-w-lg text-base text-muted-foreground sm:text-lg">
               Cars, bikes, scooters and EVs from verified local hosts. Instant booking, real-time tracking, and secure payments.
@@ -103,13 +101,14 @@ function Index() {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Enter your city"
-                  className="h-12 pl-9"
+                  className="h-12 rounded-xl pl-9"
                 />
               </div>
-              <Button type="submit" size="lg" className="h-12 gap-1 px-6">
+              <Button type="submit" size="lg" className="h-12 gap-1 rounded-xl bg-brand px-6 text-brand-foreground hover:bg-brand/90">
                 Search <ArrowRight className="h-4 w-4" />
               </Button>
             </form>
+
 
             <div className="mt-8 flex flex-wrap gap-2">
               {CATS.map((c) => (
