@@ -45,7 +45,7 @@ function AuthPage() {
           options: { emailRedirectTo: window.location.origin, data: { full_name: name } },
         });
         if (error) throw error;
-        toast.success("Welcome to RideShare!");
+        toast.success("Welcome to Synchoo!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -80,7 +80,7 @@ function AuthPage() {
         <Card className="relative w-full max-w-md animate-fade-in shadow-card">
           <CardContent className="p-8">
             <div className="mb-6 flex items-center gap-3">
-              <img src={logoAsset.url} alt="RideShare" className="h-10 w-10 rounded-md object-contain" />
+              <img src={logoAsset.url} alt="Synchoo" className="h-10 w-10 rounded-md object-contain" />
               <div>
                 <h1 className="font-display text-xl font-semibold">
                   {tab === "signup" ? "Create your account" : "Welcome back"}
@@ -126,7 +126,7 @@ function AuthPage() {
             </form>
 
             <p className="mt-5 text-center text-sm text-muted-foreground">
-              {tab === "signup" ? "Already have an account? " : "New to RideShare? "}
+              {tab === "signup" ? "Already have an account? " : "New to Synchoo? "}
               <button
                 className="font-medium text-primary hover:underline"
                 onClick={() => setTab(tab === "signup" ? "signin" : "signup")}

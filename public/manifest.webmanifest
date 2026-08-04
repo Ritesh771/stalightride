@@ -1,6 +1,6 @@
 {
-  "name": "RideShare — Peer-to-peer vehicle rentals",
-  "short_name": "RideShare",
+  "name": "Synchoo — Peer-to-peer vehicle rentals",
+  "short_name": "Synchoo",
   "description": "Rent scooters, bikes, motorcycles, cars, and EVs from trusted local hosts.",
   "start_url": "/",
   "scope": "/",

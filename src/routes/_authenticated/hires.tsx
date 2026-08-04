@@ -20,9 +20,9 @@ export const Route = createFileRoute("/_authenticated/hires")({
   component: HiresPage,
   head: () => ({
     meta: [
-      { title: "My driver hires — RideShare" },
+      { title: "My driver hires — Synchoo" },
       { name: "description", content: "Track your driver hire requests, pay securely by wallet or card, and review your driver after the trip." },
-      { property: "og:title", content: "My driver hires — RideShare" },
+      { property: "og:title", content: "My driver hires — Synchoo" },
       { property: "og:description", content: "Track your driver hire requests, pay securely and review your driver." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -107,7 +107,7 @@ function HiresPage() {
         amount: order.amount,
         currency: order.currency,
         orderId: order.orderId,
-        name: "RideShare",
+        name: "Synchoo",
         description: `Driver hire — ${b.drivers?.full_name ?? ""}`,
         prefill: { email: user.email ?? undefined, name: user.user_metadata?.full_name ?? undefined },
         onSuccess: async (resp) => {

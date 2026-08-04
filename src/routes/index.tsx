@@ -29,9 +29,9 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "RideShare — Rent cars, bikes & EVs near you" },
+      { title: "Synchoo — Rent cars, bikes & EVs near you" },
       { name: "description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Hourly, daily or weekly rentals with instant confirmation and secure payments." },
-      { property: "og:title", content: "RideShare — Rent cars, bikes & EVs near you" },
+      { property: "og:title", content: "Synchoo — Rent cars, bikes & EVs near you" },
       { property: "og:description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Hourly, daily or weekly rentals with instant confirmation and secure payments." },
       { property: "og:url", content: "https://stalightride.lovable.app/" },
     ],
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/")({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        name: "RideShare",
+        name: "Synchoo",
         url: "https://stalightride.lovable.app/",
         slogan: "Ride. Share. Explore.",
       }),
@@ -162,7 +162,7 @@ function Index() {
               { to: "/browse", icon: Car, title: "Rent a vehicle", body: "Cars, bikes, scooters and EVs by hour, day or week.", cta: "Browse rides" },
               { to: "/drivers", icon: UserRound, title: "Hire a driver", body: "Licence-verified drivers on hourly or daily rates.", cta: "Find drivers" },
               { to: "/wash", icon: Droplets, title: "Vehicle wash", body: "Pick a slot at your address — approved by our team.", cta: "Book a wash" },
-              { to: "/wallet", icon: Wallet, title: "RideShare wallet", body: "Top up once, pay instantly, get refunds back in seconds.", cta: "Open wallet" },
+              { to: "/wallet", icon: Wallet, title: "Synchoo wallet", body: "Top up once, pay instantly, get refunds back in seconds.", cta: "Open wallet" },
             ].map((s, i) => (
               <Link
                 key={s.title}
@@ -333,7 +333,7 @@ function Index() {
 
       <footer className="border-t border-border py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <span>© {new Date().getFullYear()} RideShare — Ride. Share. Explore.</span>
+          <span>© {new Date().getFullYear()} Synchoo — Ride. Share. Explore.</span>
           <div className="flex gap-4">
             <Link to="/browse" className="hover:text-foreground">Browse</Link>
             <Link to="/vendor" className="hover:text-foreground">Become a host</Link>

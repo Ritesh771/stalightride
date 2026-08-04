@@ -19,10 +19,10 @@ export const Route = createFileRoute("/_authenticated/wallet")({
   component: WalletPage,
   head: () => ({
     meta: [
-      { title: "Wallet — RideShare" },
-      { name: "description", content: "Add money to your RideShare wallet and pay for rides instantly." },
-      { property: "og:title", content: "Wallet — RideShare" },
-      { property: "og:description", content: "Add money to your RideShare wallet and pay for rides instantly." },
+      { title: "Wallet — Synchoo" },
+      { name: "description", content: "Add money to your Synchoo wallet and pay for rides instantly." },
+      { property: "og:title", content: "Wallet — Synchoo" },
+      { property: "og:description", content: "Add money to your Synchoo wallet and pay for rides instantly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -77,7 +77,7 @@ function WalletPage() {
         amount: order.amount,
         currency: order.currency,
         orderId: order.orderId,
-        name: "RideShare Wallet",
+        name: "Synchoo Wallet",
         description: "Add money to wallet",
         prefill: { email: user?.email ?? undefined, name: user?.user_metadata?.full_name ?? undefined },
         onSuccess: async (resp) => {

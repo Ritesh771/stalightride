@@ -18,13 +18,13 @@ export const Route = createFileRoute("/wash")({
   component: WashPage,
   head: () => ({
     meta: [
-      { title: "Vehicle wash & detailing at your doorstep — RideShare" },
+      { title: "Vehicle wash & detailing at your doorstep — Synchoo" },
       {
         name: "description",
         content:
           "Book a doorstep bike, scooter, car or EV wash slot in minutes. Our team confirms a washer partner for your slot, then you pay by wallet or card.",
       },
-      { property: "og:title", content: "Vehicle wash & detailing — RideShare" },
+      { property: "og:title", content: "Vehicle wash & detailing — Synchoo" },
       { property: "og:description", content: "Doorstep vehicle wash slots, confirmed by our team before you pay." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

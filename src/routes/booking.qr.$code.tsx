@@ -14,10 +14,10 @@ export const Route = createFileRoute("/booking/qr/$code")({
   component: QrPage,
   head: () => ({
     meta: [
-      { title: "Booking QR receipt — RideShare" },
-      { name: "description", content: "Scan a RideShare booking QR code to verify vehicle, renter, host, schedule, payment, and trip status details." },
-      { property: "og:title", content: "Booking QR receipt — RideShare" },
-      { property: "og:description", content: "Verified RideShare booking details for scanned vehicle QR receipts." },
+      { title: "Booking QR receipt — Synchoo" },
+      { name: "description", content: "Scan a Synchoo booking QR code to verify vehicle, renter, host, schedule, payment, and trip status details." },
+      { property: "og:title", content: "Booking QR receipt — Synchoo" },
+      { property: "og:description", content: "Verified Synchoo booking details for scanned vehicle QR receipts." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -133,7 +133,7 @@ function QrPage() {
               )}
 
               <p className="text-center text-xs text-muted-foreground">
-                Powered by RideShare · This receipt was generated from a scanned QR code.
+                Powered by Synchoo · This receipt was generated from a scanned QR code.
               </p>
             </CardContent>
           </Card>

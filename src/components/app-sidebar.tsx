@@ -81,8 +81,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <Link to="/" onClick={close} className="flex items-center gap-2 px-1 py-1.5">
-          <img src={logoAsset.url} alt="RideShare" className="h-8 w-8 shrink-0 rounded-md object-contain" />
-          {!collapsed && <span className="font-display text-base font-bold tracking-tight">RideShare</span>}
+          <img src={logoAsset.url} alt="Synchoo" className="h-8 w-8 shrink-0 rounded-md object-contain" />
+          {!collapsed && <span className="font-display text-base font-bold tracking-tight">Synchoo</span>}
         </Link>
       </SidebarHeader>
 

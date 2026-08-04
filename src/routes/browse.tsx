@@ -35,9 +35,9 @@ export const Route = createFileRoute("/browse")({
   component: Browse,
   head: () => ({
     meta: [
-      { title: "Browse verified rentals — RideShare" },
+      { title: "Browse verified rentals — Synchoo" },
       { name: "description", content: "Search verified cars, bikes, scooters, and EVs by city, category, fuel type, transmission, and daily price." },
-      { property: "og:title", content: "Browse verified rentals — RideShare" },
+      { property: "og:title", content: "Browse verified rentals — Synchoo" },
       { property: "og:description", content: "Find verified local vehicle rentals with exact pickup maps, ratings, and secure booking." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

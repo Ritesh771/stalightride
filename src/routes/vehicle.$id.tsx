@@ -21,9 +21,9 @@ export const Route = createFileRoute("/vehicle/$id")({
   component: VehiclePage,
   head: () => ({
     meta: [
-      { title: "Vehicle rental details — RideShare" },
-      { name: "description", content: "View verified vehicle details, pricing, pickup location, reviews, and secure booking options on RideShare." },
-      { property: "og:title", content: "Vehicle rental details — RideShare" },
+      { title: "Vehicle rental details — Synchoo" },
+      { name: "description", content: "View verified vehicle details, pricing, pickup location, reviews, and secure booking options on Synchoo." },
+      { property: "og:title", content: "Vehicle rental details — Synchoo" },
       { property: "og:description", content: "Check vehicle photos, verified host details, exact pickup map, and rental rates before booking." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

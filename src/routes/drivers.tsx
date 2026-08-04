@@ -15,9 +15,9 @@ export const Route = createFileRoute("/drivers")({
   component: DriversPage,
   head: () => ({
     meta: [
-      { title: "Hire a verified driver — RideShare" },
+      { title: "Hire a verified driver — Synchoo" },
       { name: "description", content: "Book background-verified professional drivers by the hour or by the day across India. Transparent rates, instant confirmation." },
-      { property: "og:title", content: "Hire a verified driver — RideShare" },
+      { property: "og:title", content: "Hire a verified driver — Synchoo" },
       { property: "og:description", content: "Book background-verified professional drivers by the hour or by the day across India." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

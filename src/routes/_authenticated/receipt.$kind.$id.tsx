@@ -15,10 +15,10 @@ export const Route = createFileRoute("/_authenticated/receipt/$kind/$id")({
   component: ReceiptPage,
   head: () => ({
     meta: [
-      { title: "Booking receipt & bill — RideShare" },
-      { name: "description", content: "Download or print a detailed RideShare bill with charges, taxes, payment method and refund details for any rental, driver hire or vehicle wash." },
-      { property: "og:title", content: "Booking receipt & bill — RideShare" },
-      { property: "og:description", content: "Itemised RideShare invoice for rentals, driver hires and vehicle wash bookings." },
+      { title: "Booking receipt & bill — Synchoo" },
+      { name: "description", content: "Download or print a detailed Synchoo bill with charges, taxes, payment method and refund details for any rental, driver hire or vehicle wash." },
+      { property: "og:title", content: "Booking receipt & bill — Synchoo" },
+      { property: "og:description", content: "Itemised Synchoo invoice for rentals, driver hires and vehicle wash bookings." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -106,7 +106,7 @@ function ReceiptPage() {
           <Card className="overflow-hidden bg-card print:border-0 print:shadow-none">
             <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border px-6 py-5">
               <div>
-                <p className="font-display text-2xl font-semibold tracking-tight">RideShare</p>
+                <p className="font-display text-2xl font-semibold tracking-tight">Synchoo</p>
                 <p className="text-xs text-muted-foreground">Tax invoice / payment receipt</p>
               </div>
               <div className="text-right text-xs text-muted-foreground">
@@ -177,7 +177,7 @@ function ReceiptPage() {
               </section>
 
               <p className="text-center text-xs text-muted-foreground">
-                Amounts are in INR and inclusive of applicable taxes. This is a computer-generated receipt from RideShare.
+                Amounts are in INR and inclusive of applicable taxes. This is a computer-generated receipt from Synchoo.
               </p>
             </CardContent>
           </Card>
