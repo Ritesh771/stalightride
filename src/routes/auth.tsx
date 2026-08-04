@@ -9,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import logoAsset from "@/assets/rideshare-logo.asset.json";
+import synchooMark from "@/assets/synchoo-mark.png";
+import { landingPathForUser } from "@/lib/post-login";
 
 const search = z.object({ mode: z.enum(["signin", "signup"]).optional() });
 
@@ -30,8 +31,8 @@ function AuthPage() {
   useEffect(() => { setTab(mode); }, [mode]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/browse" });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (data.session) navigate({ to: (await landingPathForUser(data.session.user.id)) as any });
     });
   }, [navigate]);
 
@@ -50,7 +51,8 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-      navigate({ to: "/browse" });
+      const { data: sess } = await supabase.auth.getSession();
+      navigate({ to: (sess.session ? await landingPathForUser(sess.session.user.id) : "/browse") as any });
     } catch (err: any) {
       toast.error(err.message ?? "Authentication failed");
     } finally { setLoading(false); }
@@ -61,7 +63,8 @@ function AuthPage() {
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (res.error) { toast.error(res.error.message ?? "Google sign-in failed"); setLoading(false); return; }
     if (res.redirected) return;
-    navigate({ to: "/browse" });
+    const { data: sess } = await supabase.auth.getSession();
+    navigate({ to: (sess.session ? await landingPathForUser(sess.session.user.id) : "/browse") as any });
   };
 
   return (
@@ -80,7 +83,7 @@ function AuthPage() {
         <Card className="relative w-full max-w-md animate-fade-in shadow-card">
           <CardContent className="p-8">
             <div className="mb-6 flex items-center gap-3">
-              <img src={logoAsset.url} alt="Synchoo" className="h-10 w-10 rounded-md object-contain" />
+              <img src={synchooMark} alt="Synchoo" className="h-10 w-10 rounded-md object-contain" />
               <div>
                 <h1 className="font-display text-xl font-semibold">
                   {tab === "signup" ? "Create your account" : "Welcome back"}
