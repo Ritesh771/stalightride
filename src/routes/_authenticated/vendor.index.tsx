@@ -12,8 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
+import { HostAnalytics } from "@/components/host-analytics";
+import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { toast } from "sonner";
-import { Plus, Car, DollarSign, Calendar, ShieldCheck } from "lucide-react";
+import { Plus, Car, DollarSign, Calendar, ShieldCheck, ScanLine } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/vendor/")({ component: VendorDashboard });
 
@@ -61,6 +64,12 @@ function VendorDashboard() {
     .filter((b) => b.payment_status === "paid")
     .reduce((s, b) => s + Number(b.total_price), 0);
 
+  const rated = (vehicles ?? []).filter((v) => Number(v.review_count) > 0);
+  const avgRating = rated.length
+    ? rated.reduce((s, v) => s + Number(v.avg_rating), 0) / rated.length
+    : undefined;
+
+
   if (!vendor) {
     return (
       <div className="min-h-screen">
@@ -95,7 +104,10 @@ function VendorDashboard() {
             <h1 className="font-display text-3xl font-semibold">Host dashboard</h1>
             <p className="text-sm text-muted-foreground">Welcome, {vendor.business_name}</p>
           </div>
-          <Button asChild className="shadow-glow"><Link to="/vendor/vehicles/new"><Plus className="mr-1.5 h-4 w-4" />Add vehicle</Link></Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="outline" className="rounded-xl"><Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan QR handover</Link></Button>
+            <Button asChild className="rounded-xl shadow-glow"><Link to="/vendor/vehicles/new"><Plus className="mr-1.5 h-4 w-4" />Add vehicle</Link></Button>
+          </div>
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -105,6 +117,19 @@ function VendorDashboard() {
         </div>
 
         <KycCard vendor={vendor} userId={user.id} onDone={load} />
+
+        <div className="mt-8 grid gap-4 xl:grid-cols-2">
+          <HostAnalytics bookings={bookings ?? []} avgRating={avgRating} />
+          {vehicles && vehicles.length > 0 ? (
+            <AvailabilityCalendar vehicles={vehicles.map((v) => ({ id: v.id, title: v.title }))} />
+          ) : (
+            <Card className="rounded-2xl"><CardContent className="p-6 text-sm text-muted-foreground">
+              Add a vehicle to manage its availability calendar.
+            </CardContent></Card>
+          )}
+        </div>
+
+
 
 
         <section className="mt-8">

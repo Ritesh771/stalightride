@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -35,7 +35,9 @@ const accountItems: Item[] = [
 const earnItems: Item[] = [
   { to: "/vendor", label: "Host dashboard", icon: LayoutDashboard },
   { to: "/driver-dashboard", label: "Driver dashboard", icon: Steering },
+  { to: "/scan", label: "Scan QR handover", icon: ScanLine },
 ];
+
 
 export function AppSidebar() {
   const { user } = useSession();

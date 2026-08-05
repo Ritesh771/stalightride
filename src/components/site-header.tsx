@@ -14,6 +14,8 @@ import synchooMark from "@/assets/synchoo-mark.png";
 import { InstallPwaButton } from "@/components/install-pwa-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CitySelector } from "@/components/city-selector";
+import { NotificationBell } from "@/components/notification-bell";
+
 
 export function SiteHeader() {
   const { user } = useSession();
@@ -41,8 +43,10 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <CitySelector />
+          <NotificationBell />
           <ThemeToggle className="hidden sm:inline-flex" />
           <InstallPwaButton className="hidden lg:inline-flex" />
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
