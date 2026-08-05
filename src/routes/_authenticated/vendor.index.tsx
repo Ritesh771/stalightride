@@ -64,6 +64,12 @@ function VendorDashboard() {
     .filter((b) => b.payment_status === "paid")
     .reduce((s, b) => s + Number(b.total_price), 0);
 
+  const rated = (vehicles ?? []).filter((v) => Number(v.review_count) > 0);
+  const avgRating = rated.length
+    ? rated.reduce((s, v) => s + Number(v.avg_rating), 0) / rated.length
+    : undefined;
+
+
   if (!vendor) {
     return (
       <div className="min-h-screen">
