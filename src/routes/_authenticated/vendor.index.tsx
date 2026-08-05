@@ -12,8 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
+import { HostAnalytics } from "@/components/host-analytics";
+import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { toast } from "sonner";
-import { Plus, Car, DollarSign, Calendar, ShieldCheck } from "lucide-react";
+import { Plus, Car, DollarSign, Calendar, ShieldCheck, ScanLine } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/vendor/")({ component: VendorDashboard });
 
