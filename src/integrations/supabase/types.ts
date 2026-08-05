@@ -1420,6 +1420,19 @@ export type Database = {
         }
         Returns: boolean
       }
+      notify_admins: {
+        Args: { _body: string; _link?: string; _title: string }
+        Returns: undefined
+      }
+      notify_user: {
+        Args: {
+          _body: string
+          _link?: string
+          _title: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       report_review: {
         Args: { _reason: string; _review_id: string }
         Returns: undefined

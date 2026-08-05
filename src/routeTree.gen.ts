@@ -20,6 +20,7 @@ import { Route as DriverIdRouteImport } from './routes/driver.$id'
 import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
 import { Route as AuthenticatedWashesRouteImport } from './routes/_authenticated/washes'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
+import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
 import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
@@ -85,6 +86,11 @@ const AuthenticatedWashesRoute = AuthenticatedWashesRouteImport.update({
 const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
   id: '/wallet',
   path: '/wallet',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/scan': typeof AuthenticatedScanRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/hires': typeof AuthenticatedHiresRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/scan': typeof AuthenticatedScanRoute
   '/wallet': typeof AuthenticatedWalletRoute
   '/washes': typeof AuthenticatedWashesRoute
   '/wishlist': typeof AuthenticatedWishlistRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
   '/_authenticated/hires': typeof AuthenticatedHiresRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/scan': typeof AuthenticatedScanRoute
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/_authenticated/washes': typeof AuthenticatedWashesRoute
   '/_authenticated/wishlist': typeof AuthenticatedWishlistRoute
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '/driver-dashboard'
     | '/hires'
     | '/profile'
+    | '/scan'
     | '/wallet'
     | '/washes'
     | '/wishlist'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/driver-dashboard'
     | '/hires'
     | '/profile'
+    | '/scan'
     | '/wallet'
     | '/washes'
     | '/wishlist'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/_authenticated/driver-dashboard'
     | '/_authenticated/hires'
     | '/_authenticated/profile'
+    | '/_authenticated/scan'
     | '/_authenticated/wallet'
     | '/_authenticated/washes'
     | '/_authenticated/wishlist'
@@ -394,6 +406,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet'
       preLoaderRoute: typeof AuthenticatedWalletRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/scan': {
+      id: '/_authenticated/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof AuthenticatedScanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -504,6 +523,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDriverDashboardRoute: typeof AuthenticatedDriverDashboardRoute
   AuthenticatedHiresRoute: typeof AuthenticatedHiresRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedScanRoute: typeof AuthenticatedScanRoute
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWashesRoute: typeof AuthenticatedWashesRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
@@ -519,6 +539,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDriverDashboardRoute: AuthenticatedDriverDashboardRoute,
   AuthenticatedHiresRoute: AuthenticatedHiresRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedScanRoute: AuthenticatedScanRoute,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWashesRoute: AuthenticatedWashesRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
