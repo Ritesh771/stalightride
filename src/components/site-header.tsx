@@ -14,6 +14,8 @@ import synchooMark from "@/assets/synchoo-mark.png";
 import { InstallPwaButton } from "@/components/install-pwa-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CitySelector } from "@/components/city-selector";
+import { NotificationBell } from "@/components/notification-bell";
+
 
 export function SiteHeader() {
   const { user } = useSession();
