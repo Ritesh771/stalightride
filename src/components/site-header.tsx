@@ -41,8 +41,10 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-1.5 sm:gap-2">
           <CitySelector />
+          <NotificationBell />
           <ThemeToggle className="hidden sm:inline-flex" />
           <InstallPwaButton className="hidden lg:inline-flex" />
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
