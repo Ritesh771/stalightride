@@ -96,17 +96,20 @@ function Browse() {
       setItems(null);
 
       // Vehicles already booked or blocked for the chosen window are hidden
-      // from everyone else — no duplicate bookings.
+      // from everyone else — no duplicate bookings. With no dates picked we
+      // still hide anything unavailable today, so live trips never show up.
+      const today = new Date().toISOString().slice(0, 10);
+      const winStart = params.from ?? today;
+      const winEnd = params.to ?? params.from ?? today;
       let unavailable: string[] = [];
-      if (params.from && params.to) {
-        const { data: booked } = await supabase.rpc("booked_vehicle_ids", {
-          _start: params.from,
-          _end: params.to,
-        });
-        unavailable = ((booked as any) ?? []).map((r: any) =>
-          typeof r === "string" ? r : r.booked_vehicle_ids ?? r.vehicle_id,
-        ).filter(Boolean);
-      }
+      const { data: booked } = await supabase.rpc("booked_vehicle_ids", {
+        _start: winStart,
+        _end: winEnd,
+      });
+      unavailable = ((booked as any) ?? [])
+        .map((r: any) => (typeof r === "string" ? r : r.booked_vehicle_ids ?? r.vehicle_id))
+        .filter(Boolean);
+
 
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
