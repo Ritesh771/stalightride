@@ -24,6 +24,7 @@ const exploreItems: Item[] = [
 ];
 
 const accountItems: Item[] = [
+  { to: "/account", label: "Account hub", icon: UserIcon },
   { to: "/bookings", label: "My trips", icon: CalendarDays },
   { to: "/hires", label: "My drivers", icon: UserRound },
   { to: "/washes", label: "My washes", icon: Droplets },
