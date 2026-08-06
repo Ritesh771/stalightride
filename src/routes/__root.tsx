@@ -88,7 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
-  const themeScript = `try{var t=localStorage.getItem('rs-theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(t==='dark')document.documentElement.classList.add('dark')}catch(e){}`;
+  const themeScript = `try{var t=localStorage.getItem('rs-theme')||'dark';if(t==='dark')document.documentElement.classList.add('dark')}catch(e){document.documentElement.classList.add('dark')}`;
   return (
     <html lang="en">
       <head><HeadContent /></head>
@@ -118,12 +118,14 @@ function RootComponent() {
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AppSidebar />
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 pb-24 md:pb-0">
             <Outlet />
           </div>
         </div>
+        <MobileBottomNav />
       </SidebarProvider>
       <Toaster />
     </QueryClientProvider>
   );
 }
+
