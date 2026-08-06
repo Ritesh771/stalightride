@@ -10,11 +10,10 @@ function apply(theme: "light" | "dark") {
 }
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
-    const saved = (localStorage.getItem(STORAGE_KEY) as "light" | "dark" | null) ??
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const saved = (localStorage.getItem(STORAGE_KEY) as "light" | "dark" | null) ?? "dark";
     setTheme(saved);
     apply(saved);
   }, []);
