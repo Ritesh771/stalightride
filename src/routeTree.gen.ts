@@ -26,6 +26,7 @@ import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
@@ -119,6 +120,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVendorIndexRoute =
   AuthenticatedVendorIndexRouteImport.update({
     id: '/vendor/',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/wash': typeof WashRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/wash': typeof WashRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -219,6 +227,7 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/wash': typeof WashRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/driver-dashboard': typeof AuthenticatedDriverDashboardRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/wash'
+    | '/account'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/wash'
+    | '/account'
     | '/admin'
     | '/bookings'
     | '/driver-dashboard'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/wash'
+    | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/_authenticated/bookings'
     | '/_authenticated/driver-dashboard'
@@ -450,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/vendor/': {
       id: '/_authenticated/vendor/'
       path: '/vendor'
@@ -518,6 +537,7 @@ const AuthenticatedBookingsRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
   AuthenticatedDriverDashboardRoute: typeof AuthenticatedDriverDashboardRoute
@@ -534,6 +554,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
   AuthenticatedDriverDashboardRoute: AuthenticatedDriverDashboardRoute,
