@@ -63,19 +63,19 @@ const TESTIMONIALS = [
     quote: "Booked an EV in Bengaluru at 11pm, scanned the QR at pickup and was on the road in four minutes. Cleanest rental flow I've used.",
     name: "Aarav Menon",
     role: "Weekend traveller",
-    accent: "brand",
+    tint: "text-brand",
   },
   {
     quote: "As a host, the earnings panel and availability calendar are exactly what I needed. Payouts land without me chasing anyone.",
     name: "Divya Rao",
     role: "Host · 3 vehicles",
-    accent: "cyan",
+    tint: "text-cyan",
   },
   {
     quote: "The fuel and damage inspection with photos saved a dispute for me. Support closed it in a day with the evidence already there.",
     name: "Karthik S.",
     role: "Frequent renter",
-    accent: "violet",
+    tint: "text-violet",
   },
 ];
 
@@ -315,7 +315,7 @@ function Index() {
           <div className="grid gap-4 md:grid-cols-3">
             {TESTIMONIALS.map((t, i) => (
               <figure key={t.name} className="glass lift flex flex-col p-7" style={{ animation: `sy-rise 620ms ${i * 100}ms both` }}>
-                <Quote className={`h-6 w-6 text-${t.accent}`} aria-hidden />
+                <Quote className={`h-6 w-6 ${t.tint}`} aria-hidden />
                 <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground/90">“{t.quote}”</blockquote>
                 <figcaption className="mt-5 border-t border-border pt-4">
                   <div className="text-sm font-semibold">{t.name}</div>
