@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatINR } from "@/lib/format";
+import { currency } from "@/lib/format";
 import {
   ShieldCheck, ShieldAlert, Clock, Wallet as WalletIcon, CalendarDays, Heart,
   UserRound, Droplets, LayoutDashboard, CarFront as Steering, ScanLine, Settings,
@@ -136,7 +136,7 @@ function Account() {
               <div className="min-w-0">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">Wallet balance</div>
                 {stats ? (
-                  <div className="font-display text-3xl font-bold">{formatINR(stats.balance)}</div>
+                  <div className="font-display text-3xl font-bold">{currency(stats.balance)}</div>
                 ) : (
                   <Skeleton className="mt-1 h-8 w-28" />
                 )}
