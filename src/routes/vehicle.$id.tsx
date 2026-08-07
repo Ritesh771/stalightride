@@ -14,7 +14,10 @@ import { calculateRentalPrice, currency, rentalDurationHours } from "@/lib/forma
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { VehicleMap } from "@/components/vehicle-map";
 import { toast } from "sonner";
-import { Star, MapPin, Users, Fuel, Cog, Gauge, Heart, ShieldCheck } from "lucide-react";
+import {
+  Star, MapPin, Users, Fuel, Cog, Gauge, Heart, ShieldCheck,
+  Clock, CalendarDays, CircleAlert, Loader2, ArrowRight, QrCode, Navigation, ImageOff, MessageSquareQuote,
+} from "lucide-react";
 import { useSession } from "@/hooks/use-session";
 
 export const Route = createFileRoute("/vehicle/$id")({
