@@ -97,12 +97,7 @@ function Index() {
         <div aria-hidden className="grid-lines pointer-events-none absolute inset-0 opacity-60" />
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-[1.05fr_1fr] md:items-center md:py-28">
           <div className="rise flex flex-col justify-center">
-            <span className="glass inline-flex w-fit items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium text-foreground/80">
-              <Zap className="h-3.5 w-3.5 text-brand" aria-hidden />
-              Instant booking · Verified hosts · Live tracking
-            </span>
-
-            <h1 className="mt-6 font-display text-[2.6rem] font-bold leading-[1.02] tracking-tight text-foreground sm:text-6xl md:text-[4.2rem]">
+            <h1 className="font-display text-[2.6rem] font-bold leading-[1.02] tracking-tight text-foreground sm:text-6xl md:text-[4.2rem]">
               Move like the
               <br />
               <span className="text-gradient">future arrived.</span>
