@@ -283,64 +283,139 @@ function VehiclePage() {
           </div>
 
           <aside className="lg:sticky lg:top-20 lg:self-start">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-semibold">{currency(v.price_daily)}</span>
-                  <span className="text-sm text-muted-foreground">/ day</span>
-                </div>
-                {v.price_hourly && <div className="text-xs text-muted-foreground">{currency(v.price_hourly)} / hour</div>}
-                {v.price_weekly && <div className="text-xs text-muted-foreground">{currency(v.price_weekly)} / week</div>}
-
-                <div className="mt-4 grid grid-cols-2 gap-3">
+            <Card className="glass-strong overflow-hidden rounded-3xl border-border/70 p-0 shadow-float">
+              <div className="relative overflow-hidden border-b border-border/60 px-6 py-5">
+                <div aria-hidden className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full bg-brand/20 blur-3xl" />
+                <div className="relative flex items-end justify-between gap-3">
                   <div>
-                    <Label>Pickup date</Label>
-                    <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} min={new Date().toISOString().slice(0, 10)} />
-                  </div>
-                  <div>
-                    <Label>Return date</Label>
-                    <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} min={start || new Date().toISOString().slice(0, 10)} />
-                  </div>
-                  <div>
-                    <Label>Pickup time</Label>
-                    <Input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label>Drop-off time</Label>
-                    <Input type="time" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} />
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <Label>Notes (optional)</Label>
-                  <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything the host should know?" />
-                </div>
-
-                {rentalHours > 0 && (
-                  <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
-                    {priceBreakdown.lines.map((line) => (
-                      <Row key={line.label} label={line.label} value={currency(line.value)} />
-                    ))}
-                    <Row label="Security deposit" value={currency(v.security_deposit)} />
-                    <Row label="Duration" value={`${rentalHours.toFixed(rentalHours % 1 === 0 ? 0 : 1)} hours`} />
-                    <div className="mt-2 flex justify-between border-t border-border pt-2 text-base font-semibold">
-                      <span>Total</span><span>{currency(total)}</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="font-display text-3xl font-bold leading-none">{currency(v.price_daily)}</span>
+                      <span className="text-sm text-muted-foreground">/ day</span>
                     </div>
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
+                      {v.price_hourly && <span>{currency(v.price_hourly)} / hour</span>}
+                      {v.price_weekly && <span>{currency(v.price_weekly)} / week</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 rounded-full bg-muted/70 px-2.5 py-1 text-xs font-semibold">
+                    <Star className="h-3.5 w-3.5 fill-brand text-brand" />
+                    {Number(v.avg_rating).toFixed(1)}
+                  </div>
+                </div>
+              </div>
+
+              <CardContent className="space-y-5 p-6">
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <span className="grid h-4 w-4 place-items-center rounded-full bg-brand text-[9px] font-bold text-brand-foreground">1</span>
+                    Trip schedule
+                  </div>
+                  <div className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/70 bg-card/60">
+                    <div className="grid grid-cols-2 divide-x divide-border/70">
+                      <SlotField icon={CalendarDays} label="Pickup date">
+                        <Input type="date" value={start} onChange={(e) => setStart(e.target.value)} min={new Date().toISOString().slice(0, 10)} className="h-8 border-0 bg-transparent px-0 text-sm font-medium shadow-none focus-visible:ring-0" />
+                      </SlotField>
+                      <SlotField icon={CalendarDays} label="Return date">
+                        <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} min={start || new Date().toISOString().slice(0, 10)} className="h-8 border-0 bg-transparent px-0 text-sm font-medium shadow-none focus-visible:ring-0" />
+                      </SlotField>
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-border/70">
+                      <SlotField icon={Clock} label="Pickup time">
+                        <Input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} className="h-8 border-0 bg-transparent px-0 text-sm font-medium shadow-none focus-visible:ring-0" />
+                      </SlotField>
+                      <SlotField icon={Clock} label="Drop-off time">
+                        <Input type="time" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} className="h-8 border-0 bg-transparent px-0 text-sm font-medium shadow-none focus-visible:ring-0" />
+                      </SlotField>
+                    </div>
+                  </div>
+                  {start && end && rentalHours <= 0 && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive animate-fade-in">
+                      <CircleAlert className="h-3.5 w-3.5" />Drop-off must be after pickup.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <span className="grid h-4 w-4 place-items-center rounded-full bg-muted text-[9px] font-bold text-foreground">2</span>
+                    Note for the host
+                  </div>
+                  <Textarea
+                    rows={2}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Pickup landmark, delivery request, anything else…"
+                    className="resize-none rounded-2xl bg-card/60 text-sm"
+                  />
+                </div>
+
+                {rentalHours > 0 ? (
+                  <div className="animate-fade-in rounded-2xl border border-border/70 bg-muted/30 p-4 text-sm">
+                    <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                      <span>Fare breakdown</span>
+                      <span className="rounded-full bg-card px-2 py-0.5 text-[10px] normal-case tracking-normal text-foreground">
+                        {rentalHours.toFixed(rentalHours % 1 === 0 ? 0 : 1)} h
+                      </span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {priceBreakdown.lines.map((line, i) => (
+                        <div key={line.label} className="animate-fade-in" style={{ animationDelay: `${i * 45}ms` }}>
+                          <Row label={line.label} value={currency(line.value)} />
+                        </div>
+                      ))}
+                      <Row label="Refundable deposit" value={currency(v.security_deposit)} />
+                    </div>
+                    <div className="mt-3 flex items-baseline justify-between border-t border-border/70 pt-3">
+                      <span className="text-sm font-medium">Total payable</span>
+                      <span className="font-display text-xl font-bold">{currency(total)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-4 text-center">
+                    <CalendarDays className="mx-auto h-5 w-5 text-brand" />
+                    <p className="mt-2 text-sm font-medium">Pick your dates to see the fare</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">Hourly, daily and weekly rates apply automatically.</p>
                   </div>
                 )}
 
                 {user && !dlOk && (
-                  <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
-                    Verify your driving licence in your profile before booking. <Link to="/profile" className="underline font-medium">Go to profile</Link>
+                  <div className="flex items-start gap-2 rounded-2xl border border-ember/40 bg-ember/10 p-3 text-xs">
+                    <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-ember" />
+                    <span>
+                      Your driving licence needs approval before booking.{" "}
+                      <Link to="/profile" className="font-semibold underline">Verify now</Link>
+                    </span>
                   </div>
                 )}
-                <Button onClick={book} disabled={booking || !start || !end || (!!user && !dlOk)} className="mt-4 w-full">
-                  {booking ? "Requesting…" : user ? (dlOk ? "Request to book" : "Verify licence to book") : "Sign in to book"}
+
+                <Button
+                  onClick={book}
+                  disabled={booking || !start || !end || (!!user && !dlOk)}
+                  className="btn-gradient group h-12 w-full rounded-2xl text-base"
+                >
+                  {booking ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Sending request…</>
+                  ) : user ? (
+                    dlOk
+                      ? <>Request to book<ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /></>
+                      : "Verify licence to book"
+                  ) : (
+                    <>Sign in to book<ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /></>
+                  )}
                 </Button>
-                <p className="mt-2 text-center text-xs text-muted-foreground">You won't be charged until the host accepts.</p>
+                <p className="text-center text-xs text-muted-foreground">
+                  No charge until the host accepts your request.
+                </p>
+
+                <div className="grid grid-cols-3 gap-2 border-t border-border/60 pt-4 text-center">
+                  <Assurance icon={ShieldCheck} label="Verified host" />
+                  <Assurance icon={QrCode} label="QR handover" />
+                  <Assurance icon={Navigation} label="Live tracking" />
+                </div>
               </CardContent>
             </Card>
           </aside>
+
         </div>
       </div>
     </div>
