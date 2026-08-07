@@ -425,14 +425,37 @@ function VehiclePage() {
   );
 }
 
-function Spec({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
+function SlotField({ icon: Icon, label, children }: { icon: any; label: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5" />{label}</div>
-      <div className="mt-1 text-sm font-medium capitalize">{String(value)}</div>
+    <div className="px-3 py-2.5 transition-colors focus-within:bg-brand/5">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <Icon className="h-3 w-3 text-brand" />{label}
+      </div>
+      <div className="mt-0.5">{children}</div>
     </div>
   );
 }
+
+function Assurance({ icon: Icon, label }: { icon: any; label: string }) {
+  return (
+    <div className="group flex flex-col items-center gap-1.5">
+      <span className="grid h-9 w-9 place-items-center rounded-xl bg-muted/70 text-brand transition-transform duration-300 group-hover:-translate-y-0.5">
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="text-[10px] font-medium leading-tight text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
+function Spec({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
+  return (
+    <div className="lift rounded-2xl border border-border/70 bg-card/70 p-3.5">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted-foreground"><Icon className="h-3.5 w-3.5 text-brand" />{label}</div>
+      <div className="mt-1 text-sm font-semibold capitalize">{String(value)}</div>
+    </div>
+  );
+}
+
 function Row({ label, value }: { label: string; value: string }) {
   return <div className="flex justify-between"><span className="text-muted-foreground">{label}</span><span>{value}</span></div>;
 }
