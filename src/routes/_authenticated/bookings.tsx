@@ -13,7 +13,10 @@ import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { useSession } from "@/hooks/use-session";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
-import { MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText } from "lucide-react";
+import {
+  MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText,
+  CircleSlash, CarFront, ArrowRight, CheckCircle2, CalendarDays, Clock,
+} from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
