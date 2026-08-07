@@ -100,28 +100,74 @@ function Bookings() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-3xl font-semibold">Bookings</h1>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="rise">
+            <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Your trips</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Track requests, pay securely and manage handovers.</p>
+          </div>
           <Link
             to="/wallet"
-            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+            className="glass flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-transform hover:-translate-y-0.5"
           >
-            <WalletIcon className="h-4 w-4" />
-            Wallet: {walletBalance === null ? "…" : currency(walletBalance)}
+            <WalletIcon className="h-4 w-4 text-brand" />
+            {walletBalance === null ? "…" : currency(walletBalance)}
           </Link>
         </div>
-        <Tabs defaultValue="customer" className="mt-6">
-          <TabsList>
-            <TabsTrigger value="customer">As renter</TabsTrigger>
-            <TabsTrigger value="vendor">As host</TabsTrigger>
+        <Tabs defaultValue="customer" className="mt-7">
+          <TabsList className="rounded-full">
+            <TabsTrigger value="customer" className="rounded-full">As renter</TabsTrigger>
+            <TabsTrigger value="vendor" className="rounded-full">As host</TabsTrigger>
           </TabsList>
-          <TabsContent value="customer" className="mt-4">
+          <TabsContent value="customer" className="mt-5">
             <List items={asCustomer} role="customer" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
-          <TabsContent value="vendor" className="mt-4">
+          <TabsContent value="vendor" className="mt-5">
             <List items={asVendor} role="vendor" onAction={setStatus} onPay={payNow} onWalletPay={payWithWallet} walletBalance={walletBalance} paying={paying} />
           </TabsContent>
         </Tabs>
+      </div>
+    </div>
+  );
+}
+
+const STEPS = ["Requested", "Accepted", "Paid", "On trip", "Completed"] as const;
+
+function stepIndex(b: any) {
+  if (b.status === "completed") return 4;
+  if (b.pickup_checked_at) return 3;
+  if (b.payment_status === "paid") return 2;
+  if (b.status === "confirmed") return 1;
+  return 0;
+}
+
+function Progress({ b }: { b: any }) {
+  const closed = b.status === "cancelled" || b.status === "rejected";
+  if (closed) {
+    return (
+      <div className="mt-3 flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+        <CircleSlash className="h-3.5 w-3.5" />
+        {b.status === "rejected" ? "The host declined this request." : "This booking was cancelled."}
+      </div>
+    );
+  }
+  const active = stepIndex(b);
+  return (
+    <div className="mt-4">
+      <div className="flex items-center gap-1.5">
+        {STEPS.map((s, i) => (
+          <div key={s} className="flex flex-1 items-center gap-1.5">
+            <span
+              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
+                i <= active ? "bg-brand" : "bg-muted"
+              }`}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-1.5 flex justify-between text-[10px] font-medium uppercase tracking-wide">
+        {STEPS.map((s, i) => (
+          <span key={s} className={i <= active ? "text-foreground" : "text-muted-foreground/60"}>{s}</span>
+        ))}
       </div>
     </div>
   );
@@ -133,118 +179,174 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
   );
   const urls = useSignedUrls("vehicle-images", paths);
 
+  if (!items) return <div className="grid gap-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-44 rounded-3xl" />)}</div>;
 
-  if (!items) return <div className="grid gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}</div>;
-  if (items.length === 0) return <div className="rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">No bookings yet.</div>;
+  if (items.length === 0)
+    return (
+      <div className="animate-fade-in rounded-3xl border border-dashed border-border/70 bg-muted/20 p-12 text-center">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand/10 text-brand">
+          {role === "customer" ? <CarFront className="h-5 w-5" /> : <ClipboardCheck className="h-5 w-5" />}
+        </span>
+        <p className="mt-4 font-display text-lg font-semibold">
+          {role === "customer" ? "No trips yet" : "No booking requests yet"}
+        </p>
+        <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+          {role === "customer"
+            ? "Find a verified ride near you — you're only charged once the host accepts."
+            : "Once your listings are live, incoming requests will appear here for approval."}
+        </p>
+        <Button asChild className="btn-gradient mt-5 rounded-full px-6">
+          <Link to={role === "customer" ? "/browse" : "/vendor"}>
+            {role === "customer" ? "Browse rides" : "Open host dashboard"}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+    );
+
   return (
-    <ul className="grid gap-3">
-      {items.map((b) => {
+    <ul className="grid gap-4">
+      {items.map((b, idx) => {
         const img = b.vehicles?.vehicle_images?.slice().sort((a: any, x: any) => a.sort_order - x.sort_order)[0];
         const url = img ? urls[img.url] : null;
         const canPay = role === "customer" && b.status === "confirmed" && b.payment_status !== "paid";
+        const shortBalance = (walletBalance ?? 0) < Number(b.total_price);
         return (
-          <Card key={b.id}>
-            <CardContent className="flex flex-col gap-4 p-4 sm:flex-row">
-              <div className="h-32 w-full overflow-hidden rounded-lg bg-muted sm:w-48">
-                {url && <img src={url} alt="" className="h-full w-full object-cover" />}
-              </div>
-              <div className="flex-1">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <Link to="/vehicle/$id" params={{ id: b.vehicles?.id }} className="font-medium hover:underline">{b.vehicles?.title}</Link>
-                    <div className="text-xs text-muted-foreground">{b.vehicles?.city}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge s={b.status} />
-                    {b.payment_status === "paid" && <Badge className="bg-emerald-600 text-white">Paid</Badge>}
-                  </div>
-                </div>
-                <div className="mt-2 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-                  <div>📅 {b.start_date} → {b.end_date}</div>
-                  <div>🕒 {String(b.pickup_time ?? "").slice(0, 5)} → {String(b.dropoff_time ?? "").slice(0, 5)}</div>
-                </div>
-                <div className="mt-1 text-sm">Total: <span className="font-semibold">{currency(b.total_price)}</span></div>
-
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {role === "vendor" && b.status === "pending" && (
-                    <>
-                      <Button size="sm" onClick={() => onAction(b.id, "confirmed")}>Accept</Button>
-                      <Button size="sm" variant="outline" onClick={() => onAction(b.id, "rejected")}>Reject</Button>
-                    </>
+          <li key={b.id} className="animate-fade-in" style={{ animationDelay: `${Math.min(idx, 6) * 60}ms` }}>
+            <Card className="lift overflow-hidden rounded-3xl border-border/70 p-0 shadow-card">
+              <CardContent className="flex flex-col gap-5 p-4 sm:flex-row sm:p-5">
+                <div className="relative h-36 w-full shrink-0 overflow-hidden rounded-2xl bg-muted sm:h-auto sm:w-52">
+                  {url ? (
+                    <img src={url} alt={b.vehicles?.title ?? ""} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">No photo</div>
                   )}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <Link to="/vehicle/$id" params={{ id: b.vehicles?.id }} className="font-display text-lg font-semibold hover:text-brand">
+                        {b.vehicles?.title}
+                      </Link>
+                      <div className="text-xs text-muted-foreground">{b.vehicles?.city}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge s={b.status} />
+                      {b.payment_status === "paid" && (
+                        <Badge className="gap-1 border-transparent bg-emerald/15 text-emerald"><CheckCircle2 className="h-3 w-3" />Paid</Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1">
+                      <CalendarDays className="h-3.5 w-3.5 text-brand" />{b.start_date} → {b.end_date}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1">
+                      <Clock className="h-3.5 w-3.5 text-brand" />
+                      {String(b.pickup_time ?? "").slice(0, 5)} → {String(b.dropoff_time ?? "").slice(0, 5)}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1 font-semibold">
+                      {currency(b.total_price)}
+                    </span>
+                  </div>
+
+                  <Progress b={b} />
+
                   {canPay && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onWalletPay(b)}
-                        disabled={paying === b.id || (walletBalance ?? 0) < Number(b.total_price)}
-                        title={(walletBalance ?? 0) < Number(b.total_price) ? "Not enough wallet balance" : undefined}
-                      >
-                        <WalletIcon className="mr-1.5 h-4 w-4" />
-                        {paying === b.id ? "Paying…" : "Pay with wallet"}
-                      </Button>
-                      <Button size="sm" onClick={() => onPay(b)} disabled={paying === b.id}>
-                        <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
-                      </Button>
-                    </>
-                  )}
-                  {canPay && (walletBalance ?? 0) < Number(b.total_price) && (
-                    <Link to="/wallet" className="text-xs text-muted-foreground underline">Add money</Link>
+                    <div className="mt-4 rounded-2xl border border-brand/30 bg-brand/5 p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="text-xs">
+                          <div className="font-semibold">Host accepted — confirm with payment</div>
+                          <div className="text-muted-foreground">
+                            {shortBalance ? "Wallet balance is short for this trip." : `Wallet covers this trip · ${currency(walletBalance ?? 0)} available`}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-full"
+                            onClick={() => onWalletPay(b)}
+                            disabled={paying === b.id || shortBalance}
+                            title={shortBalance ? "Not enough wallet balance" : undefined}
+                          >
+                            <WalletIcon className="mr-1.5 h-4 w-4" />
+                            {paying === b.id ? "Paying…" : "Pay with wallet"}
+                          </Button>
+                          <Button size="sm" className="btn-gradient rounded-full" onClick={() => onPay(b)} disabled={paying === b.id}>
+                            <CreditCard className="mr-1.5 h-4 w-4" />{paying === b.id ? "Opening…" : "Pay now"}
+                          </Button>
+                          {shortBalance && (
+                            <Link to="/wallet" className="text-xs font-medium underline">Add money</Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
 
-                  {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
-                    <Button size="sm" variant="outline" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
-                  )}
-                  {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
-                    <Button size="sm" variant="outline" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
-                  )}
-                  {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
-                    <Button asChild size="sm" variant="ghost">
-                      <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
-                    </Button>
-                  )}
-                  {b.status === "confirmed" && b.payment_status === "paid" && (
-                    <Button asChild size="sm" variant="outline">
-                      <Link to="/bookings/$id/trip" params={{ id: b.id }}>
-                        <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                        {b.return_checked_at ? "Trip summary" : b.pickup_checked_at ? "End trip" : "Start trip"}
-                      </Link>
-                    </Button>
-                  )}
-                  {(b.payment_status === "paid" || b.paid_at) && (
-                    <Button asChild size="sm" variant="outline">
-                      <Link to="/receipt/$kind/$id" params={{ kind: "vehicle", id: b.id }}>
-                        <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
-                      </Link>
-                    </Button>
-                  )}
-                  {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
-                    <Button asChild size="sm" variant="ghost" className="text-destructive">
-                      <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
-                        <AlertTriangle className="mr-1.5 h-4 w-4" />Report
-                      </Link>
-                    </Button>
-                  )}
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    {role === "vendor" && b.status === "pending" && (
+                      <>
+                        <Button size="sm" className="btn-gradient rounded-full" onClick={() => onAction(b.id, "confirmed")}>Accept request</Button>
+                        <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "rejected")}>Decline</Button>
+                      </>
+                    )}
+                    {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
+                      <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
+                    )}
+                    {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
+                      <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
+                    )}
+                    {b.status === "confirmed" && b.payment_status === "paid" && (
+                      <Button asChild size="sm" variant="outline" className="rounded-full">
+                        <Link to="/bookings/$id/trip" params={{ id: b.id }}>
+                          <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                          {b.return_checked_at ? "Trip summary" : b.pickup_checked_at ? "End trip" : "Start trip"}
+                        </Link>
+                      </Button>
+                    )}
+                    {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
+                      <Button asChild size="sm" variant="ghost" className="rounded-full">
+                        <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
+                      </Button>
+                    )}
+                    {(b.payment_status === "paid" || b.paid_at) && (
+                      <Button asChild size="sm" variant="ghost" className="rounded-full">
+                        <Link to="/receipt/$kind/$id" params={{ kind: "vehicle", id: b.id }}>
+                          <ReceiptText className="mr-1.5 h-4 w-4" />Receipt
+                        </Link>
+                      </Button>
+                    )}
+                    {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
+                      <Button asChild size="sm" variant="ghost" className="rounded-full text-destructive">
+                        <Link to="/bookings/$id/dispute" params={{ id: b.id }}>
+                          <AlertTriangle className="mr-1.5 h-4 w-4" />Report
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
-                <a
-                  href={`/booking/qr/${b.qr_code}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex shrink-0 flex-col items-center justify-center gap-1 rounded-lg bg-white p-2 ring-1 ring-border transition-transform hover:scale-[1.03]"
-                  title="Scan or open to view booking details"
-                >
-                  <QRCodeSVG
-                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/booking/qr/${b.qr_code}`}
-                    size={96}
-                  />
-                  <span className="text-[10px] font-medium text-muted-foreground">Scan for details</span>
-                </a>
-              )}
-            </CardContent>
-          </Card>
+
+                {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
+                  <a
+                    href={`/booking/qr/${b.qr_code}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex shrink-0 flex-col items-center justify-center gap-1.5 self-center rounded-2xl bg-white p-3 ring-1 ring-border transition-transform hover:scale-[1.03]"
+                    title="Scan or open to view booking details"
+                  >
+                    <QRCodeSVG
+                      value={`${typeof window !== "undefined" ? window.location.origin : ""}/booking/qr/${b.qr_code}`}
+                      size={92}
+                    />
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Handover QR</span>
+                  </a>
+                )}
+              </CardContent>
+            </Card>
+          </li>
         );
       })}
     </ul>
@@ -253,11 +355,12 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
 
 function StatusBadge({ s }: { s: string }) {
   const map: Record<string, string> = {
-    pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
-    confirmed: "bg-blue-100 text-blue-800 border-blue-300",
-    rejected: "bg-red-100 text-red-700 border-red-300",
-    cancelled: "bg-muted text-muted-foreground",
-    completed: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    pending: "border-ember/40 bg-ember/10 text-ember",
+    confirmed: "border-brand/40 bg-brand/10 text-brand",
+    rejected: "border-destructive/40 bg-destructive/10 text-destructive",
+    cancelled: "border-border bg-muted text-muted-foreground",
+    completed: "border-emerald/40 bg-emerald/10 text-emerald",
   };
-  return <Badge variant="outline" className={map[s] ?? ""}>{s}</Badge>;
+  return <Badge variant="outline" className={`capitalize ${map[s] ?? ""}`}>{s}</Badge>;
 }
+
