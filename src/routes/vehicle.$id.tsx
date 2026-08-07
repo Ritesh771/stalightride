@@ -296,7 +296,13 @@ function VehiclePage() {
               <h2 className="font-display text-lg font-semibold">Reviews</h2>
               {user && !isOwner && <WriteReviewBox vehicleId={id} userId={user.id} reviews={reviews} onCreated={(row) => setReviews((prev) => [row, ...(prev ?? [])])} />}
               {!reviews && <Skeleton className="mt-3 h-16" />}
-              {reviews && reviews.length === 0 && <p className="mt-3 text-sm text-muted-foreground">No reviews yet.</p>}
+              {reviews && reviews.length === 0 && (
+                <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-muted/20 p-8 text-center">
+                  <MessageSquareQuote className="mx-auto h-5 w-5 text-brand" />
+                  <p className="mt-2 text-sm font-medium">No reviews yet</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">Be the first to ride and rate this vehicle.</p>
+                </div>
+              )}
               {reviews && reviews.length > 0 && (
                 <ul className="mt-4 space-y-4">
                   {reviews.map((r: any) => (
