@@ -207,20 +207,42 @@ function VehiclePage() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div>
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
-              <div className="aspect-[16/10] bg-muted">
-                {imgUrl ? <img src={imgUrl} alt={v.title} className="h-full w-full object-cover" /> : <div className="grid h-full w-full place-items-center text-muted-foreground">No image</div>}
+            <div className="overflow-hidden rounded-3xl border border-border/70 bg-card shadow-card">
+              <div className="relative aspect-[16/10] bg-muted">
+                {imgUrl ? (
+                  <img key={imgUrl} src={imgUrl} alt={`${v.brand} ${v.model} for rent in ${v.city}`} className="h-full w-full animate-fade-in object-cover" />
+                ) : (
+                  <div className="grid h-full w-full place-items-center gap-2 text-muted-foreground">
+                    <ImageOff className="h-6 w-6" />
+                    <span className="text-sm">Photos coming soon</span>
+                  </div>
+                )}
+                <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/45 to-transparent" />
+                <Badge className="absolute left-4 top-4 rounded-full bg-background/85 capitalize text-foreground backdrop-blur">{v.category}</Badge>
+                {images.length > 1 && (
+                  <span className="absolute bottom-4 right-4 rounded-full bg-background/85 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
+                    {activeImg + 1} / {images.length}
+                  </span>
+                )}
               </div>
               {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto p-2">
+                <div className="flex gap-2 overflow-x-auto p-3">
                   {images.map((im: any, i: number) => (
-                    <button key={i} onClick={() => setActiveImg(i)} className={`h-16 w-24 shrink-0 overflow-hidden rounded-md border ${i === activeImg ? "border-foreground" : "border-border"}`}>
+                    <button
+                      key={i}
+                      onClick={() => setActiveImg(i)}
+                      aria-label={`View photo ${i + 1}`}
+                      className={`h-16 w-24 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-300 ${
+                        i === activeImg ? "border-brand opacity-100 shadow-glow" : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
                       {urls[im.url] && <img src={urls[im.url]} alt="" className="h-full w-full object-cover" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
+
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Spec icon={Cog} label="Transmission" value={v.transmission} />
