@@ -18,7 +18,7 @@ import {
   BadgeCheck,
   CircleAlert,
   QrCode,
-  Zap,
+  
   Quote,
 } from "lucide-react";
 import { useState } from "react";
