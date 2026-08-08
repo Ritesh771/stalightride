@@ -200,21 +200,35 @@
   ::selection { background: color-mix(in oklab, var(--brand) 35%, transparent); }
 }
 
-/* ————— Surfaces ————— */
+/* ————— Surfaces —————
+   NOTE: backdrop-filter is expensive and was previously applied to dozens of
+   cards per page, which made scrolling and the sidebar width transition janky.
+   Only fixed overlays (header, bottom nav) get a real blur now. */
 @utility glass {
-  background: var(--glass-bg);
+  background: color-mix(in oklab, var(--card) 88%, var(--background));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
   box-shadow: var(--shadow-card);
 }
 @utility glass-strong {
-  background: color-mix(in oklab, var(--card) 82%, transparent);
+  background: color-mix(in oklab, var(--card) 94%, var(--background));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
-  backdrop-filter: blur(28px) saturate(160%);
   box-shadow: var(--shadow-float);
 }
+@utility glass-blur {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-float);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass-blur {
+    background: color-mix(in oklab, var(--card) 72%, transparent);
+    backdrop-filter: blur(16px) saturate(150%);
+  }
+}
+
 @utility surface-card {
   background: var(--card);
   border: 1px solid var(--border);
