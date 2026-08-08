@@ -49,7 +49,7 @@ export function CitySelector({ className }: { className?: string }) {
           aria-label="Select your city"
         >
           <MapPin className="h-4 w-4 text-brand" />
-          <span className="max-w-[7rem] truncate text-xs font-medium sm:text-sm">
+          <span className="hidden max-w-[7rem] truncate text-xs font-medium sm:inline sm:text-sm">
             {city ?? "Select city"}
           </span>
           <ChevronDown className="h-3.5 w-3.5 opacity-60" />
