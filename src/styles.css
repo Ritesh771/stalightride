@@ -344,7 +344,10 @@
   background-size: 200% 100%;
   animation: sy-shimmer 1.8s linear infinite;
 }
-@utility floaty { animation: sy-float 6s ease-in-out infinite; }
+@utility floaty { animation: none; }
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .floaty { animation: sy-float 6s ease-in-out infinite; will-change: transform; }
+}
 @utility rise { animation: sy-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @utility sheen {
   position: relative;
@@ -357,10 +360,13 @@
     width: 40%;
     height: 180%;
     background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 12%, transparent), transparent);
-    animation: sy-sheen 3.6s ease-in-out infinite;
     pointer-events: none;
   }
 }
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .sheen::after { animation: sy-sheen 3.6s ease-in-out infinite; will-change: transform; }
+}
+
 
 /* ————— Map / ride themed animations ————— */
 @keyframes rs-map-shimmer {
