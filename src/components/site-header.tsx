@@ -37,7 +37,7 @@ export function SiteHeader() {
           <SidebarTrigger className="-ml-1 shrink-0" aria-label="Toggle navigation" />
           <Link to="/" className="flex min-w-0 items-center gap-2 md:hidden">
             <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
-            <span className="hidden truncate font-display text-base font-bold tracking-tight text-foreground xs:inline sm:inline">Synchoo</span>
+            <span className="hidden truncate font-display text-base font-bold tracking-tight text-foreground sm:inline">Synchoo</span>
           </Link>
         </div>
 
