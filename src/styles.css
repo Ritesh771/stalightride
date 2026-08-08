@@ -348,6 +348,10 @@
 @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
   .floaty { animation: sy-float 6s ease-in-out infinite; will-change: transform; }
 }
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px;
+}
 @utility rise { animation: sy-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @utility sheen {
   position: relative;
