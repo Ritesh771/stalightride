@@ -208,7 +208,6 @@
   background: color-mix(in oklab, var(--card) 88%, var(--background));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
 }
 @utility glass-strong {
   background: color-mix(in oklab, var(--card) 94%, var(--background));
