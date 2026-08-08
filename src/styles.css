@@ -312,15 +312,23 @@
     inset: -20%;
     z-index: -1;
     pointer-events: none;
+    /* soft radial gradients only — no filter: blur(), which forced a costly
+       full-layer repaint on every animation frame */
     background:
-      radial-gradient(38% 42% at 18% 12%, color-mix(in oklab, var(--brand) 45%, transparent), transparent 70%),
-      radial-gradient(34% 40% at 82% 8%, color-mix(in oklab, var(--cyan) 32%, transparent), transparent 70%),
-      radial-gradient(40% 44% at 70% 78%, color-mix(in oklab, var(--violet) 34%, transparent), transparent 72%),
-      radial-gradient(28% 30% at 8% 78%, color-mix(in oklab, var(--ember) 20%, transparent), transparent 72%);
-    filter: blur(30px);
-    animation: sy-aurora 22s ease-in-out infinite;
+      radial-gradient(38% 42% at 18% 12%, color-mix(in oklab, var(--brand) 34%, transparent), transparent 72%),
+      radial-gradient(34% 40% at 82% 8%, color-mix(in oklab, var(--cyan) 24%, transparent), transparent 72%),
+      radial-gradient(40% 44% at 70% 78%, color-mix(in oklab, var(--violet) 26%, transparent), transparent 74%),
+      radial-gradient(28% 30% at 8% 78%, color-mix(in oklab, var(--ember) 16%, transparent), transparent 74%);
   }
 }
+/* animate the ambient glow only on larger screens where there is headroom */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .aurora::before {
+    animation: sy-aurora 22s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
 @utility grid-lines {
   background-image:
     linear-gradient(to right, color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px),
