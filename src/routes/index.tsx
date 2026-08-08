@@ -175,7 +175,7 @@ function Index() {
       </section>
 
       {/* ————— Services ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 max-w-2xl">
             <h2 className="font-display text-3xl font-bold sm:text-4xl">Everything mobility, one platform</h2>
@@ -214,7 +214,7 @@ function Index() {
       <HomeActivity />
 
       {/* ————— Trip experience ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 max-w-2xl">
             <h2 className="font-display text-3xl font-bold sm:text-4xl">Built for every step of the trip</h2>
@@ -242,7 +242,7 @@ function Index() {
       </section>
 
       {/* ————— Categories ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 flex items-end justify-between gap-4">
             <div>
@@ -277,7 +277,7 @@ function Index() {
       </section>
 
       {/* ————— How it works ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <h2 className="font-display text-3xl font-bold sm:text-4xl">How it works</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -301,7 +301,7 @@ function Index() {
       </section>
 
       {/* ————— Testimonials ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 max-w-2xl">
             <h2 className="font-display text-3xl font-bold sm:text-4xl">Riders and hosts, in their words</h2>
@@ -323,7 +323,7 @@ function Index() {
       </section>
 
       {/* ————— Trust ————— */}
-      <section className="relative py-16 sm:py-20">
+      <section className="cv-auto relative py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid gap-5 md:grid-cols-3">
             {[
@@ -344,7 +344,7 @@ function Index() {
       </section>
 
       {/* ————— Host CTA ————— */}
-      <section className="py-16 sm:py-20">
+      <section className="cv-auto py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="aurora glow-border glass-strong relative overflow-hidden p-8 sm:p-14">
             <div className="relative grid gap-10 md:grid-cols-[1.2fr_1fr] md:items-center">

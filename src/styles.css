@@ -200,21 +200,34 @@
   ::selection { background: color-mix(in oklab, var(--brand) 35%, transparent); }
 }
 
-/* ————— Surfaces ————— */
+/* ————— Surfaces —————
+   NOTE: backdrop-filter is expensive and was previously applied to dozens of
+   cards per page, which made scrolling and the sidebar width transition janky.
+   Only fixed overlays (header, bottom nav) get a real blur now. */
 @utility glass {
-  background: var(--glass-bg);
+  background: color-mix(in oklab, var(--card) 88%, var(--background));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
-  box-shadow: var(--shadow-card);
 }
 @utility glass-strong {
-  background: color-mix(in oklab, var(--card) 82%, transparent);
+  background: color-mix(in oklab, var(--card) 94%, var(--background));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
-  backdrop-filter: blur(28px) saturate(160%);
   box-shadow: var(--shadow-float);
 }
+@utility glass-blur {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-float);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .glass-blur {
+    background: color-mix(in oklab, var(--card) 72%, transparent);
+    backdrop-filter: blur(16px) saturate(150%);
+  }
+}
+
 @utility surface-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -298,15 +311,23 @@
     inset: -20%;
     z-index: -1;
     pointer-events: none;
+    /* soft radial gradients only — no filter: blur(), which forced a costly
+       full-layer repaint on every animation frame */
     background:
-      radial-gradient(38% 42% at 18% 12%, color-mix(in oklab, var(--brand) 45%, transparent), transparent 70%),
-      radial-gradient(34% 40% at 82% 8%, color-mix(in oklab, var(--cyan) 32%, transparent), transparent 70%),
-      radial-gradient(40% 44% at 70% 78%, color-mix(in oklab, var(--violet) 34%, transparent), transparent 72%),
-      radial-gradient(28% 30% at 8% 78%, color-mix(in oklab, var(--ember) 20%, transparent), transparent 72%);
-    filter: blur(30px);
-    animation: sy-aurora 22s ease-in-out infinite;
+      radial-gradient(38% 42% at 18% 12%, color-mix(in oklab, var(--brand) 34%, transparent), transparent 72%),
+      radial-gradient(34% 40% at 82% 8%, color-mix(in oklab, var(--cyan) 24%, transparent), transparent 72%),
+      radial-gradient(40% 44% at 70% 78%, color-mix(in oklab, var(--violet) 26%, transparent), transparent 74%),
+      radial-gradient(28% 30% at 8% 78%, color-mix(in oklab, var(--ember) 16%, transparent), transparent 74%);
   }
 }
+/* animate the ambient glow only on larger screens where there is headroom */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .aurora::before {
+    animation: sy-aurora 22s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
 @utility grid-lines {
   background-image:
     linear-gradient(to right, color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px),
@@ -322,7 +343,14 @@
   background-size: 200% 100%;
   animation: sy-shimmer 1.8s linear infinite;
 }
-@utility floaty { animation: sy-float 6s ease-in-out infinite; }
+@utility floaty { animation: none; }
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .floaty { animation: sy-float 6s ease-in-out infinite; will-change: transform; }
+}
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px;
+}
 @utility rise { animation: sy-rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 @utility sheen {
   position: relative;
@@ -335,10 +363,13 @@
     width: 40%;
     height: 180%;
     background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foreground) 12%, transparent), transparent);
-    animation: sy-sheen 3.6s ease-in-out infinite;
     pointer-events: none;
   }
 }
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .sheen::after { animation: sy-sheen 3.6s ease-in-out infinite; will-change: transform; }
+}
+
 
 /* ————— Map / ride themed animations ————— */
 @keyframes rs-map-shimmer {

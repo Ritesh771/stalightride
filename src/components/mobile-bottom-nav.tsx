@@ -21,7 +21,7 @@ export function MobileBottomNav() {
       className="fixed inset-x-0 bottom-0 z-50 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-3 mb-3 glass-strong flex items-stretch justify-between gap-1 p-1.5">
+      <div className="mx-3 mb-3 glass-blur flex items-stretch justify-between gap-1 p-1.5">
         {items.map((it) => {
           const isActive = active(it.to, it.exact);
           return (
