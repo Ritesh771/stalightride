@@ -1420,6 +1420,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_end_user_request: { Args: never; Returns: boolean }
       notify_admins: {
         Args: { _body: string; _link?: string; _title: string }
         Returns: undefined

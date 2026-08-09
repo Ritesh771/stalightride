@@ -38,7 +38,9 @@ export const createDriverRazorpayOrder = createServerFn({ method: "POST" })
     if (!res.ok) throw new Error(`Razorpay order failed [${res.status}]: ${body}`);
     const order = JSON.parse(body) as { id: string; amount: number; currency: string };
 
-    await supabase.from("driver_bookings").update({ razorpay_order_id: order.id }).eq("id", booking.id);
+    // Payment columns are locked from end-user writes; use the privileged client after ownership checks.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("driver_bookings").update({ razorpay_order_id: order.id }).eq("id", booking.id);
 
     return { orderId: order.id, amount: order.amount, currency: order.currency, keyId };
   });
@@ -80,7 +82,8 @@ export const verifyDriverRazorpayPayment = createServerFn({ method: "POST" })
     if (booking.razorpay_order_id !== data.razorpay_order_id) throw new Error("Order mismatch");
     if (booking.payment_status === "paid") return { ok: true };
 
-    const { error: upErr } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: upErr } = await supabaseAdmin
       .from("driver_bookings")
       .update({
         payment_status: "paid",

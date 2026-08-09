@@ -80,7 +80,9 @@ export const confirmHandover = createServerFn({ method: "POST" })
         ? { pickup_checked_at: new Date().toISOString() }
         : { return_checked_at: new Date().toISOString() };
 
-    const { error: upErr } = await supabase.from("bookings").update(patch).eq("id", booking.id);
+    // Handover timestamps are locked from end-user writes; write them after the host/admin check above.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: upErr } = await supabaseAdmin.from("bookings").update(patch).eq("id", booking.id);
     if (upErr) throw new Error(upErr.message);
 
     return { ok: true as const, phase: data.phase, bookingId: booking.id };
