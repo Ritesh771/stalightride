@@ -149,16 +149,17 @@ function VendorDashboard() {
           ) : (
             <ul className="mt-4 divide-y divide-border rounded-2xl border border-border/60 bg-card">
               {bookings.map((b) => (
-                <li key={b.id} className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="text-sm font-medium">{b.vehicles?.title}</p>
-                    <p className="text-xs text-muted-foreground">{b.start_date} → {b.end_date}</p>
+                <li key={b.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{b.vehicles?.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">{b.start_date} → {b.end_date}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <p className="text-sm font-semibold">{currency(b.total_price)}</p>
                     <Badge variant="outline" className="mt-1">{b.status}</Badge>
                   </div>
                 </li>
+
               ))}
             </ul>
           )}
