@@ -98,23 +98,24 @@ function VendorDashboard() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="font-display text-3xl font-semibold">Host dashboard</h1>
-            <p className="text-sm text-muted-foreground">Welcome, {vendor.business_name}</p>
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pb-8">
+        <div className="grid gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="truncate font-display text-2xl font-semibold sm:text-3xl">Host dashboard</h1>
+            <p className="truncate text-sm text-muted-foreground">Welcome, {vendor.business_name}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline" className="rounded-xl"><Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan QR handover</Link></Button>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <Button asChild variant="outline" className="rounded-xl"><Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan QR</Link></Button>
             <Button asChild className="rounded-xl shadow-glow"><Link to="/vendor/vehicles/new"><Plus className="mr-1.5 h-4 w-4" />Add vehicle</Link></Button>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Stat icon={Car} label="Vehicles" value={vehicles?.length ?? 0} />
           <Stat icon={Calendar} label="Bookings" value={bookings?.length ?? 0} />
           <Stat icon={DollarSign} label="Earnings" value={currency(earnings)} />
         </div>
+
 
         <KycCard vendor={vendor} userId={user.id} onDone={load} />
 
