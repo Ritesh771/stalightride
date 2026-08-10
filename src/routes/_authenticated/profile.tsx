@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
-import { ShieldCheck, ShieldAlert, Clock, Upload } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Clock, Upload, Check } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({ component: Profile });
 
