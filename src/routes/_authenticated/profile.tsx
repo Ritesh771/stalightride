@@ -44,8 +44,14 @@ function Profile() {
       avatar_url: profile.avatar_url,
     });
     setSaving(false);
-    if (error) toast.error(error.message); else toast.success("Profile saved");
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Profile saved");
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 4000);
+    }
   };
+
 
   const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
