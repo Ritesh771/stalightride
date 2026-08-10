@@ -168,6 +168,10 @@ function DriverProfile() {
                     <Badge variant="secondary" className="gap-1 bg-emerald-50 text-emerald-700">
                       <BadgeCheck className="h-3 w-3" />Verified
                     </Badge>
+                    <Badge variant="outline" className="gap-1.5 border-emerald-500/40 text-emerald-600">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Available for hire
+                    </Badge>
+
                   </div>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{driver.city}</span>
