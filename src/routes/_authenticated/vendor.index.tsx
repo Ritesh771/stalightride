@@ -170,12 +170,16 @@ function VendorDashboard() {
 
 function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
   return (
-    <Card><CardContent className="flex items-center gap-4 p-5">
-      <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="h-5 w-5" /></div>
-      <div><div className="text-xs text-muted-foreground">{label}</div><div className="text-2xl font-semibold">{value}</div></div>
+    <Card><CardContent className="flex items-center gap-4 p-4 sm:p-5">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="h-5 w-5" /></div>
+      <div className="min-w-0">
+        <div className="truncate text-xs text-muted-foreground">{label}</div>
+        <div className="truncate text-xl font-semibold sm:text-2xl">{value}</div>
+      </div>
     </CardContent></Card>
   );
 }
+
 
 function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
   const paths = vehicles.map((v) => v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.url);
