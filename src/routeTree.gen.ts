@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WashRouteImport } from './routes/wash'
+import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -38,6 +39,11 @@ import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_au
 const WashRoute = WashRouteImport.update({
   id: '/wash',
   path: '/wash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EarnRoute = EarnRouteImport.update({
+  id: '/earn',
+  path: '/earn',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DriversRoute = DriversRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/earn': typeof EarnRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/earn': typeof EarnRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
+  '/earn': typeof EarnRoute
   '/wash': typeof WashRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/earn'
     | '/wash'
     | '/account'
     | '/admin'
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/earn'
     | '/wash'
     | '/account'
     | '/admin'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/drivers'
+    | '/earn'
     | '/wash'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -335,6 +347,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   DriversRoute: typeof DriversRoute
+  EarnRoute: typeof EarnRoute
   WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/wash'
       fullPath: '/wash'
       preLoaderRoute: typeof WashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/earn': {
+      id: '/earn'
+      path: '/earn'
+      fullPath: '/earn'
+      preLoaderRoute: typeof EarnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/drivers': {
@@ -579,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   DriversRoute: DriversRoute,
+  EarnRoute: EarnRoute,
   WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
@@ -587,13 +608,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

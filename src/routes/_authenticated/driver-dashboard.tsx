@@ -178,19 +178,28 @@ function DriverDashboard() {
         )}
 
         {driver && vs === "approved" && (
-          <Card><CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
-            <div>
+          <Card><CardContent className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 p-5">
+            <div className="min-w-0">
               <p className="font-medium">Availability</p>
               <p className="text-xs text-muted-foreground">
-                {driver.status === "active" ? "You're listed publicly and can be hired." : "You're hidden from the driver directory."}
+                {driver.status === "active"
+                  ? "You're shown as Available for hire — customers can book you right now."
+                  : "You're offline. Customers can't hire you until you switch this on."}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch checked={driver.status === "active"} onCheckedChange={setStatus} />
-              <span className="text-sm">{driver.status === "active" ? "Live" : "Paused"}</span>
+            <div className="flex shrink-0 items-center gap-2">
+              <Switch checked={driver.status === "active"} onCheckedChange={setStatus} aria-label="Availability" />
+              <Badge
+                variant="outline"
+                className={driver.status === "active" ? "gap-1.5 border-emerald-500/40 text-emerald-600" : "gap-1.5"}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${driver.status === "active" ? "bg-emerald-500" : "bg-muted-foreground"}`} />
+                {driver.status === "active" ? "Available" : "Offline"}
+              </Badge>
             </div>
           </CardContent></Card>
         )}
+
 
         <Card><CardContent className="p-6">
           <h2 className="font-display text-lg font-semibold">Driver profile & verification</h2>

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
-import { ShieldCheck, ShieldAlert, Clock, Upload } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Clock, Upload, Check } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/profile")({ component: Profile });
 
@@ -19,6 +19,8 @@ function Profile() {
   const { user } = useSession();
   const [profile, setProfile] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+
   const [uploading, setUploading] = useState(false);
   const [dlSaving, setDlSaving] = useState(false);
 
@@ -42,8 +44,14 @@ function Profile() {
       avatar_url: profile.avatar_url,
     });
     setSaving(false);
-    if (error) toast.error(error.message); else toast.success("Profile saved");
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Profile saved");
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 4000);
+    }
   };
+
 
   const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,7 +123,15 @@ function Profile() {
               <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
             </div>
             <div><Label>Email</Label><Input value={user.email ?? ""} disabled /></div>
-            <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+              {justSaved && (
+                <span className="flex items-center gap-1.5 text-sm text-emerald-600">
+                  <Check className="h-4 w-4" />Profile saved
+                </span>
+              )}
+            </div>
+
           </form>
         </CardContent></Card>
 

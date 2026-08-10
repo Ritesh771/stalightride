@@ -98,23 +98,24 @@ function VendorDashboard() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="font-display text-3xl font-semibold">Host dashboard</h1>
-            <p className="text-sm text-muted-foreground">Welcome, {vendor.business_name}</p>
+      <div className="mx-auto max-w-6xl px-4 pb-24 pt-8 sm:px-6 sm:pb-8">
+        <div className="grid gap-4 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="truncate font-display text-2xl font-semibold sm:text-3xl">Host dashboard</h1>
+            <p className="truncate text-sm text-muted-foreground">Welcome, {vendor.business_name}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline" className="rounded-xl"><Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan QR handover</Link></Button>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <Button asChild variant="outline" className="rounded-xl"><Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan QR</Link></Button>
             <Button asChild className="rounded-xl shadow-glow"><Link to="/vendor/vehicles/new"><Plus className="mr-1.5 h-4 w-4" />Add vehicle</Link></Button>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Stat icon={Car} label="Vehicles" value={vehicles?.length ?? 0} />
           <Stat icon={Calendar} label="Bookings" value={bookings?.length ?? 0} />
           <Stat icon={DollarSign} label="Earnings" value={currency(earnings)} />
         </div>
+
 
         <KycCard vendor={vendor} userId={user.id} onDone={load} />
 
@@ -148,16 +149,17 @@ function VendorDashboard() {
           ) : (
             <ul className="mt-4 divide-y divide-border rounded-2xl border border-border/60 bg-card">
               {bookings.map((b) => (
-                <li key={b.id} className="flex items-center justify-between p-4">
-                  <div>
-                    <p className="text-sm font-medium">{b.vehicles?.title}</p>
-                    <p className="text-xs text-muted-foreground">{b.start_date} → {b.end_date}</p>
+                <li key={b.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{b.vehicles?.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">{b.start_date} → {b.end_date}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="shrink-0 text-right">
                     <p className="text-sm font-semibold">{currency(b.total_price)}</p>
                     <Badge variant="outline" className="mt-1">{b.status}</Badge>
                   </div>
                 </li>
+
               ))}
             </ul>
           )}
@@ -169,12 +171,16 @@ function VendorDashboard() {
 
 function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: any }) {
   return (
-    <Card><CardContent className="flex items-center gap-4 p-5">
-      <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="h-5 w-5" /></div>
-      <div><div className="text-xs text-muted-foreground">{label}</div><div className="text-2xl font-semibold">{value}</div></div>
+    <Card><CardContent className="flex items-center gap-4 p-4 sm:p-5">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="h-5 w-5" /></div>
+      <div className="min-w-0">
+        <div className="truncate text-xs text-muted-foreground">{label}</div>
+        <div className="truncate text-xl font-semibold sm:text-2xl">{value}</div>
+      </div>
     </CardContent></Card>
   );
 }
+
 
 function VehiclesGrid({ vehicles }: { vehicles: any[] }) {
   const paths = vehicles.map((v) => v.vehicle_images?.slice().sort((a: any, b: any) => a.sort_order - b.sort_order)[0]?.url);

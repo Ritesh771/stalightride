@@ -73,6 +73,19 @@ function DriverProfile() {
     return () => { cancelled = true; };
   }, [id]);
 
+  // Keep the customer's view of driver availability in sync in real time.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`public_drivers:${id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "public_drivers", filter: `id=eq.${id}` }, (payload) => {
+        if (payload.eventType === "DELETE") setDriver(null);
+        else setDriver(payload.new as any);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id]);
+
+
   useEffect(() => {
     if (rateType === "hourly") setEndDate(startDate);
   }, [rateType, startDate]);
@@ -126,13 +139,16 @@ function DriverProfile() {
     return (
       <div className="min-h-screen"><SiteHeader />
         <div className="mx-auto max-w-md px-4 py-16 text-center">
-          <p className="font-medium">Driver not available</p>
-          <p className="mt-1 text-sm text-muted-foreground">This driver profile is not published.</p>
-          <Button asChild className="mt-4"><Link to="/drivers">Browse drivers</Link></Button>
+          <p className="font-medium">This driver is currently offline</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            They've paused new hires or are not accepting bookings right now. Plenty of verified drivers are available.
+          </p>
+          <Button asChild className="mt-4"><Link to="/drivers">See available drivers</Link></Button>
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,6 +168,10 @@ function DriverProfile() {
                     <Badge variant="secondary" className="gap-1 bg-emerald-50 text-emerald-700">
                       <BadgeCheck className="h-3 w-3" />Verified
                     </Badge>
+                    <Badge variant="outline" className="gap-1.5 border-emerald-500/40 text-emerald-600">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Available for hire
+                    </Badge>
+
                   </div>
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{driver.city}</span>

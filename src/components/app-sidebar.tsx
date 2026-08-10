@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -34,10 +34,12 @@ const accountItems: Item[] = [
 ];
 
 const earnItems: Item[] = [
+  { to: "/earn", label: "Earning options", icon: BadgeIndianRupee },
   { to: "/vendor", label: "Host dashboard", icon: LayoutDashboard },
   { to: "/driver-dashboard", label: "Driver dashboard", icon: Steering },
   { to: "/scan", label: "Scan QR handover", icon: ScanLine },
 ];
+
 
 
 export function AppSidebar() {
@@ -92,7 +94,7 @@ export function AppSidebar() {
       <SidebarContent>
         {renderGroup("Explore", exploreItems)}
         {user && renderGroup("Your account", accountItems)}
-        {user && renderGroup("Earn with us", earnItems)}
+        {renderGroup("Earn with us", user ? earnItems : earnItems.slice(0, 1))}
         {user && isAdmin && renderGroup("Admin", [{ to: "/admin", label: "Admin panel", icon: ShieldCheck }])}
       </SidebarContent>
 
