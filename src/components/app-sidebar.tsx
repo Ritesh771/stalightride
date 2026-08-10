@@ -34,10 +34,12 @@ const accountItems: Item[] = [
 ];
 
 const earnItems: Item[] = [
+  { to: "/earn", label: "Earning options", icon: BadgeIndianRupee },
   { to: "/vendor", label: "Host dashboard", icon: LayoutDashboard },
   { to: "/driver-dashboard", label: "Driver dashboard", icon: Steering },
   { to: "/scan", label: "Scan QR handover", icon: ScanLine },
 ];
+
 
 
 export function AppSidebar() {
