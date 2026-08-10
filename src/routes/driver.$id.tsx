@@ -73,6 +73,19 @@ function DriverProfile() {
     return () => { cancelled = true; };
   }, [id]);
 
+  // Keep the customer's view of driver availability in sync in real time.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`public_drivers:${id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "public_drivers", filter: `id=eq.${id}` }, (payload) => {
+        if (payload.eventType === "DELETE") setDriver(null);
+        else setDriver(payload.new as any);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [id]);
+
+
   useEffect(() => {
     if (rateType === "hourly") setEndDate(startDate);
   }, [rateType, startDate]);
