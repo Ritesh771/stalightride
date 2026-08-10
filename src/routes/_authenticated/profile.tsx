@@ -115,7 +115,15 @@ function Profile() {
               <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
             </div>
             <div><Label>Email</Label><Input value={user.email ?? ""} disabled /></div>
-            <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+              {justSaved && (
+                <span className="flex items-center gap-1.5 text-sm text-emerald-600">
+                  <Check className="h-4 w-4" />Profile saved
+                </span>
+              )}
+            </div>
+
           </form>
         </CardContent></Card>
 
