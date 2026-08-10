@@ -139,13 +139,16 @@ function DriverProfile() {
     return (
       <div className="min-h-screen"><SiteHeader />
         <div className="mx-auto max-w-md px-4 py-16 text-center">
-          <p className="font-medium">Driver not available</p>
-          <p className="mt-1 text-sm text-muted-foreground">This driver profile is not published.</p>
-          <Button asChild className="mt-4"><Link to="/drivers">Browse drivers</Link></Button>
+          <p className="font-medium">This driver is currently offline</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            They've paused new hires or are not accepting bookings right now. Plenty of verified drivers are available.
+          </p>
+          <Button asChild className="mt-4"><Link to="/drivers">See available drivers</Link></Button>
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-background">
