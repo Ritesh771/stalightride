@@ -19,6 +19,8 @@ function Profile() {
   const { user } = useSession();
   const [profile, setProfile] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+
   const [uploading, setUploading] = useState(false);
   const [dlSaving, setDlSaving] = useState(false);
 
