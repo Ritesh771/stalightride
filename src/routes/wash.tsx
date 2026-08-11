@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { currency } from "@/lib/format";
+import { useSelectedCity } from "@/components/city-selector";
 import { toast } from "sonner";
 import { Droplets, Clock, ShieldCheck, MapPin, CalendarClock } from "lucide-react";
 
@@ -50,6 +51,7 @@ function todayISO() {
 function WashPage() {
   const { user } = useSession();
   const navigate = useNavigate();
+  const { city: selectedCity } = useSelectedCity();
   const [services, setServices] = useState<any[] | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -61,6 +63,23 @@ function WashPage() {
     slot_time: "10:00",
     notes: "",
   });
+
+  // Prefill the city from the top-bar city selector, then from the saved profile city.
+  useEffect(() => {
+    if (selectedCity) setForm((f) => (f.city ? f : { ...f, city: selectedCity }));
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("city")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.city) setForm((f) => (f.city ? f : { ...f, city: data.city as string }));
+      });
+  }, [user]);
 
   useEffect(() => {
     supabase
