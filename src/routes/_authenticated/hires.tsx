@@ -52,16 +52,25 @@ function HiresPage() {
     const [{ data }, { data: w }, { data: rv }] = await Promise.all([
       supabase
         .from("driver_bookings")
-        .select("*, drivers:driver_id(id,full_name,photo_url,city)")
+        .select("*")
         .eq("customer_id", user.id)
         .order("created_at", { ascending: false }),
       supabase.from("wallets").select("balance").eq("user_id", user.id).maybeSingle(),
       supabase.from("driver_reviews").select("driver_booking_id").eq("customer_id", user.id),
     ]);
+    const rows = data ?? [];
+    // Driver details come from the public directory view (the drivers table is
+    // host-private), so hydrate names/photos separately instead of embedding.
+    const ids = Array.from(new Set(rows.map((b: any) => b.driver_id)));
+    const { data: drv } = ids.length
+      ? await supabase.from("public_drivers").select("id,full_name,photo_url,city").in("id", ids)
+      : { data: [] as any[] };
+    const byId = new Map((drv ?? []).map((d: any) => [d.id, d]));
     const reviewed = new Set((rv ?? []).map((r) => r.driver_booking_id));
-    setItems((data ?? []).map((b: any) => ({ ...b, reviewed: reviewed.has(b.id) })));
+    setItems(rows.map((b: any) => ({ ...b, drivers: byId.get(b.driver_id) ?? null, reviewed: reviewed.has(b.id) })));
     setWallet(Number(w?.balance ?? 0));
   };
+
   useEffect(() => { load(); }, [user?.id]);
 
   const cancel = async (b: any) => {
