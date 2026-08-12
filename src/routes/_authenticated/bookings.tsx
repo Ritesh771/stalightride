@@ -302,14 +302,26 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                     {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
                     )}
-                    {b.status === "confirmed" && b.payment_status === "paid" && (
-                      <Button asChild size="sm" variant="outline" className="rounded-full">
-                        <Link to="/bookings/$id/trip" params={{ id: b.id }}>
-                          <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                          {b.return_checked_at ? "Trip summary" : b.pickup_checked_at ? "End trip" : "Start trip"}
-                        </Link>
-                      </Button>
-                    )}
+                    {(() => {
+                      const gate = getHandoverGate(b);
+                      if (!gate.ctaLabel) return null;
+                      const locked = !gate.canCheckin && !gate.canCheckout && !b.return_checked_at;
+                      if (locked)
+                        return (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground">
+                            <Clock className="h-3.5 w-3.5" />
+                            {gate.opensAt ? `Check-in opens ${formatWhen(gate.opensAt)}` : gate.ctaLabel}
+                          </span>
+                        );
+                      return (
+                        <Button asChild size="sm" variant="outline" className="rounded-full">
+                          <Link to="/bookings/$id/trip" params={{ id: b.id }}>
+                            <ClipboardCheck className="mr-1.5 h-4 w-4" />
+                            {gate.ctaLabel}
+                          </Link>
+                        </Button>
+                      );
+                    })()}
                     {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
                       <Button asChild size="sm" variant="ghost" className="rounded-full">
                         <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
