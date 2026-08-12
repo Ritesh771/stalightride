@@ -34,7 +34,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <div className="grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2">
-          <SidebarTrigger className="-ml-1 shrink-0" aria-label="Toggle navigation" />
+          <SidebarTrigger className="-ml-1 shrink-0 md:hidden" aria-label="Open navigation" />
           <Link to="/" className="flex min-w-0 items-center gap-2 md:hidden">
             <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
             <span className="truncate font-display text-base font-bold tracking-tight text-foreground">Synchoo</span>
