@@ -85,10 +85,16 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
-        <Link to="/" onClick={close} className="flex items-center gap-2 px-1 py-1.5">
-          <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
-          {!collapsed && <span className="font-display text-base font-bold tracking-tight">Synchoo</span>}
-        </Link>
+        <div className="flex items-center gap-2 px-1 py-1.5">
+          <Link to="/" onClick={close} className="flex min-w-0 flex-1 items-center gap-2">
+            <img src={synchooMark} alt="Synchoo" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
+            {!collapsed && <span className="truncate font-display text-base font-bold tracking-tight">Synchoo</span>}
+          </Link>
+          {!collapsed && <SidebarTrigger className="shrink-0" aria-label="Collapse navigation" />}
+        </div>
+        {collapsed && (
+          <SidebarTrigger className="mx-auto" aria-label="Expand navigation" />
+        )}
       </SidebarHeader>
 
       <SidebarContent>
