@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
 import { Upload, X, Fuel, Gauge, Camera, ShieldAlert, Radio } from "lucide-react";
+import { getHandoverGate } from "@/lib/trip-window";
 import { LiveTracker } from "@/components/live-tracker";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
@@ -88,8 +89,9 @@ function TripInspection() {
       </div>
     );
 
-  const canCheckin = b.status === "confirmed" && b.payment_status === "paid" && !b.pickup_checked_at;
-  const canCheckout = b.status === "confirmed" && b.pickup_checked_at && !b.return_checked_at;
+  const gate = getHandoverGate(b);
+  const canCheckin = gate.canCheckin;
+  const canCheckout = gate.canCheckout;
 
   return (
     <div className="min-h-screen bg-background">
@@ -180,7 +182,7 @@ function TripInspection() {
               />
             ) : (
               <p className="text-sm text-muted-foreground">
-                Available once the booking is confirmed and paid.
+                {gate.checkinReason ?? "Check-in is not available for this booking."}
               </p>
             )}
           </Section>
@@ -228,7 +230,7 @@ function TripInspection() {
               />
             ) : (
               <p className="text-sm text-muted-foreground">
-                Complete the pickup check-in first.
+                {gate.checkoutReason ?? "Check-out is not available yet."}
               </p>
             )}
           </Section>
