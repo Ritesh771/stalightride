@@ -13,6 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
 import { Upload, X, Fuel, Gauge, Camera, ShieldAlert, Radio } from "lucide-react";
+import { getHandoverGate } from "@/lib/trip-window";
+import { useServerFn } from "@tanstack/react-start";
+import { submitInspection } from "@/lib/trip-inspection.functions";
 import { LiveTracker } from "@/components/live-tracker";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
@@ -38,6 +41,7 @@ function TripInspection() {
   const navigate = useNavigate();
   const [b, setB] = useState<any>(null);
   const [saving, setSaving] = useState<Phase | null>(null);
+  const saveInspection = useServerFn(submitInspection);
 
   const load = async () => {
     const { data } = await supabase
@@ -88,8 +92,9 @@ function TripInspection() {
       </div>
     );
 
-  const canCheckin = b.status === "confirmed" && b.payment_status === "paid" && !b.pickup_checked_at;
-  const canCheckout = b.status === "confirmed" && b.pickup_checked_at && !b.return_checked_at;
+  const gate = getHandoverGate(b);
+  const canCheckin = gate.canCheckin;
+  const canCheckout = gate.canCheckout;
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,26 +166,30 @@ function TripInspection() {
                 saving={saving === "pickup"}
                 onSave={async (payload) => {
                   setSaving("pickup");
-                  const { error } = await supabase
-                    .from("bookings")
-                    .update({
-                      pickup_fuel_pct: payload.fuel,
-                      pickup_odometer: payload.odo,
-                      pickup_photos: payload.photoPaths,
-                      pickup_notes: payload.notes || null,
-                      pickup_damage: payload.damage as any,
-                      pickup_checked_at: new Date().toISOString(),
-                    } as any)
-                    .eq("id", b.id);
+                  try {
+                    await saveInspection({
+                      data: {
+                        bookingId: b.id,
+                        phase: "pickup",
+                        fuel: payload.fuel,
+                        odo: payload.odo,
+                        photoPaths: payload.photoPaths,
+                        notes: payload.notes || null,
+                        damage: payload.damage as any,
+                      },
+                    });
+                  } catch (e: any) {
+                    setSaving(null);
+                    return toast.error(e?.message ?? "Could not record the pickup.");
+                  }
                   setSaving(null);
-                  if (error) return toast.error(error.message);
                   toast.success("Pickup recorded");
                   load();
                 }}
               />
             ) : (
               <p className="text-sm text-muted-foreground">
-                Available once the booking is confirmed and paid.
+                {gate.checkinReason ?? "Check-in is not available for this booking."}
               </p>
             )}
           </Section>
@@ -208,27 +217,30 @@ function TripInspection() {
                 saving={saving === "return"}
                 onSave={async (payload) => {
                   setSaving("return");
-                  const { error } = await supabase
-                    .from("bookings")
-                    .update({
-                      return_fuel_pct: payload.fuel,
-                      return_odometer: payload.odo,
-                      return_photos: payload.photoPaths,
-                      return_notes: payload.notes || null,
-                      return_damage: payload.damage as any,
-                      return_checked_at: new Date().toISOString(),
-                      status: "completed",
-                    } as any)
-                    .eq("id", b.id);
+                  try {
+                    await saveInspection({
+                      data: {
+                        bookingId: b.id,
+                        phase: "return",
+                        fuel: payload.fuel,
+                        odo: payload.odo,
+                        photoPaths: payload.photoPaths,
+                        notes: payload.notes || null,
+                        damage: payload.damage as any,
+                      },
+                    });
+                  } catch (e: any) {
+                    setSaving(null);
+                    return toast.error(e?.message ?? "Could not record the return.");
+                  }
                   setSaving(null);
-                  if (error) return toast.error(error.message);
                   toast.success("Return recorded — trip completed");
                   load();
                 }}
               />
             ) : (
               <p className="text-sm text-muted-foreground">
-                Complete the pickup check-in first.
+                {gate.checkoutReason ?? "Check-out is not available yet."}
               </p>
             )}
           </Section>
