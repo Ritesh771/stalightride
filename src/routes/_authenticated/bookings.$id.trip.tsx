@@ -14,6 +14,8 @@ import { useSignedUrls } from "@/hooks/use-signed-urls";
 import { toast } from "sonner";
 import { Upload, X, Fuel, Gauge, Camera, ShieldAlert, Radio } from "lucide-react";
 import { getHandoverGate } from "@/lib/trip-window";
+import { useServerFn } from "@tanstack/react-start";
+import { submitInspection } from "@/lib/trip-inspection.functions";
 import { LiveTracker } from "@/components/live-tracker";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
@@ -39,6 +41,7 @@ function TripInspection() {
   const navigate = useNavigate();
   const [b, setB] = useState<any>(null);
   const [saving, setSaving] = useState<Phase | null>(null);
+  const saveInspection = useServerFn(submitInspection);
 
   const load = async () => {
     const { data } = await supabase
@@ -163,19 +166,23 @@ function TripInspection() {
                 saving={saving === "pickup"}
                 onSave={async (payload) => {
                   setSaving("pickup");
-                  const { error } = await supabase
-                    .from("bookings")
-                    .update({
-                      pickup_fuel_pct: payload.fuel,
-                      pickup_odometer: payload.odo,
-                      pickup_photos: payload.photoPaths,
-                      pickup_notes: payload.notes || null,
-                      pickup_damage: payload.damage as any,
-                      pickup_checked_at: new Date().toISOString(),
-                    } as any)
-                    .eq("id", b.id);
+                  try {
+                    await saveInspection({
+                      data: {
+                        bookingId: b.id,
+                        phase: "pickup",
+                        fuel: payload.fuel,
+                        odo: payload.odo,
+                        photoPaths: payload.photoPaths,
+                        notes: payload.notes || null,
+                        damage: payload.damage as any,
+                      },
+                    });
+                  } catch (e: any) {
+                    setSaving(null);
+                    return toast.error(e?.message ?? "Could not record the pickup.");
+                  }
                   setSaving(null);
-                  if (error) return toast.error(error.message);
                   toast.success("Pickup recorded");
                   load();
                 }}
@@ -210,20 +217,23 @@ function TripInspection() {
                 saving={saving === "return"}
                 onSave={async (payload) => {
                   setSaving("return");
-                  const { error } = await supabase
-                    .from("bookings")
-                    .update({
-                      return_fuel_pct: payload.fuel,
-                      return_odometer: payload.odo,
-                      return_photos: payload.photoPaths,
-                      return_notes: payload.notes || null,
-                      return_damage: payload.damage as any,
-                      return_checked_at: new Date().toISOString(),
-                      status: "completed",
-                    } as any)
-                    .eq("id", b.id);
+                  try {
+                    await saveInspection({
+                      data: {
+                        bookingId: b.id,
+                        phase: "return",
+                        fuel: payload.fuel,
+                        odo: payload.odo,
+                        photoPaths: payload.photoPaths,
+                        notes: payload.notes || null,
+                        damage: payload.damage as any,
+                      },
+                    });
+                  } catch (e: any) {
+                    setSaving(null);
+                    return toast.error(e?.message ?? "Could not record the return.");
+                  }
                   setSaving(null);
-                  if (error) return toast.error(error.message);
                   toast.success("Return recorded — trip completed");
                   load();
                 }}
