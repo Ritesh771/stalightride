@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WashRouteImport } from './routes/wash'
+import { Route as PoolingRouteImport } from './routes/pooling'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as BrowseRouteImport } from './routes/browse'
@@ -30,6 +31,9 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
+import { Route as AuthenticatedPoolingNewRouteImport } from './routes/_authenticated/pooling.new'
+import { Route as AuthenticatedPoolingMineRouteImport } from './routes/_authenticated/pooling.mine'
+import { Route as AuthenticatedPoolingDriverRouteImport } from './routes/_authenticated/pooling.driver'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_authenticated/vendor.vehicles.new'
 import { Route as AuthenticatedReceiptKindIdRouteImport } from './routes/_authenticated/receipt.$kind.$id'
@@ -39,6 +43,11 @@ import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_au
 const WashRoute = WashRouteImport.update({
   id: '/wash',
   path: '/wash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PoolingRoute = PoolingRouteImport.update({
+  id: '/pooling',
+  path: '/pooling',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarnRoute = EarnRouteImport.update({
@@ -142,6 +151,23 @@ const BookingQrCodeRoute = BookingQrCodeRouteImport.update({
   path: '/booking/qr/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPoolingNewRoute = AuthenticatedPoolingNewRouteImport.update({
+  id: '/pooling/new',
+  path: '/pooling/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPoolingMineRoute =
+  AuthenticatedPoolingMineRouteImport.update({
+    id: '/pooling/mine',
+    path: '/pooling/mine',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPoolingDriverRoute =
+  AuthenticatedPoolingDriverRouteImport.update({
+    id: '/pooling/driver',
+    path: '/pooling/driver',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMessagesBookingIdRoute =
   AuthenticatedMessagesBookingIdRouteImport.update({
     id: '/messages/$bookingId',
@@ -179,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/pooling': typeof PoolingRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -193,6 +220,9 @@ export interface FileRoutesByFullPath {
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/pooling/driver': typeof AuthenticatedPoolingDriverRoute
+  '/pooling/mine': typeof AuthenticatedPoolingMineRoute
+  '/pooling/new': typeof AuthenticatedPoolingNewRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -206,6 +236,7 @@ export interface FileRoutesByTo {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/pooling': typeof PoolingRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -220,6 +251,9 @@ export interface FileRoutesByTo {
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/pooling/driver': typeof AuthenticatedPoolingDriverRoute
+  '/pooling/mine': typeof AuthenticatedPoolingMineRoute
+  '/pooling/new': typeof AuthenticatedPoolingNewRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -235,6 +269,7 @@ export interface FileRoutesById {
   '/browse': typeof BrowseRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/pooling': typeof PoolingRoute
   '/wash': typeof WashRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -249,6 +284,9 @@ export interface FileRoutesById {
   '/driver/$id': typeof DriverIdRoute
   '/vehicle/$id': typeof VehicleIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/_authenticated/pooling/driver': typeof AuthenticatedPoolingDriverRoute
+  '/_authenticated/pooling/mine': typeof AuthenticatedPoolingMineRoute
+  '/_authenticated/pooling/new': typeof AuthenticatedPoolingNewRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
   '/_authenticated/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -264,6 +302,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/earn'
+    | '/pooling'
     | '/wash'
     | '/account'
     | '/admin'
@@ -278,6 +317,9 @@ export interface FileRouteTypes {
     | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
+    | '/pooling/driver'
+    | '/pooling/mine'
+    | '/pooling/new'
     | '/booking/qr/$code'
     | '/vendor/'
     | '/bookings/$id/dispute'
@@ -291,6 +333,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/earn'
+    | '/pooling'
     | '/wash'
     | '/account'
     | '/admin'
@@ -305,6 +348,9 @@ export interface FileRouteTypes {
     | '/driver/$id'
     | '/vehicle/$id'
     | '/messages/$bookingId'
+    | '/pooling/driver'
+    | '/pooling/mine'
+    | '/pooling/new'
     | '/booking/qr/$code'
     | '/vendor'
     | '/bookings/$id/dispute'
@@ -319,6 +365,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/drivers'
     | '/earn'
+    | '/pooling'
     | '/wash'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -333,6 +380,9 @@ export interface FileRouteTypes {
     | '/driver/$id'
     | '/vehicle/$id'
     | '/_authenticated/messages/$bookingId'
+    | '/_authenticated/pooling/driver'
+    | '/_authenticated/pooling/mine'
+    | '/_authenticated/pooling/new'
     | '/booking/qr/$code'
     | '/_authenticated/vendor/'
     | '/_authenticated/bookings/$id/dispute'
@@ -348,6 +398,7 @@ export interface RootRouteChildren {
   BrowseRoute: typeof BrowseRoute
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
+  PoolingRoute: typeof PoolingRoute
   WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
@@ -361,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/wash'
       fullPath: '/wash'
       preLoaderRoute: typeof WashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pooling': {
+      id: '/pooling'
+      path: '/pooling'
+      fullPath: '/pooling'
+      preLoaderRoute: typeof PoolingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earn': {
@@ -503,6 +561,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingQrCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/pooling/new': {
+      id: '/_authenticated/pooling/new'
+      path: '/pooling/new'
+      fullPath: '/pooling/new'
+      preLoaderRoute: typeof AuthenticatedPoolingNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pooling/mine': {
+      id: '/_authenticated/pooling/mine'
+      path: '/pooling/mine'
+      fullPath: '/pooling/mine'
+      preLoaderRoute: typeof AuthenticatedPoolingMineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pooling/driver': {
+      id: '/_authenticated/pooling/driver'
+      path: '/pooling/driver'
+      fullPath: '/pooling/driver'
+      preLoaderRoute: typeof AuthenticatedPoolingDriverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/messages/$bookingId': {
       id: '/_authenticated/messages/$bookingId'
       path: '/messages/$bookingId'
@@ -568,6 +647,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedWashesRoute: typeof AuthenticatedWashesRoute
   AuthenticatedWishlistRoute: typeof AuthenticatedWishlistRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
+  AuthenticatedPoolingDriverRoute: typeof AuthenticatedPoolingDriverRoute
+  AuthenticatedPoolingMineRoute: typeof AuthenticatedPoolingMineRoute
+  AuthenticatedPoolingNewRoute: typeof AuthenticatedPoolingNewRoute
   AuthenticatedVendorIndexRoute: typeof AuthenticatedVendorIndexRoute
   AuthenticatedReceiptKindIdRoute: typeof AuthenticatedReceiptKindIdRoute
   AuthenticatedVendorVehiclesNewRoute: typeof AuthenticatedVendorVehiclesNewRoute
@@ -585,6 +667,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWashesRoute: AuthenticatedWashesRoute,
   AuthenticatedWishlistRoute: AuthenticatedWishlistRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
+  AuthenticatedPoolingDriverRoute: AuthenticatedPoolingDriverRoute,
+  AuthenticatedPoolingMineRoute: AuthenticatedPoolingMineRoute,
+  AuthenticatedPoolingNewRoute: AuthenticatedPoolingNewRoute,
   AuthenticatedVendorIndexRoute: AuthenticatedVendorIndexRoute,
   AuthenticatedReceiptKindIdRoute: AuthenticatedReceiptKindIdRoute,
   AuthenticatedVendorVehiclesNewRoute: AuthenticatedVendorVehiclesNewRoute,
@@ -600,6 +685,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrowseRoute: BrowseRoute,
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
+  PoolingRoute: PoolingRoute,
   WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,

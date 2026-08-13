@@ -638,6 +638,140 @@ export type Database = {
           },
         ]
       }
+      pool_requests: {
+        Row: {
+          cancellation_reason: string | null
+          cancelled_by: string | null
+          created_at: string
+          drop_label: string
+          drop_lat: number
+          drop_lng: number
+          fare_total: number
+          id: string
+          match_score: number
+          note: string | null
+          passenger_id: string
+          pickup_label: string
+          pickup_lat: number
+          pickup_lng: number
+          seats: number
+          status: Database["public"]["Enums"]["booking_status"]
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          cancellation_reason?: string | null
+          cancelled_by?: string | null
+          created_at?: string
+          drop_label: string
+          drop_lat: number
+          drop_lng: number
+          fare_total?: number
+          id?: string
+          match_score?: number
+          note?: string | null
+          passenger_id: string
+          pickup_label: string
+          pickup_lat: number
+          pickup_lng: number
+          seats?: number
+          status?: Database["public"]["Enums"]["booking_status"]
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          cancellation_reason?: string | null
+          cancelled_by?: string | null
+          created_at?: string
+          drop_label?: string
+          drop_lat?: number
+          drop_lng?: number
+          fare_total?: number
+          id?: string
+          match_score?: number
+          note?: string | null
+          passenger_id?: string
+          pickup_label?: string
+          pickup_lat?: number
+          pickup_lng?: number
+          seats?: number
+          status?: Database["public"]["Enums"]["booking_status"]
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pool_requests_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "pool_trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pool_trips: {
+        Row: {
+          created_at: string
+          depart_at: string
+          dest_label: string
+          dest_lat: number
+          dest_lng: number
+          driver_id: string
+          fare_per_seat: number
+          id: string
+          notes: string | null
+          origin_label: string
+          origin_lat: number
+          origin_lng: number
+          route: Json
+          seats_available: number
+          seats_total: number
+          status: string
+          updated_at: string
+          vehicle_label: string
+        }
+        Insert: {
+          created_at?: string
+          depart_at: string
+          dest_label: string
+          dest_lat: number
+          dest_lng: number
+          driver_id: string
+          fare_per_seat: number
+          id?: string
+          notes?: string | null
+          origin_label: string
+          origin_lat: number
+          origin_lng: number
+          route?: Json
+          seats_available: number
+          seats_total: number
+          status?: string
+          updated_at?: string
+          vehicle_label: string
+        }
+        Update: {
+          created_at?: string
+          depart_at?: string
+          dest_label?: string
+          dest_lat?: number
+          dest_lng?: number
+          driver_id?: string
+          fare_per_seat?: number
+          id?: string
+          notes?: string | null
+          origin_label?: string
+          origin_lat?: number
+          origin_lng?: number
+          route?: Json
+          seats_available?: number
+          seats_total?: number
+          status?: string
+          updated_at?: string
+          vehicle_label?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

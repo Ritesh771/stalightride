@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee, Users,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -19,6 +19,7 @@ type Item = { to: string; label: string; icon: any };
 const exploreItems: Item[] = [
   { to: "/", label: "Home", icon: Home },
   { to: "/browse", label: "Browse rides", icon: Car },
+  { to: "/pooling", label: "Car pooling", icon: Users },
   { to: "/drivers", label: "Hire a driver", icon: UserRound },
   { to: "/wash", label: "Vehicle wash", icon: Droplets },
 ];
@@ -26,6 +27,7 @@ const exploreItems: Item[] = [
 const accountItems: Item[] = [
   { to: "/account", label: "Account hub", icon: UserIcon },
   { to: "/bookings", label: "My trips", icon: CalendarDays },
+  { to: "/pooling/mine", label: "My pooling", icon: Users },
   { to: "/hires", label: "My drivers", icon: UserRound },
   { to: "/washes", label: "My washes", icon: Droplets },
   { to: "/wallet", label: "Wallet", icon: WalletIcon },
@@ -37,8 +39,10 @@ const earnItems: Item[] = [
   { to: "/earn", label: "Earning options", icon: BadgeIndianRupee },
   { to: "/vendor", label: "Host dashboard", icon: LayoutDashboard },
   { to: "/driver-dashboard", label: "Driver dashboard", icon: Steering },
+  { to: "/pooling/driver", label: "Pooling trips", icon: Users },
   { to: "/scan", label: "Scan QR handover", icon: ScanLine },
 ];
+
 
 
 
