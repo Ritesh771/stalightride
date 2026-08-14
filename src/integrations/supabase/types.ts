@@ -1548,6 +1548,7 @@ export type Database = {
         Args: { _reason?: string; _wash_booking_id: string }
         Returns: Json
       }
+      has_pool_request_on_trip: { Args: { _trip_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1556,6 +1557,7 @@ export type Database = {
         Returns: boolean
       }
       is_end_user_request: { Args: never; Returns: boolean }
+      is_pool_trip_driver: { Args: { _trip_id: string }; Returns: boolean }
       notify_admins: {
         Args: { _body: string; _link?: string; _title: string }
         Returns: undefined
