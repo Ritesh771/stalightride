@@ -10,8 +10,10 @@ export type LatLng = { lat: number; lng: number };
 
 export const MATCH_THRESHOLD = 80;
 
+/** Within this distance a point counts as fully on-route. */
+const ON_ROUTE_KM = 5;
 /** Distance in km beyond which a point is considered "off route". */
-const CORRIDOR_KM = 12;
+const CORRIDOR_KM = 30;
 
 export function haversineKm(a: LatLng, b: LatLng): number {
   const R = 6371;
@@ -87,7 +89,8 @@ export function matchScore(
   const p = projectOnRoute(pickup, route);
   const d = projectOnRoute(drop, route);
   const sameDirection = d.progress >= p.progress;
-  const proximity = (km: number) => Math.max(0, 1 - km / CORRIDOR_KM);
+  const proximity = (km: number) =>
+    km <= ON_ROUTE_KM ? 1 : Math.max(0, 1 - (km - ON_ROUTE_KM) / (CORRIDOR_KM - ON_ROUTE_KM));
   const base = (proximity(p.distanceKm) + proximity(d.distanceKm)) / 2;
   const score = sameDirection ? Math.round(base * 100) : 0;
   return { score, pickupDistanceKm: p.distanceKm, dropDistanceKm: d.distanceKm, sameDirection };

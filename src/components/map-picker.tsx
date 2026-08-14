@@ -2,29 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Crosshair, MapPin, Loader2 } from "lucide-react";
+import { loadGoogleMaps } from "@/lib/gmaps";
 
 declare global { interface Window { google: any; __gmapInit?: () => void } }
-
-let loaderPromise: Promise<void> | null = null;
-function loadGoogleMaps(): Promise<void> {
-  if (typeof window === "undefined") return Promise.reject(new Error("no window"));
-  if (window.google?.maps?.places) return Promise.resolve();
-  if (loaderPromise) return loaderPromise;
-  const key = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as string | undefined;
-  const channel = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID as string | undefined;
-  if (!key) return Promise.reject(new Error("Maps key missing"));
-  loaderPromise = new Promise<void>((resolve, reject) => {
-    window.__gmapInit = () => resolve();
-    const s = document.createElement("script");
-    const params = new URLSearchParams({ key, loading: "async", callback: "__gmapInit", libraries: "marker,places" });
-    if (channel) params.set("channel", channel);
-    s.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
-    s.async = true;
-    s.onerror = () => reject(new Error("Failed to load Google Maps"));
-    document.head.appendChild(s);
-  });
-  return loaderPromise;
-}
 
 interface Suggestion { placeId: string; text: string; }
 
@@ -34,9 +14,11 @@ interface Props {
   onChange: (v: { lat: number; lng: number; address?: string }) => void;
   onAddressChange: (address: string) => void;
   className?: string;
+  /** Tailwind height class for the map canvas. */
+  mapHeight?: string;
 }
 
-export function MapPicker({ value, address, onChange, onAddressChange, className }: Props) {
+export function MapPicker({ value, address, onChange, onAddressChange, className, mapHeight = "h-64" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -166,7 +148,7 @@ export function MapPicker({ value, address, onChange, onAddressChange, className
       </div>
 
       <div className="relative mt-3 overflow-hidden rounded-xl border border-border">
-        <div ref={ref} className={`h-64 w-full ${ready ? "" : "map-shimmer"}`} />
+        <div ref={ref} className={`${mapHeight} w-full ${ready ? "" : "map-shimmer"}`} />
         {error && (
           <div className="absolute inset-0 grid place-items-center bg-muted text-xs text-muted-foreground">
             <div className="flex items-center gap-2"><MapPin className="h-4 w-4" />{error}</div>

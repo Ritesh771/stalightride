@@ -170,7 +170,7 @@ function PoolingPage() {
                 address={pickupLabel}
                 onChange={(v) => { setPickup({ lat: v.lat, lng: v.lng }); if (v.address) setPickupLabel(v.address); }}
                 onAddressChange={setPickupLabel}
-                className="h-48"
+                mapHeight="h-44"
               />
             </div>
             <div className="space-y-2">
@@ -180,7 +180,7 @@ function PoolingPage() {
                 address={dropLabel}
                 onChange={(v) => { setDrop({ lat: v.lat, lng: v.lng }); if (v.address) setDropLabel(v.address); }}
                 onAddressChange={setDropLabel}
-                className="h-48"
+                mapHeight="h-44"
               />
             </div>
             <div className="grid gap-3 sm:grid-cols-3 lg:col-span-2">

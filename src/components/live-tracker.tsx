@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { loadGoogleMaps } from "@/lib/gmaps";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,22 +13,6 @@ interface Props {
   hostLat?: number | null;
   hostLng?: number | null;
   className?: string;
-}
-
-function loadGoogleMaps(key: string): Promise<void> {
-  const w = window as any;
-  if (w.google?.maps) return Promise.resolve();
-  if (w.__gmapsLoader__) return w.__gmapsLoader__;
-  w.__gmapsLoader__ = new Promise<void>((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
-    s.async = true;
-    s.defer = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Google Maps"));
-    document.head.appendChild(s);
-  });
-  return w.__gmapsLoader__;
 }
 
 /**
@@ -56,7 +41,7 @@ export function LiveTracker({ bookingId, userId, role, hostLat, hostLng, classNa
     if (!key || !mapRef.current) return;
     let cancelled = false;
     (async () => {
-      await loadGoogleMaps(key);
+      await loadGoogleMaps();
       if (cancelled || !mapRef.current) return;
       const google = (window as any).google;
       const center = hostLat && hostLng ? { lat: hostLat, lng: hostLng } : { lat: 20.5937, lng: 78.9629 };
