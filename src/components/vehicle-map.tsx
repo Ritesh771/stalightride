@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { loadGoogleMaps } from "@/lib/gmaps";
 import { Button } from "@/components/ui/button";
 import { Navigation, MapPin } from "lucide-react";
 
@@ -7,23 +8,6 @@ interface Props {
   lat?: number | null;
   lng?: number | null;
   className?: string;
-}
-
-function loadGoogleMaps(key: string): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  const w = window as any;
-  if (w.google?.maps) return Promise.resolve();
-  if (w.__gmapsLoader__) return w.__gmapsLoader__;
-  w.__gmapsLoader__ = new Promise<void>((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
-    s.async = true;
-    s.defer = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Google Maps"));
-    document.head.appendChild(s);
-  });
-  return w.__gmapsLoader__;
 }
 
 /**
@@ -50,7 +34,7 @@ export function VehicleMap({ query, lat, lng, className }: Props) {
     let cancelled = false;
     (async () => {
       try {
-        await loadGoogleMaps(key);
+        await loadGoogleMaps();
         if (cancelled || !ref.current) return;
         const google = (window as any).google;
         const center = hasHost ? { lat: Number(lat), lng: Number(lng) } : { lat: 20.5937, lng: 78.9629 };

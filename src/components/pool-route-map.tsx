@@ -1,23 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import type { LatLng } from "@/lib/pool-match";
-
-function loadGoogleMaps(key: string): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  const w = window as any;
-  if (w.google?.maps) return Promise.resolve();
-  if (w.__gmapsLoader__) return w.__gmapsLoader__;
-  w.__gmapsLoader__ = new Promise<void>((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=marker&loading=async&v=weekly`;
-    s.async = true;
-    s.defer = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Google Maps"));
-    document.head.appendChild(s);
-  });
-  return w.__gmapsLoader__;
-}
+import { loadGoogleMaps, mapsBrowserKey } from "@/lib/gmaps";
 
 interface Props {
   route: LatLng[];
@@ -28,7 +12,7 @@ interface Props {
 
 /** Draws a pooling trip's route with the passenger's pickup / drop-off pins. */
 export function PoolRouteMap({ route, pickup, drop, className }: Props) {
-  const key = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as string | undefined;
+  const key = mapsBrowserKey();
   const ref = useRef<HTMLDivElement | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -37,7 +21,7 @@ export function PoolRouteMap({ route, pickup, drop, className }: Props) {
     let cancelled = false;
     (async () => {
       try {
-        await loadGoogleMaps(key);
+        await loadGoogleMaps();
         if (cancelled || !ref.current) return;
         const google = (window as any).google;
         const map = new google.maps.Map(ref.current, {
