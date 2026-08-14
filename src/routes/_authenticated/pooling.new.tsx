@@ -119,7 +119,7 @@ function NewPoolTrip() {
                   address={originLabel}
                   onChange={(v) => { setOrigin({ lat: v.lat, lng: v.lng }); if (v.address) setOriginLabel(v.address); }}
                   onAddressChange={setOriginLabel}
-                  className="h-48"
+                  mapHeight="h-44"
                 />
               </div>
               <div className="space-y-2">
@@ -129,7 +129,7 @@ function NewPoolTrip() {
                   address={destLabel}
                   onChange={(v) => { setDest({ lat: v.lat, lng: v.lng }); if (v.address) setDestLabel(v.address); }}
                   onAddressChange={setDestLabel}
-                  className="h-48"
+                  mapHeight="h-44"
                 />
               </div>
             </CardContent>
