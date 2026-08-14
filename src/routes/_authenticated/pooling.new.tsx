@@ -163,7 +163,7 @@ function NewPoolTrip() {
                       setStops((s) => s.map((x, idx) => (idx === i ? { label: v.address ?? x.label, point: { lat: v.lat, lng: v.lng } } : x)))
                     }
                     onAddressChange={(label) => setStops((s) => s.map((x, idx) => (idx === i ? { ...x, label } : x)))}
-                    className="h-40"
+                    mapHeight="h-40"
                   />
                 </div>
               ))}
