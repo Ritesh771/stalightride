@@ -1539,6 +1539,7 @@ export type Database = {
         Returns: string[]
       }
       can_access_booking_folder: { Args: { _folder: string }; Returns: boolean }
+      can_read_vehicle_image: { Args: { _name: string }; Returns: boolean }
       cancel_driver_booking: {
         Args: { _driver_booking_id: string; _reason?: string }
         Returns: Json
