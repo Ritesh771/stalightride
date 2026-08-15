@@ -1,0 +1,525 @@
+/**
+ * In-memory model of Synchoo's server-side rules, used by the end-to-end
+ * integration tests. It mirrors the guards that live in the database
+ * (triggers, RPCs and RLS intent) so flows can be exercised deterministically
+ * without a live connection:
+ *
+ *  - vehicle + driver verification gates and customer DL gate
+ *  - double-booking / overbooking prevention on overlapping dates
+ *  - wallet debits, refunds and transaction ledger
+ *  - pooling seat accounting, duplicate requests and driver accept/decline
+ *  - cancellation refund tiers (rental, driver hire, wash)
+ *  - handover (check-in / check-out) sequencing
+ *
+ * Every rule is expressed once here and asserted by the flow tests.
+ */
+
+export type BookingStatus = "pending" | "confirmed" | "rejected" | "cancelled" | "completed";
+export type PaymentStatus = "unpaid" | "paid" | "refunded";
+
+export class RuleError extends Error {}
+
+const day = 86_400_000;
+
+export type Vehicle = {
+  id: string;
+  vendor_id: string;
+  price_daily: number;
+  security_deposit: number;
+  status: "draft" | "active" | "paused";
+  verification_status: "pending" | "approved" | "rejected";
+};
+
+export type Booking = {
+  id: string;
+  vehicle_id: string;
+  vendor_id: string;
+  customer_id: string;
+  start_date: string;
+  end_date: string;
+  pickup_time: string;
+  dropoff_time: string;
+  total_price: number;
+  status: BookingStatus;
+  payment_status: PaymentStatus;
+  refund_amount: number;
+  pickup_checked_at: string | null;
+  return_checked_at: string | null;
+  pickup_fuel_pct?: number;
+  return_fuel_pct?: number;
+};
+
+export type Driver = {
+  id: string;
+  hourly_rate: number;
+  daily_rate: number;
+  status: "draft" | "active" | "paused";
+  verification_status: "pending" | "approved" | "rejected";
+};
+
+export type DriverBooking = {
+  id: string;
+  driver_id: string;
+  customer_id: string;
+  start_date: string;
+  end_date: string;
+  total_price: number;
+  status: BookingStatus;
+  payment_status: PaymentStatus;
+  refund_amount: number;
+};
+
+export type PoolTrip = {
+  id: string;
+  driver_id: string;
+  depart_at: string;
+  seats_total: number;
+  seats_available: number;
+  fare_per_seat: number;
+  status: "scheduled" | "started" | "completed" | "cancelled";
+};
+
+export type PoolRequest = {
+  id: string;
+  trip_id: string;
+  passenger_id: string;
+  seats: number;
+  match_score: number;
+  status: BookingStatus;
+};
+
+export type WashBooking = {
+  id: string;
+  customer_id: string;
+  slot_date: string;
+  price: number;
+  status: BookingStatus;
+  payment_status: PaymentStatus;
+  assigned_vendor_id: string | null;
+  refund_amount: number;
+};
+
+export type WalletTxn = { user_id: string; amount: number; kind: string; balance_after: number };
+
+/** Cancellation refund tiers, mirroring the cancel_* database functions. */
+export function refundPercent(startsAt: Date, now: Date): number {
+  const hours = (startsAt.getTime() - now.getTime()) / 3_600_000;
+  if (hours >= 24) return 100;
+  if (hours >= 2) return 50;
+  return 0;
+}
+
+export function datesOverlap(aStart: string, aEnd: string, bStart: string, bEnd: string) {
+  return new Date(aStart) <= new Date(bEnd) && new Date(bStart) <= new Date(aEnd);
+}
+
+let seq = 0;
+const id = (p: string) => `${p}_${++seq}`;
+
+export function createBackend(now = new Date("2026-08-15T10:00:00Z")) {
+  const clock = { now };
+  const profiles = new Map<string, { dl_status: "none" | "pending" | "approved" | "rejected" }>();
+  const admins = new Set<string>();
+  const vehicles = new Map<string, Vehicle>();
+  const bookings = new Map<string, Booking>();
+  const drivers = new Map<string, Driver>();
+  const driverBookings = new Map<string, DriverBooking>();
+  const trips = new Map<string, PoolTrip>();
+  const poolRequests = new Map<string, PoolRequest>();
+  const washes = new Map<string, WashBooking>();
+  const wallets = new Map<string, number>();
+  const walletTxns: WalletTxn[] = [];
+  const notifications: { user_id: string; title: string }[] = [];
+
+  const notify = (user_id: string, title: string) => notifications.push({ user_id, title });
+
+  const wallet = {
+    balance: (user: string) => wallets.get(user) ?? 0,
+    topup(user: string, amount: number) {
+      if (amount <= 0) throw new RuleError("Top-up must be positive");
+      const next = wallet.balance(user) + amount;
+      wallets.set(user, next);
+      walletTxns.push({ user_id: user, amount, kind: "topup", balance_after: next });
+      notify(user, "Wallet topped up");
+      return next;
+    },
+    apply(user: string, amount: number, kind: string) {
+      const next = wallet.balance(user) + amount;
+      if (next < 0) throw new RuleError("Insufficient wallet balance");
+      wallets.set(user, next);
+      walletTxns.push({ user_id: user, amount, kind, balance_after: next });
+      return next;
+    },
+    txns: (user: string) => walletTxns.filter((t) => t.user_id === user),
+  };
+
+  return {
+    clock,
+    setNow: (d: string | Date) => (clock.now = new Date(d)),
+    wallet,
+    notifications,
+    tables: { vehicles, bookings, drivers, driverBookings, trips, poolRequests, washes },
+
+    /* ---------- accounts ---------- */
+    registerCustomer(dl: "none" | "pending" | "approved" | "rejected" = "approved") {
+      const uid = id("user");
+      profiles.set(uid, { dl_status: dl });
+      return uid;
+    },
+    setDl(user: string, dl: "none" | "pending" | "approved" | "rejected") {
+      profiles.set(user, { dl_status: dl });
+    },
+    registerAdmin() {
+      const uid = id("admin");
+      admins.add(uid);
+      return uid;
+    },
+
+    /* ---------- vehicle listing + admin verification ---------- */
+    listVehicle(vendor_id: string, price_daily = 1200, security_deposit = 2000): Vehicle {
+      // Guard: new listings are always pending, never publicly visible.
+      const v: Vehicle = {
+        id: id("veh"),
+        vendor_id,
+        price_daily,
+        security_deposit,
+        status: "active",
+        verification_status: "pending",
+      };
+      vehicles.set(v.id, v);
+      return v;
+    },
+    verifyVehicle(actor: string, vehicle_id: string, decision: "approved" | "rejected") {
+      if (!admins.has(actor)) throw new RuleError("Only admins can verify vehicles");
+      const v = vehicles.get(vehicle_id)!;
+      v.verification_status = decision;
+      notify(v.vendor_id, `Vehicle ${decision}`);
+      return v;
+    },
+    /** What an anonymous visitor sees in Browse Rides for a date range. */
+    browse(startDate?: string, endDate?: string) {
+      const blocked = new Set(
+        [...bookings.values()]
+          .filter((b) => ["pending", "confirmed"].includes(b.status))
+          .filter((b) => !startDate || !endDate || datesOverlap(b.start_date, b.end_date, startDate, endDate))
+          .map((b) => b.vehicle_id),
+      );
+      return [...vehicles.values()].filter(
+        (v) => v.status === "active" && v.verification_status === "approved" && !blocked.has(v.id),
+      );
+    },
+
+    /* ---------- rental bookings ---------- */
+    createBooking(args: {
+      customer_id: string;
+      vehicle_id: string;
+      start_date: string;
+      end_date: string;
+      pickup_time?: string;
+      dropoff_time?: string;
+      total_price?: number;
+    }): Booking {
+      const v = vehicles.get(args.vehicle_id);
+      if (!v) throw new RuleError("Vehicle not found");
+      if (v.verification_status !== "approved" || v.status !== "active")
+        throw new RuleError("This vehicle is not available for booking");
+      if (v.vendor_id === args.customer_id) throw new RuleError("You cannot book your own vehicle");
+      if ((profiles.get(args.customer_id)?.dl_status ?? "none") !== "approved")
+        throw new RuleError("Your driving licence must be approved before booking");
+      const clash = [...bookings.values()].some(
+        (b) =>
+          b.vehicle_id === v.id &&
+          ["pending", "confirmed"].includes(b.status) &&
+          datesOverlap(b.start_date, b.end_date, args.start_date, args.end_date),
+      );
+      if (clash) throw new RuleError("These dates are already booked");
+
+      const b: Booking = {
+        id: id("bk"),
+        vehicle_id: v.id,
+        vendor_id: v.vendor_id,
+        customer_id: args.customer_id,
+        start_date: args.start_date,
+        end_date: args.end_date,
+        pickup_time: args.pickup_time ?? "10:00",
+        dropoff_time: args.dropoff_time ?? "18:00",
+        total_price: args.total_price ?? v.price_daily + v.security_deposit,
+        status: "pending",
+        payment_status: "unpaid",
+        refund_amount: 0,
+        pickup_checked_at: null,
+        return_checked_at: null,
+      };
+      bookings.set(b.id, b);
+      notify(v.vendor_id, "New booking request");
+      return b;
+    },
+    hostDecide(actor: string, booking_id: string, decision: "confirmed" | "rejected") {
+      const b = bookings.get(booking_id)!;
+      if (b.vendor_id !== actor) throw new RuleError("Only the host can decide this booking");
+      if (b.status !== "pending") throw new RuleError("This booking is no longer pending");
+      b.status = decision;
+      notify(b.customer_id, `Booking ${decision}`);
+      return b;
+    },
+    payBookingWithWallet(actor: string, booking_id: string) {
+      const b = bookings.get(booking_id)!;
+      if (b.customer_id !== actor) throw new RuleError("Not your booking");
+      if (b.status !== "confirmed") throw new RuleError("Only confirmed bookings can be paid");
+      if (b.payment_status === "paid") throw new RuleError("Already paid");
+      wallet.apply(actor, -b.total_price, "booking");
+      b.payment_status = "paid";
+      notify(b.vendor_id, "Booking paid");
+      return b;
+    },
+    checkIn(actor: string, booking_id: string, fuel_pct: number) {
+      const b = bookings.get(booking_id)!;
+      if (b.customer_id !== actor && b.vendor_id !== actor) throw new RuleError("Not your booking");
+      if (b.status !== "confirmed" || b.payment_status !== "paid")
+        throw new RuleError("Check-in unlocks after acceptance and payment");
+      const opensAt = new Date(`${b.start_date}T${b.pickup_time}:00Z`).getTime() - 30 * 60_000;
+      if (clock.now.getTime() < opensAt) throw new RuleError("Check-in is not open yet");
+      if (b.pickup_checked_at) throw new RuleError("Already checked in");
+      b.pickup_checked_at = clock.now.toISOString();
+      b.pickup_fuel_pct = fuel_pct;
+      return b;
+    },
+    checkOut(actor: string, booking_id: string, fuel_pct: number) {
+      const b = bookings.get(booking_id)!;
+      if (!b.pickup_checked_at) throw new RuleError("Complete the pickup check-in first");
+      if (b.return_checked_at) throw new RuleError("Already checked out");
+      b.return_checked_at = clock.now.toISOString();
+      b.return_fuel_pct = fuel_pct;
+      b.status = "completed";
+      return b;
+    },
+    cancelBooking(actor: string, booking_id: string) {
+      const b = bookings.get(booking_id)!;
+      if (b.customer_id !== actor) throw new RuleError("Not your booking");
+      if (!["pending", "confirmed"].includes(b.status)) throw new RuleError("This booking cannot be cancelled");
+      if (b.pickup_checked_at) throw new RuleError("The trip has already started");
+      const pct = refundPercent(new Date(`${b.start_date}T${b.pickup_time}:00Z`), clock.now);
+      const refund = b.payment_status === "paid" ? Math.round((b.total_price * pct) / 100) : 0;
+      if (refund > 0) {
+        wallet.apply(b.customer_id, refund, "refund");
+        b.payment_status = "refunded";
+      }
+      b.refund_amount = refund;
+      b.status = "cancelled";
+      notify(b.vendor_id, "Booking cancelled");
+      return { booking: b, refund, percent: pct };
+    },
+    canReview(booking_id: string) {
+      return bookings.get(booking_id)!.status === "completed";
+    },
+
+    /* ---------- driver hire ---------- */
+    enrollDriver(hourly = 200, daily = 1500) {
+      const d: Driver = {
+        id: id("drv"),
+        hourly_rate: hourly,
+        daily_rate: daily,
+        status: "active",
+        verification_status: "pending",
+      };
+      drivers.set(d.id, d);
+      return d;
+    },
+    verifyDriver(actor: string, driver_id: string, decision: "approved" | "rejected") {
+      if (!admins.has(actor)) throw new RuleError("Only admins can verify drivers");
+      drivers.get(driver_id)!.verification_status = decision;
+      return drivers.get(driver_id)!;
+    },
+    searchDrivers() {
+      return [...drivers.values()].filter((d) => d.status === "active" && d.verification_status === "approved");
+    },
+    hireDriver(args: { customer_id: string; driver_id: string; start_date: string; end_date: string; total_price?: number }) {
+      const d = drivers.get(args.driver_id);
+      if (!d || d.verification_status !== "approved" || d.status !== "active")
+        throw new RuleError("This driver is not available");
+      const clash = [...driverBookings.values()].some(
+        (b) =>
+          b.driver_id === d.id &&
+          ["pending", "confirmed"].includes(b.status) &&
+          datesOverlap(b.start_date, b.end_date, args.start_date, args.end_date),
+      );
+      if (clash) throw new RuleError("This driver is already booked for those dates");
+      const b: DriverBooking = {
+        id: id("dbk"),
+        driver_id: d.id,
+        customer_id: args.customer_id,
+        start_date: args.start_date,
+        end_date: args.end_date,
+        total_price: args.total_price ?? d.daily_rate,
+        status: "pending",
+        payment_status: "unpaid",
+        refund_amount: 0,
+      };
+      driverBookings.set(b.id, b);
+      notify(d.id, "New driver hire request");
+      return b;
+    },
+    driverDecide(driver_id: string, booking_id: string, decision: "confirmed" | "rejected") {
+      const b = driverBookings.get(booking_id)!;
+      if (b.driver_id !== driver_id) throw new RuleError("Not your hire request");
+      if (b.status !== "pending") throw new RuleError("This request is no longer pending");
+      b.status = decision;
+      notify(b.customer_id, `Driver ${decision === "confirmed" ? "accepted" : "declined"} your hire`);
+      return b;
+    },
+    payDriverBookingWithWallet(actor: string, booking_id: string) {
+      const b = driverBookings.get(booking_id)!;
+      if (b.customer_id !== actor) throw new RuleError("Not your hire");
+      if (b.status !== "confirmed") throw new RuleError("Only accepted hires can be paid");
+      if (b.payment_status === "paid") throw new RuleError("Already paid");
+      wallet.apply(actor, -b.total_price, "driver_booking");
+      b.payment_status = "paid";
+      return b;
+    },
+    cancelDriverBooking(actor: string, booking_id: string) {
+      const b = driverBookings.get(booking_id)!;
+      if (b.customer_id !== actor) throw new RuleError("Not your hire");
+      if (!["pending", "confirmed"].includes(b.status)) throw new RuleError("This hire cannot be cancelled");
+      const pct = refundPercent(new Date(`${b.start_date}T00:00:00Z`), clock.now);
+      const refund = b.payment_status === "paid" ? Math.round((b.total_price * pct) / 100) : 0;
+      if (refund > 0) {
+        wallet.apply(b.customer_id, refund, "refund");
+        b.payment_status = "refunded";
+      }
+      b.refund_amount = refund;
+      b.status = "cancelled";
+      notify(b.driver_id, "Hire cancelled");
+      return { booking: b, refund, percent: pct };
+    },
+
+    /* ---------- car pooling ---------- */
+    createTrip(driver_id: string, args: { depart_at: string; seats_total: number; fare_per_seat: number }) {
+      if (args.seats_total < 1) throw new RuleError("A trip needs at least one seat");
+      const t: PoolTrip = {
+        id: id("trip"),
+        driver_id,
+        depart_at: args.depart_at,
+        seats_total: args.seats_total,
+        seats_available: args.seats_total,
+        fare_per_seat: args.fare_per_seat,
+        status: "scheduled",
+      };
+      trips.set(t.id, t);
+      return t;
+    },
+    /** Direct seat tampering is ignored by the trip guard. */
+    tamperSeats(trip_id: string, seats: number) {
+      const t = trips.get(trip_id)!;
+      void seats;
+      return t;
+    },
+    requestSeat(args: { passenger_id: string; trip_id: string; seats: number; match_score: number }) {
+      const t = trips.get(args.trip_id);
+      if (!t) throw new RuleError("Trip not found");
+      if (t.status !== "scheduled") throw new RuleError("This trip is no longer open");
+      if (t.driver_id === args.passenger_id) throw new RuleError("You cannot join your own trip");
+      if (args.match_score < 80) throw new RuleError("This trip does not match your route closely enough");
+      if (args.seats < 1) throw new RuleError("Request at least one seat");
+      if (args.seats > t.seats_available) throw new RuleError("Not enough seats available");
+      const dupe = [...poolRequests.values()].some(
+        (r) => r.trip_id === t.id && r.passenger_id === args.passenger_id && ["pending", "confirmed"].includes(r.status),
+      );
+      if (dupe) throw new RuleError("You already have an active request for this trip");
+      const r: PoolRequest = {
+        id: id("preq"),
+        trip_id: t.id,
+        passenger_id: args.passenger_id,
+        seats: args.seats,
+        match_score: args.match_score,
+        status: "pending",
+      };
+      poolRequests.set(r.id, r);
+      notify(t.driver_id, "New pooling request");
+      return r;
+    },
+    poolDecide(driver_id: string, request_id: string, decision: "confirmed" | "rejected") {
+      const r = poolRequests.get(request_id)!;
+      const t = trips.get(r.trip_id)!;
+      if (t.driver_id !== driver_id) throw new RuleError("Not your trip");
+      if (r.status !== "pending") throw new RuleError("This request is no longer pending");
+      if (decision === "confirmed") {
+        if (r.seats > t.seats_available) throw new RuleError("Not enough seats left to accept this rider");
+        t.seats_available -= r.seats;
+      }
+      r.status = decision;
+      notify(r.passenger_id, `Pooling request ${decision === "confirmed" ? "accepted" : "declined"}`);
+      return { request: r, trip: t };
+    },
+    cancelPoolRequest(actor: string, request_id: string) {
+      const r = poolRequests.get(request_id)!;
+      const t = trips.get(r.trip_id)!;
+      if (r.passenger_id !== actor) throw new RuleError("Not your request");
+      if (!["pending", "confirmed"].includes(r.status)) throw new RuleError("Already closed");
+      if (r.status === "confirmed") t.seats_available = Math.min(t.seats_total, t.seats_available + r.seats);
+      r.status = "cancelled";
+      notify(t.driver_id, "Rider cancelled");
+      return { request: r, trip: t };
+    },
+    setTripStatus(driver_id: string, trip_id: string, status: "started" | "completed" | "cancelled") {
+      const t = trips.get(trip_id)!;
+      if (t.driver_id !== driver_id) throw new RuleError("Not your trip");
+      t.status = status;
+      for (const r of poolRequests.values()) {
+        if (r.trip_id !== t.id || !["pending", "confirmed"].includes(r.status)) continue;
+        if (status === "completed") r.status = r.status === "confirmed" ? "completed" : "rejected";
+        if (status === "cancelled") r.status = "cancelled";
+      }
+      return t;
+    },
+
+    /* ---------- vehicle wash ---------- */
+    bookWash(customer_id: string, slot_date: string, price = 499) {
+      const w: WashBooking = {
+        id: id("wash"),
+        customer_id,
+        slot_date,
+        price,
+        status: "pending",
+        payment_status: "unpaid",
+        assigned_vendor_id: null,
+        refund_amount: 0,
+      };
+      washes.set(w.id, w);
+      return w;
+    },
+    adminDecideWash(actor: string, wash_id: string, decision: "confirmed" | "rejected", vendor_id?: string) {
+      if (!admins.has(actor)) throw new RuleError("Only admins can assign wash bookings");
+      const w = washes.get(wash_id)!;
+      if (w.status !== "pending") throw new RuleError("Already decided");
+      if (decision === "confirmed" && !vendor_id) throw new RuleError("Assign a wash vendor before approving");
+      w.status = decision;
+      w.assigned_vendor_id = decision === "confirmed" ? vendor_id! : null;
+      notify(w.customer_id, `Wash ${decision}`);
+      return w;
+    },
+    payWashWithWallet(actor: string, wash_id: string) {
+      const w = washes.get(wash_id)!;
+      if (w.customer_id !== actor) throw new RuleError("Not your wash booking");
+      if (w.status !== "confirmed") throw new RuleError("Wait for admin approval before paying");
+      wallet.apply(actor, -w.price, "wash_booking");
+      w.payment_status = "paid";
+      return w;
+    },
+    cancelWash(actor: string, wash_id: string) {
+      const w = washes.get(wash_id)!;
+      if (w.customer_id !== actor) throw new RuleError("Not your wash booking");
+      const pct = refundPercent(new Date(`${w.slot_date}T00:00:00Z`), clock.now);
+      const refund = w.payment_status === "paid" ? Math.round((w.price * pct) / 100) : 0;
+      if (refund > 0) {
+        wallet.apply(w.customer_id, refund, "refund");
+        w.payment_status = "refunded";
+      }
+      w.refund_amount = refund;
+      w.status = "cancelled";
+      return { wash: w, refund, percent: pct };
+    },
+  };
+}
+
+export type Backend = ReturnType<typeof createBackend>;
+export const DAY_MS = day;
