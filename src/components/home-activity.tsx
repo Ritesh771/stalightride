@@ -141,28 +141,24 @@ export function HomeActivity() {
 
 
   return (
-    <section className="border-b border-border py-14">
+    <section className="cv-auto border-b border-border py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <h2 className="font-display text-2xl font-bold sm:text-3xl">Your bookings</h2>
             <p className="mt-1 text-sm text-muted-foreground">Recent rentals, driver hires and wash slots.</p>
           </div>
           <Link
             to="/wallet"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-foreground/40"
+            className="glass inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all hover:-translate-y-0.5"
           >
-            <WalletIcon className="h-4 w-4" />
+            <WalletIcon className="h-4 w-4" aria-hidden />
             Wallet {wallet === null ? "—" : currency(wallet)}
           </Link>
         </div>
 
         {items === null ? (
-          <div className="grid gap-3">
-            {[0, 1, 2].map((i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-2xl" />
-            ))}
-          </div>
+          <ListRowsSkeleton rows={3} />
         ) : items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
             No bookings yet.{" "}
@@ -180,36 +176,35 @@ export function HomeActivity() {
             {items.map((it) => {
               const Icon = ICONS[it.kind];
               return (
-                <li
-                  key={`${it.kind}-${it.id}`}
-                  className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-sm"
-                >
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-muted">
-                    <Icon className="h-5 w-5" aria-hidden />
+                <li key={`${it.kind}-${it.id}`} className="glass lift p-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="glass grid h-11 w-11 shrink-0 place-items-center rounded-xl">
+                      <Icon className="h-5 w-5" aria-hidden />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-semibold">{it.title}</div>
+                      <div className="truncate text-xs text-muted-foreground">{it.when}</div>
+                    </div>
+                    <span className="font-display text-base font-bold sm:text-lg">{currency(it.total)}</span>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate font-semibold">{it.title}</div>
-                    <div className="text-xs text-muted-foreground">{it.when}</div>
-                  </div>
-                  <div className="flex items-center gap-3">
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
                     <StatusBadge s={it.status} />
-                    <span className="font-display text-base font-bold">{currency(it.total)}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button asChild size="sm" variant="outline">
-                      <Link to={it.href}>Details</Link>
-                    </Button>
-                    {it.paid ? (
-                      <Button asChild size="sm" variant="ghost">
-                        <Link
-                          to="/receipt/$kind/$id"
-                          params={{ kind: it.kind === "rental" ? "vehicle" : it.kind === "hire" ? "driver" : "wash", id: it.id }}
-                        >
-                          <ReceiptText className="h-4 w-4" />
-                          <span className="sr-only">Receipt</span>
-                        </Link>
+                    <div className="flex gap-2">
+                      <Button asChild size="sm" variant="outline">
+                        <Link to={it.href}>Details</Link>
                       </Button>
-                    ) : null}
+                      {it.paid ? (
+                        <Button asChild size="sm" variant="ghost">
+                          <Link
+                            to="/receipt/$kind/$id"
+                            params={{ kind: it.kind === "rental" ? "vehicle" : it.kind === "hire" ? "driver" : "wash", id: it.id }}
+                          >
+                            <ReceiptText className="h-4 w-4" aria-hidden />
+                            <span className="sr-only">Receipt</span>
+                          </Link>
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 </li>
               );
@@ -220,3 +215,4 @@ export function HomeActivity() {
     </section>
   );
 }
+
