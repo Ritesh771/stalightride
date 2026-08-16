@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ListRowsSkeleton, SectionHeaderSkeleton } from "@/components/skeletons";
 import { currency } from "@/lib/format";
 import { Car, Droplets, ReceiptText, UserRound, Wallet as WalletIcon } from "lucide-react";
 
