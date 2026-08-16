@@ -104,20 +104,29 @@ export function HomeActivity() {
     };
   }, [user]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <section className="cv-auto border-b border-border py-12 sm:py-14">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeaderSkeleton className="mb-6" />
+          <ListRowsSkeleton rows={3} />
+        </div>
+      </section>
+    );
+  }
 
   if (!user) {
     return (
-      <section className="border-b border-border py-14">
+      <section className="cv-auto border-b border-border py-12 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="glass glow-border p-6 sm:p-8">
             <h2 className="font-display text-2xl font-bold sm:text-3xl">Your bookings, all in one place</h2>
-            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
               Sign in to see your rentals, driver hires and wash slots, track live trips, download bills and pay from your
               Synchoo wallet.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Button asChild>
+              <Button asChild className="btn-gradient">
                 <Link to="/auth">Sign in</Link>
               </Button>
               <Button asChild variant="outline">
@@ -129,6 +138,7 @@ export function HomeActivity() {
       </section>
     );
   }
+
 
   return (
     <section className="border-b border-border py-14">
