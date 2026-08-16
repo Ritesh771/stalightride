@@ -95,7 +95,18 @@ function Profile() {
     else { toast.success("Submitted — we'll review shortly"); setProfile({ ...profile, dl_status: "pending" }); }
   };
 
-  if (!user || !profile) return null;
+  if (!user || !profile)
+    return (
+      <div className="min-h-screen">
+        <SiteHeader />
+        <div className="mx-auto max-w-2xl space-y-6 px-4 py-8 sm:px-6">
+          <SectionHeaderSkeleton />
+          <FormSkeleton fields={4} />
+          <FormSkeleton fields={2} />
+        </div>
+      </div>
+    );
+
   const initial = (profile.full_name || user.email || "U").charAt(0).toUpperCase();
   const status: string = profile.dl_status ?? "none";
 
