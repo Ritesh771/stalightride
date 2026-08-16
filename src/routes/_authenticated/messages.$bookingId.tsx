@@ -105,7 +105,22 @@ function MessagesPage() {
     } finally { setSending(false); }
   };
 
-  if (allowed === false) return null;
+  if (allowed === false)
+    return (
+      <div className="min-h-screen">
+        <SiteHeader />
+        <div className="mx-auto max-w-md px-4 py-16 text-center">
+          <p className="font-medium">Chat isn't available for this booking</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Messaging unlocks once you have a confirmed booking with this host.
+          </p>
+          <Button asChild className="mt-4">
+            <Link to="/bookings">Back to bookings</Link>
+          </Button>
+        </div>
+      </div>
+    );
+
 
   return (
     <div className="min-h-screen">

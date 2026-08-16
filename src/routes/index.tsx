@@ -139,21 +139,22 @@ function Index() {
               ))}
             </div>
 
-            <dl className="mt-11 grid max-w-lg grid-cols-3 gap-4 text-left">
+            <dl className="mt-11 grid max-w-lg grid-cols-3 gap-2.5 text-left sm:gap-4">
               {[
                 { k: "10k+", v: "Trips completed" },
                 { k: "4.8", v: "Average rating", star: true },
                 { k: "24/7", v: "Rider support" },
               ].map((s) => (
-                <div key={s.v} className="glass px-4 py-3">
-                  <dt className="flex items-center gap-1 font-display text-2xl font-bold text-foreground">
+                <div key={s.v} className="glass px-3 py-2.5 sm:px-4 sm:py-3">
+                  <dt className="flex items-center gap-1 font-display text-xl font-bold text-foreground sm:text-2xl">
                     {s.k}
                     {s.star ? <Star className="h-4 w-4 fill-current text-ember" aria-hidden /> : null}
                   </dt>
-                  <dd className="mt-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">{s.v}</dd>
+                  <dd className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground sm:text-[11px]">{s.v}</dd>
                 </div>
               ))}
             </dl>
+
           </div>
 
           <div className="relative">
@@ -259,17 +260,18 @@ function Index() {
                 key={c.key}
                 to="/browse"
                 search={{ category: c.key } as any}
-                className="glass lift group relative flex flex-col items-start justify-between overflow-hidden p-5"
+                className="glass lift group relative flex flex-col items-start justify-between overflow-hidden p-4 sm:p-5"
               >
                 <div
                   className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-brand/20 blur-xl transition-transform duration-500 group-hover:scale-150"
                   aria-hidden
                 />
-                <CategoryIcon name={c.key} className="relative h-10 w-10 text-foreground" />
-                <div className="relative mt-10">
-                  <div className="text-base font-semibold">{c.label}</div>
+                <CategoryIcon name={c.key} className="relative h-9 w-9 text-foreground sm:h-10 sm:w-10" />
+                <div className="relative mt-8 sm:mt-10">
+                  <div className="text-sm font-semibold sm:text-base">{c.label}</div>
                   <div className="text-xs text-muted-foreground">{c.desc}</div>
                 </div>
+
               </Link>
             ))}
           </div>
@@ -378,7 +380,7 @@ function Index() {
       <footer className="border-t border-border py-10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} Synchoo — Ride. Share. Explore.</span>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
             <Link to="/browse" className="hover:text-foreground">Browse</Link>
             <Link to="/vendor" className="hover:text-foreground">Become a host</Link>
             <Link to="/auth" className="hover:text-foreground">Sign in</Link>
