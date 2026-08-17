@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WashRouteImport } from './routes/wash'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
@@ -43,6 +44,11 @@ import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_au
 const WashRoute = WashRouteImport.update({
   id: '/wash',
   path: '/wash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PoolingRoute = PoolingRouteImport.update({
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
   '/wash': typeof WashRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -303,6 +312,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/pooling'
+    | '/privacy'
     | '/wash'
     | '/account'
     | '/admin'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/pooling'
+    | '/privacy'
     | '/wash'
     | '/account'
     | '/admin'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/pooling'
+    | '/privacy'
     | '/wash'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -399,6 +411,7 @@ export interface RootRouteChildren {
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
   PoolingRoute: typeof PoolingRoute
+  PrivacyRoute: typeof PrivacyRoute
   WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
@@ -412,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/wash'
       fullPath: '/wash'
       preLoaderRoute: typeof WashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pooling': {
@@ -686,6 +706,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
   PoolingRoute: PoolingRoute,
+  PrivacyRoute: PrivacyRoute,
   WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
