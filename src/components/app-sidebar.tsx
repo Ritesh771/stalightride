@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee, Users,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee, Users, LifeBuoy,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
