@@ -1548,6 +1548,7 @@ export type Database = {
         Args: { _reason?: string; _wash_booking_id: string }
         Returns: Json
       }
+      delete_my_account_data: { Args: never; Returns: Json }
       has_pool_request_on_trip: { Args: { _trip_id: string }; Returns: boolean }
       has_role: {
         Args: {

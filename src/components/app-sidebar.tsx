@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Car, UserRound, CalendarDays, Heart, Wallet as WalletIcon, LayoutDashboard,
-  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee, Users,
+  ShieldCheck, CarFront as Steering, Home, User as UserIcon, LogOut, LogIn, Droplets, ScanLine, BadgeIndianRupee, Users, LifeBuoy,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -106,6 +106,11 @@ export function AppSidebar() {
         {user && renderGroup("Your account", accountItems)}
         {renderGroup("Earn with us", user ? earnItems : earnItems.slice(0, 1))}
         {user && isAdmin && renderGroup("Admin", [{ to: "/admin", label: "Admin panel", icon: ShieldCheck }])}
+        {renderGroup("Help & privacy", [
+          { to: "/help", label: "User manual", icon: LifeBuoy },
+          { to: "/data-deletion", label: "Privacy & data", icon: ShieldCheck },
+        ])}
+
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">

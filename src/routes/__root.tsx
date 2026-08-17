@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { SiteFooter } from "@/components/site-footer";
+
 
 function NotFoundComponent() {
   return (
@@ -119,9 +121,11 @@ function RootComponent() {
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AppSidebar />
-          <div className="min-w-0 flex-1 pb-24 md:pb-0">
-            <Outlet />
+          <div className="flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
+            <div className="flex-1"><Outlet /></div>
+            <SiteFooter />
           </div>
+
         </div>
         <MobileBottomNav />
       </SidebarProvider>

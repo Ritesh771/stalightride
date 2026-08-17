@@ -10,9 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WashRouteImport } from './routes/wash'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -45,9 +50,24 @@ const WashRoute = WashRouteImport.update({
   path: '/wash',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PoolingRoute = PoolingRouteImport.update({
   id: '/pooling',
   path: '/pooling',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarnRoute = EarnRouteImport.update({
@@ -58,6 +78,16 @@ const EarnRoute = EarnRouteImport.update({
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrowseRoute = BrowseRouteImport.update({
@@ -203,9 +233,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -234,9 +269,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/wash': typeof WashRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -267,9 +307,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/wash': typeof WashRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -300,9 +345,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
+    | '/privacy'
+    | '/terms'
     | '/wash'
     | '/account'
     | '/admin'
@@ -331,9 +381,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
+    | '/privacy'
+    | '/terms'
     | '/wash'
     | '/account'
     | '/admin'
@@ -363,9 +418,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/browse'
+    | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
+    | '/privacy'
+    | '/terms'
     | '/wash'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -396,9 +456,14 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
+  CookiesRoute: typeof CookiesRoute
+  DataDeletionRoute: typeof DataDeletionRoute
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
+  HelpRoute: typeof HelpRoute
   PoolingRoute: typeof PoolingRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
@@ -414,11 +479,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WashRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pooling': {
       id: '/pooling'
       path: '/pooling'
       fullPath: '/pooling'
       preLoaderRoute: typeof PoolingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earn': {
@@ -433,6 +519,20 @@ declare module '@tanstack/react-router' {
       path: '/drivers'
       fullPath: '/drivers'
       preLoaderRoute: typeof DriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/browse': {
@@ -683,9 +783,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
+  CookiesRoute: CookiesRoute,
+  DataDeletionRoute: DataDeletionRoute,
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
+  HelpRoute: HelpRoute,
   PoolingRoute: PoolingRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
