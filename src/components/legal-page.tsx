@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 
 export function LegalPage({
   title,
@@ -23,7 +22,6 @@ export function LegalPage({
         {intro ? <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{intro}</p> : null}
         <div className="legal-body mt-8 space-y-7 text-sm leading-relaxed text-muted-foreground">{children}</div>
       </main>
-      <SiteFooter />
     </div>
   );
 }
