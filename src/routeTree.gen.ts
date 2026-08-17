@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -71,6 +72,11 @@ const EarnRoute = EarnRouteImport.update({
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -292,6 +300,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
   '/cookies': typeof CookiesRoute
+  '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -328,6 +337,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -397,6 +408,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/browse'
     | '/cookies'
+    | '/data-deletion'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -433,6 +445,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
   CookiesRoute: typeof CookiesRoute
+  DataDeletionRoute: typeof DataDeletionRoute
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
   PoolingRoute: typeof PoolingRoute
@@ -486,6 +499,13 @@ declare module '@tanstack/react-router' {
       path: '/drivers'
       fullPath: '/drivers'
       preLoaderRoute: typeof DriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -744,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
   CookiesRoute: CookiesRoute,
+  DataDeletionRoute: DataDeletionRoute,
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
   PoolingRoute: PoolingRoute,
