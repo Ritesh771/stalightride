@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -70,6 +71,11 @@ const EarnRoute = EarnRouteImport.update({
 const DriversRoute = DriversRouteImport.update({
   id: '/drivers',
   path: '/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrowseRoute = BrowseRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -248,6 +255,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/browse': typeof BrowseRoute
+  '/cookies': typeof CookiesRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/pooling': typeof PoolingRoute
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/cookies'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/browse'
+    | '/cookies'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/browse'
+    | '/cookies'
     | '/drivers'
     | '/earn'
     | '/pooling'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BrowseRoute: typeof BrowseRoute
+  CookiesRoute: typeof CookiesRoute
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
   PoolingRoute: typeof PoolingRoute
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       path: '/drivers'
       fullPath: '/drivers'
       preLoaderRoute: typeof DriversRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/browse': {
@@ -723,6 +743,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BrowseRoute: BrowseRoute,
+  CookiesRoute: CookiesRoute,
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
   PoolingRoute: PoolingRoute,
