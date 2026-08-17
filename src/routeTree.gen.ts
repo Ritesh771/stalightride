@@ -13,6 +13,7 @@ import { Route as WashRouteImport } from './routes/wash'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as DataDeletionRouteImport } from './routes/data-deletion'
@@ -62,6 +63,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PoolingRoute = PoolingRouteImport.update({
   id: '/pooling',
   path: '/pooling',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarnRoute = EarnRouteImport.update({
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -303,6 +311,7 @@ export interface FileRoutesById {
   '/data-deletion': typeof DataDeletionRoute
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
+  '/help': typeof HelpRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/data-deletion'
     | '/drivers'
     | '/earn'
+    | '/help'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -448,6 +460,7 @@ export interface RootRouteChildren {
   DataDeletionRoute: typeof DataDeletionRoute
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
+  HelpRoute: typeof HelpRoute
   PoolingRoute: typeof PoolingRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
@@ -485,6 +498,13 @@ declare module '@tanstack/react-router' {
       path: '/pooling'
       fullPath: '/pooling'
       preLoaderRoute: typeof PoolingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/earn': {
@@ -767,6 +787,7 @@ const rootRouteChildren: RootRouteChildren = {
   DataDeletionRoute: DataDeletionRoute,
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
+  HelpRoute: HelpRoute,
   PoolingRoute: PoolingRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
