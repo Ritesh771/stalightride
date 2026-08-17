@@ -377,16 +377,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6">
-          <span>© {new Date().getFullYear()} Synchoo — Ride. Share. Explore.</span>
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-            <Link to="/browse" className="hover:text-foreground">Browse</Link>
-            <Link to="/vendor" className="hover:text-foreground">Become a host</Link>
-            <Link to="/auth" className="hover:text-foreground">Sign in</Link>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
