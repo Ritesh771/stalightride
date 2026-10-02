@@ -13,6 +13,7 @@ import { Route as WashRouteImport } from './routes/wash'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PoolingRouteImport } from './routes/pooling'
+import { Route as PitchRouteImport } from './routes/pitch'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as EarnRouteImport } from './routes/earn'
 import { Route as DriversRouteImport } from './routes/drivers'
@@ -63,6 +64,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PoolingRoute = PoolingRouteImport.update({
   id: '/pooling',
   path: '/pooling',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpRoute = HelpRouteImport.update({
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/help': typeof HelpRoute
+  '/pitch': typeof PitchRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -274,6 +281,7 @@ export interface FileRoutesByTo {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/help': typeof HelpRoute
+  '/pitch': typeof PitchRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/drivers': typeof DriversRoute
   '/earn': typeof EarnRoute
   '/help': typeof HelpRoute
+  '/pitch': typeof PitchRoute
   '/pooling': typeof PoolingRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/help'
+    | '/pitch'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/help'
+    | '/pitch'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/earn'
     | '/help'
+    | '/pitch'
     | '/pooling'
     | '/privacy'
     | '/terms'
@@ -461,6 +473,7 @@ export interface RootRouteChildren {
   DriversRoute: typeof DriversRoute
   EarnRoute: typeof EarnRoute
   HelpRoute: typeof HelpRoute
+  PitchRoute: typeof PitchRoute
   PoolingRoute: typeof PoolingRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
@@ -498,6 +511,13 @@ declare module '@tanstack/react-router' {
       path: '/pooling'
       fullPath: '/pooling'
       preLoaderRoute: typeof PoolingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help': {
@@ -788,6 +808,7 @@ const rootRouteChildren: RootRouteChildren = {
   DriversRoute: DriversRoute,
   EarnRoute: EarnRoute,
   HelpRoute: HelpRoute,
+  PitchRoute: PitchRoute,
   PoolingRoute: PoolingRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
