@@ -11,7 +11,7 @@ import {
   QrCode,
   Route as RouteIcon,
   ShieldCheck,
-  Steering,
+  CircleGauge,
   UsersRound,
   WalletCards,
 } from "lucide-react";
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/pitch")({
   }),
 });
 
-const serviceIcons = [CarFront, Steering, UsersRound, Droplets];
+const serviceIcons = [CarFront, CircleGauge, UsersRound, Droplets];
 const roleTints = ["text-brand", "text-cyan", "text-violet", "text-ember", "text-emerald"];
 
 function SectionHeading({ kicker, title, body }: { kicker: string; title: string; body?: string }) {
