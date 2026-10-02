@@ -20,12 +20,21 @@ const GROUPS: { title: string; links: { label: string; to: string }[] }[] = [
     ],
   },
   {
-    title: "Help",
+    title: "Company",
     links: [
+      { label: "Pitch & proposal", to: "/pitch" },
       { label: "User manual", to: "/help" },
-      { label: "My trips", to: "/bookings" },
       { label: "Account", to: "/account" },
       { label: "Sign in", to: "/auth" },
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      { label: "My trips", to: "/bookings" },
+      { label: "Hire bookings", to: "/hires" },
+      { label: "Wash bookings", to: "/washes" },
+      { label: "Data controls", to: "/data-deletion" },
     ],
   },
   {
@@ -43,7 +52,7 @@ export function SiteFooter() {
   return (
     <footer className="cv-auto border-t border-border bg-background py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
           {GROUPS.map((g) => (
             <nav key={g.title} aria-label={g.title}>
               <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{g.title}</h2>
