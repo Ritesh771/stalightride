@@ -1,0 +1,74 @@
+{
+  "eyebrow": "Mobility infrastructure, unified",
+  "title": "One operating system for shared mobility.",
+  "summary": "Synchoo connects vehicle rental, verified driver hire, car pooling and vehicle care in one role-aware marketplace with payments, trust controls and trip operations built in.",
+  "positioning": [
+    "Four distinct mobility services create fragmented journeys for customers and operators.",
+    "Trust, availability, handover, payments and incident evidence must remain connected across every booking.",
+    "Synchoo brings these operational layers into one product while keeping each booking workflow independent."
+  ],
+  "services": [
+    { "title": "Vehicle rental", "detail": "Search verified vehicles, schedule precise pickup and return times, pay, complete QR handover and manage the trip." },
+    { "title": "Driver hire", "detail": "Discover licence-reviewed drivers, book by hour or day, pay after confirmation and follow a dedicated hire lifecycle." },
+    { "title": "Car pooling", "detail": "Drivers publish routes and seats; riders discover nearby trips and submit requests that drivers accept or decline." },
+    { "title": "Vehicle wash", "detail": "Customers request a service slot; operations confirms availability before payment and fulfilment." }
+  ],
+  "capabilities": [
+    "Role-aware customer, host, driver and administrator experiences",
+    "Wallet and card payment paths with ledger-backed transactions",
+    "QR pickup and return confirmation",
+    "Booking-scoped chat with image sharing",
+    "Live trip location sharing for active rental bookings",
+    "Fuel, odometer, damage and photo inspection records",
+    "Verification queues for customers, hosts, vehicles and drivers",
+    "Reviews, vendor responses, reports and dispute resolution",
+    "In-app event notifications and printable booking receipts",
+    "Self-service data export and account anonymisation controls"
+  ],
+  "roles": [
+    { "title": "Customers", "detail": "Discover, book, pay, hand over, track, review and raise supported disputes." },
+    { "title": "Hosts", "detail": "Complete verification, publish approved vehicles, manage availability, bookings and trip evidence." },
+    { "title": "Drivers", "detail": "Create a verified profile, control availability and manage hire or pooling requests." },
+    { "title": "Wash partners", "detail": "Participate in an admin-coordinated service workflow with approval before payment." },
+    { "title": "Administrators", "detail": "Review identity and vehicle records, coordinate washing capacity and resolve disputes." }
+  ],
+  "rentalLifecycle": [
+    "Search verified inventory and select an available time window",
+    "Authenticate, confirm the booking and complete payment",
+    "Use booking-scoped chat and precise pickup location",
+    "Scan QR and record pickup inspection before trip start",
+    "Share live location during the active booking",
+    "Record return inspection, complete handover and receive a receipt",
+    "Leave a review or open an evidence-backed dispute when needed"
+  ],
+  "architecture": [
+    { "layer": "Experience", "detail": "Responsive React interfaces and role-aware navigation" },
+    { "layer": "Application", "detail": "TanStack Start routing, server functions and protected workflows" },
+    { "layer": "Platform", "detail": "Postgres data, authentication, storage, realtime events and row-level access controls" },
+    { "layer": "Services", "detail": "Razorpay payment flows and Google Maps location experiences" }
+  ],
+  "trust": [
+    "Role checks and row-level policies restrict sensitive records",
+    "Verification state gates customer booking and public vehicle visibility",
+    "Payment signatures are verified on the server before confirmation",
+    "Booking membership gates messages, tracking and dispute access",
+    "Inspection photos and handover timestamps preserve trip evidence",
+    "Data export and deletion controls support user privacy operations"
+  ],
+  "readiness": [
+    { "label": "Implemented", "detail": "Four service lines, wallet/card payments, QR handover, verification, chat, tracking, inspections, disputes, reviews and notifications." },
+    { "label": "Verified in repository", "detail": "Automated in-memory lifecycle simulations cover rentals, pooling, driver hire, washing and wallet scenarios." },
+    { "label": "Requires deployment validation", "detail": "Live payment credentials, production monitoring, delivery messaging and end-to-end tests against the deployed database and UI." }
+  ],
+  "roadmap": [
+    { "phase": "Foundation", "status": "Current", "detail": "Marketplace services, role-based operations, verification, payments and trip controls." },
+    { "phase": "Operational hardening", "status": "Proposed", "detail": "Deployed end-to-end test coverage, observability, service-level dashboards and reconciliation tooling." },
+    { "phase": "Growth systems", "status": "Proposed", "detail": "Partner onboarding automation, demand intelligence, fleet tools and controlled geographic expansion." }
+  ],
+  "caveats": [
+    "No traction, revenue, market-size or customer adoption claims are included because the repository does not substantiate them.",
+    "The existing automated suite models lifecycle rules in memory; it is not a substitute for deployed database and browser end-to-end testing.",
+    "The install experience is manifest-based; offline caching and background sync are not currently established.",
+    "Vehicle-rental cancellation refund automation was not verified in the audited implementation; driver-hire and wash refund workflows are present."
+  ]
+}
