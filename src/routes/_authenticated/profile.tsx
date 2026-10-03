@@ -1,3 +1,4 @@
+import { CityPicker } from "@/components/city-picker";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -132,7 +133,7 @@ function Profile() {
             <div><Label>Full name</Label><Input value={profile.full_name ?? ""} onChange={(e) => setProfile({ ...profile, full_name: e.target.value })} /></div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div><Label>Phone</Label><Input value={profile.phone ?? ""} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></div>
-              <div><Label>City</Label><Input value={profile.city ?? ""} onChange={(e) => setProfile({ ...profile, city: e.target.value })} /></div>
+              <div><Label>City</Label><CityPicker value={profile.city ?? ""} onChange={(c) => setProfile({ ...profile, city: c })} /></div>
             </div>
             <div><Label>Email</Label><Input value={user.email ?? ""} disabled /></div>
             <div className="flex flex-wrap items-center gap-3">

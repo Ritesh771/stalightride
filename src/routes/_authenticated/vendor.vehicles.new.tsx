@@ -1,3 +1,4 @@
+import { CityPicker } from "@/components/city-picker";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -171,7 +172,7 @@ function NewVehicle() {
 
             <Section title="Pickup location">
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="City"><Input value={form.city} onChange={(e) => set("city", e.target.value)} required placeholder="Bengaluru" /></Field>
+                <Field label="City"><CityPicker value={form.city} onChange={(c) => set("city", c)} /></Field>
               </div>
               <div className="mt-2">
                 <Label>Full address</Label>
