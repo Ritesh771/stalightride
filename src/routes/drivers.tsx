@@ -57,7 +57,6 @@ function DriversPage() {
   }, [page, q, city]);
 
   const pages = Math.max(1, Math.ceil(count / PAGE_SIZE));
-  const cities = useMemo(() => Array.from(new Set((items ?? []).map((d) => d.city))).slice(0, 12), [items]);
 
   return (
     <div className="min-h-screen bg-background">
