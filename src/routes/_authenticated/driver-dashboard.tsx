@@ -1,3 +1,4 @@
+import { CityPicker } from "@/components/city-picker";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -221,7 +222,7 @@ function DriverDashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div><Label>Full name</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required /></div>
               <div><Label>Phone</Label><Input value={form.phone ?? ""} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-              <div><Label>City</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required /></div>
+              <div><Label>City</Label><CityPicker value={form.city} onChange={(c) => setForm({ ...form, city: c })} /></div>
               <div><Label>Years of experience</Label><Input type="number" min={0} value={form.experience_years} onChange={(e) => setForm({ ...form, experience_years: e.target.value })} /></div>
               <div><Label>Hourly rate (₹)</Label><Input type="number" min={0} value={form.hourly_rate} onChange={(e) => setForm({ ...form, hourly_rate: e.target.value })} /></div>
               <div><Label>Daily rate (₹)</Label><Input type="number" min={0} value={form.daily_rate} onChange={(e) => setForm({ ...form, daily_rate: e.target.value })} required /></div>

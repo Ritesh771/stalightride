@@ -1,3 +1,4 @@
+import { CityPicker } from "@/components/city-picker";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -204,7 +205,7 @@ function WashPage() {
             <div className="mt-4 grid gap-3">
               <div className="grid gap-1.5">
                 <Label htmlFor="wash-city">City</Label>
-                <Input id="wash-city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Bengaluru" />
+                <CityPicker id="wash-city" value={form.city} onChange={(c) => setForm({ ...form, city: c })} />
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="wash-address">Address where we should come</Label>

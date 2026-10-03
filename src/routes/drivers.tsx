@@ -1,3 +1,4 @@
+import { CityPicker } from "@/components/city-picker";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +57,6 @@ function DriversPage() {
   }, [page, q, city]);
 
   const pages = Math.max(1, Math.ceil(count / PAGE_SIZE));
-  const cities = useMemo(() => Array.from(new Set((items ?? []).map((d) => d.city))).slice(0, 12), [items]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -72,11 +72,7 @@ function DriversPage() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input className="pl-9" placeholder="Search by driver name" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
-            <div className="relative">
-              <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input className="pl-9" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} list="driver-cities" />
-              <datalist id="driver-cities">{cities.map((c) => <option key={c} value={c} />)}</datalist>
-            </div>
+            <CityPicker value={city} onChange={setCity} placeholder="All cities" allowClear />
             <Button variant="outline" onClick={() => { setQ(""); setCity(""); }}>Clear</Button>
           </div>
         </div>
