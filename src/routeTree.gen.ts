@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
+import { Route as ApiPublicPitchDeckRouteImport } from './routes/api/public/pitch-deck'
 import { Route as AuthenticatedPoolingNewRouteImport } from './routes/_authenticated/pooling.new'
 import { Route as AuthenticatedPoolingMineRouteImport } from './routes/_authenticated/pooling.mine'
 import { Route as AuthenticatedPoolingDriverRouteImport } from './routes/_authenticated/pooling.driver'
@@ -187,6 +188,11 @@ const BookingQrCodeRoute = BookingQrCodeRouteImport.update({
   path: '/booking/qr/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPitchDeckRoute = ApiPublicPitchDeckRouteImport.update({
+  id: '/api/public/pitch-deck',
+  path: '/api/public/pitch-deck',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPoolingNewRoute = AuthenticatedPoolingNewRouteImport.update({
   id: '/pooling/new',
   path: '/pooling/new',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/pooling/driver': typeof AuthenticatedPoolingDriverRoute
   '/pooling/mine': typeof AuthenticatedPoolingMineRoute
   '/pooling/new': typeof AuthenticatedPoolingNewRoute
+  '/api/public/pitch-deck': typeof ApiPublicPitchDeckRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor/': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -302,6 +309,7 @@ export interface FileRoutesByTo {
   '/pooling/driver': typeof AuthenticatedPoolingDriverRoute
   '/pooling/mine': typeof AuthenticatedPoolingMineRoute
   '/pooling/new': typeof AuthenticatedPoolingNewRoute
+  '/api/public/pitch-deck': typeof ApiPublicPitchDeckRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/vendor': typeof AuthenticatedVendorIndexRoute
   '/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/_authenticated/pooling/driver': typeof AuthenticatedPoolingDriverRoute
   '/_authenticated/pooling/mine': typeof AuthenticatedPoolingMineRoute
   '/_authenticated/pooling/new': typeof AuthenticatedPoolingNewRoute
+  '/api/public/pitch-deck': typeof ApiPublicPitchDeckRoute
   '/booking/qr/$code': typeof BookingQrCodeRoute
   '/_authenticated/vendor/': typeof AuthenticatedVendorIndexRoute
   '/_authenticated/bookings/$id/dispute': typeof AuthenticatedBookingsIdDisputeRoute
@@ -380,6 +389,7 @@ export interface FileRouteTypes {
     | '/pooling/driver'
     | '/pooling/mine'
     | '/pooling/new'
+    | '/api/public/pitch-deck'
     | '/booking/qr/$code'
     | '/vendor/'
     | '/bookings/$id/dispute'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/pooling/driver'
     | '/pooling/mine'
     | '/pooling/new'
+    | '/api/public/pitch-deck'
     | '/booking/qr/$code'
     | '/vendor'
     | '/bookings/$id/dispute'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pooling/driver'
     | '/_authenticated/pooling/mine'
     | '/_authenticated/pooling/new'
+    | '/api/public/pitch-deck'
     | '/booking/qr/$code'
     | '/_authenticated/vendor/'
     | '/_authenticated/bookings/$id/dispute'
@@ -480,6 +492,7 @@ export interface RootRouteChildren {
   WashRoute: typeof WashRoute
   DriverIdRoute: typeof DriverIdRoute
   VehicleIdRoute: typeof VehicleIdRoute
+  ApiPublicPitchDeckRoute: typeof ApiPublicPitchDeckRoute
   BookingQrCodeRoute: typeof BookingQrCodeRoute
 }
 
@@ -681,6 +694,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingQrCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/pitch-deck': {
+      id: '/api/public/pitch-deck'
+      path: '/api/public/pitch-deck'
+      fullPath: '/api/public/pitch-deck'
+      preLoaderRoute: typeof ApiPublicPitchDeckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/pooling/new': {
       id: '/_authenticated/pooling/new'
       path: '/pooling/new'
@@ -815,6 +835,7 @@ const rootRouteChildren: RootRouteChildren = {
   WashRoute: WashRoute,
   DriverIdRoute: DriverIdRoute,
   VehicleIdRoute: VehicleIdRoute,
+  ApiPublicPitchDeckRoute: ApiPublicPitchDeckRoute,
   BookingQrCodeRoute: BookingQrCodeRoute,
 }
 export const routeTree = rootRouteImport
