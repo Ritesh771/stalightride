@@ -9,100 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BrowseRouteImport } from './routes/browse'
-import { Route as CookiesRouteImport } from './routes/cookies'
-import { Route as DataDeletionRouteImport } from './routes/data-deletion'
-import { Route as DriversRouteImport } from './routes/drivers'
-import { Route as EarnRouteImport } from './routes/earn'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as PitchRouteImport } from './routes/pitch'
-import { Route as PoolingRouteImport } from './routes/pooling'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as TermsRouteImport } from './routes/terms'
 import { Route as WashRouteImport } from './routes/wash'
-import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
-import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
-import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
-import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
-import { Route as AuthenticatedWashesRouteImport } from './routes/_authenticated/washes'
-import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
-import { Route as DriverIdRouteImport } from './routes/driver.$id'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PoolingRouteImport } from './routes/pooling'
+import { Route as PitchRouteImport } from './routes/pitch'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as EarnRouteImport } from './routes/earn'
+import { Route as DriversRouteImport } from './routes/drivers'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as VehicleIdRouteImport } from './routes/vehicle.$id'
-import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
-import { Route as AuthenticatedPoolingDriverRouteImport } from './routes/_authenticated/pooling.driver'
-import { Route as AuthenticatedPoolingMineRouteImport } from './routes/_authenticated/pooling.mine'
-import { Route as AuthenticatedPoolingNewRouteImport } from './routes/_authenticated/pooling.new'
+import { Route as DriverIdRouteImport } from './routes/driver.$id'
+import { Route as AuthenticatedWishlistRouteImport } from './routes/_authenticated/wishlist'
+import { Route as AuthenticatedWashesRouteImport } from './routes/_authenticated/washes'
+import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
+import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedHiresRouteImport } from './routes/_authenticated/hires'
+import { Route as AuthenticatedDriverDashboardRouteImport } from './routes/_authenticated/driver-dashboard'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedVendorIndexRouteImport } from './routes/_authenticated/vendor.index'
 import { Route as BookingQrCodeRouteImport } from './routes/booking.qr.$code'
-import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
-import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
-import { Route as AuthenticatedReceiptKindIdRouteImport } from './routes/_authenticated/receipt.$kind.$id'
+import { Route as AuthenticatedPoolingNewRouteImport } from './routes/_authenticated/pooling.new'
+import { Route as AuthenticatedPoolingMineRouteImport } from './routes/_authenticated/pooling.mine'
+import { Route as AuthenticatedPoolingDriverRouteImport } from './routes/_authenticated/pooling.driver'
+import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedVendorVehiclesNewRouteImport } from './routes/_authenticated/vendor.vehicles.new'
+import { Route as AuthenticatedReceiptKindIdRouteImport } from './routes/_authenticated/receipt.$kind.$id'
+import { Route as AuthenticatedBookingsIdTripRouteImport } from './routes/_authenticated/bookings.$id.trip'
+import { Route as AuthenticatedBookingsIdDisputeRouteImport } from './routes/_authenticated/bookings.$id.dispute'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BrowseRoute = BrowseRouteImport.update({
-  id: '/browse',
-  path: '/browse',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiesRoute = CookiesRouteImport.update({
-  id: '/cookies',
-  path: '/cookies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DataDeletionRoute = DataDeletionRouteImport.update({
-  id: '/data-deletion',
-  path: '/data-deletion',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DriversRoute = DriversRouteImport.update({
-  id: '/drivers',
-  path: '/drivers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EarnRoute = EarnRouteImport.update({
-  id: '/earn',
-  path: '/earn',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PitchRoute = PitchRouteImport.update({
-  id: '/pitch',
-  path: '/pitch',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PoolingRoute = PoolingRouteImport.update({
-  id: '/pooling',
-  path: '/pooling',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
+const WashRoute = WashRouteImport.update({
+  id: '/wash',
+  path: '/wash',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -110,24 +56,103 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WashRoute = WashRouteImport.update({
-  id: '/wash',
-  path: '/wash',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
+const PoolingRoute = PoolingRouteImport.update({
+  id: '/pooling',
+  path: '/pooling',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchRoute = PitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EarnRoute = EarnRouteImport.update({
+  id: '/earn',
+  path: '/earn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriversRoute = DriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrowseRoute = BrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VehicleIdRoute = VehicleIdRouteImport.update({
+  id: '/vehicle/$id',
+  path: '/vehicle/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriverIdRoute = DriverIdRouteImport.update({
+  id: '/driver/$id',
+  path: '/driver/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedWashesRoute = AuthenticatedWashesRouteImport.update({
+  id: '/washes',
+  path: '/washes',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
+const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHiresRoute = AuthenticatedHiresRouteImport.update({
+  id: '/hires',
+  path: '/hires',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDriverDashboardRoute =
@@ -136,67 +161,19 @@ const AuthenticatedDriverDashboardRoute =
     path: '/driver-dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedHiresRoute = AuthenticatedHiresRouteImport.update({
-  id: '/hires',
-  path: '/hires',
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
-  id: '/scan',
-  path: '/scan',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
-  id: '/wallet',
-  path: '/wallet',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedWashesRoute = AuthenticatedWashesRouteImport.update({
-  id: '/washes',
-  path: '/washes',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedWishlistRoute = AuthenticatedWishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const DriverIdRoute = DriverIdRouteImport.update({
-  id: '/driver/$id',
-  path: '/driver/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VehicleIdRoute = VehicleIdRouteImport.update({
-  id: '/vehicle/$id',
-  path: '/vehicle/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedMessagesBookingIdRoute =
-  AuthenticatedMessagesBookingIdRouteImport.update({
-    id: '/messages/$bookingId',
-    path: '/messages/$bookingId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPoolingDriverRoute =
-  AuthenticatedPoolingDriverRouteImport.update({
-    id: '/pooling/driver',
-    path: '/pooling/driver',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPoolingMineRoute =
-  AuthenticatedPoolingMineRouteImport.update({
-    id: '/pooling/mine',
-    path: '/pooling/mine',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPoolingNewRoute = AuthenticatedPoolingNewRouteImport.update({
-  id: '/pooling/new',
-  path: '/pooling/new',
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedVendorIndexRoute =
@@ -210,22 +187,27 @@ const BookingQrCodeRoute = BookingQrCodeRouteImport.update({
   path: '/booking/qr/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedBookingsIdDisputeRoute =
-  AuthenticatedBookingsIdDisputeRouteImport.update({
-    id: '/$id/dispute',
-    path: '/$id/dispute',
-    getParentRoute: () => AuthenticatedBookingsRoute,
+const AuthenticatedPoolingNewRoute = AuthenticatedPoolingNewRouteImport.update({
+  id: '/pooling/new',
+  path: '/pooling/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPoolingMineRoute =
+  AuthenticatedPoolingMineRouteImport.update({
+    id: '/pooling/mine',
+    path: '/pooling/mine',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedBookingsIdTripRoute =
-  AuthenticatedBookingsIdTripRouteImport.update({
-    id: '/$id/trip',
-    path: '/$id/trip',
-    getParentRoute: () => AuthenticatedBookingsRoute,
+const AuthenticatedPoolingDriverRoute =
+  AuthenticatedPoolingDriverRouteImport.update({
+    id: '/pooling/driver',
+    path: '/pooling/driver',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedReceiptKindIdRoute =
-  AuthenticatedReceiptKindIdRouteImport.update({
-    id: '/receipt/$kind/$id',
-    path: '/receipt/$kind/$id',
+const AuthenticatedMessagesBookingIdRoute =
+  AuthenticatedMessagesBookingIdRouteImport.update({
+    id: '/messages/$bookingId',
+    path: '/messages/$bookingId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVendorVehiclesNewRoute =
@@ -233,6 +215,24 @@ const AuthenticatedVendorVehiclesNewRoute =
     id: '/vendor/vehicles/new',
     path: '/vendor/vehicles/new',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedReceiptKindIdRoute =
+  AuthenticatedReceiptKindIdRouteImport.update({
+    id: '/receipt/$kind/$id',
+    path: '/receipt/$kind/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBookingsIdTripRoute =
+  AuthenticatedBookingsIdTripRouteImport.update({
+    id: '/$id/trip',
+    path: '/$id/trip',
+    getParentRoute: () => AuthenticatedBookingsRoute,
+  } as any)
+const AuthenticatedBookingsIdDisputeRoute =
+  AuthenticatedBookingsIdDisputeRouteImport.update({
+    id: '/$id/dispute',
+    path: '/$id/dispute',
+    getParentRoute: () => AuthenticatedBookingsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -485,88 +485,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/browse': {
-      id: '/browse'
-      path: '/browse'
-      fullPath: '/browse'
-      preLoaderRoute: typeof BrowseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookies': {
-      id: '/cookies'
-      path: '/cookies'
-      fullPath: '/cookies'
-      preLoaderRoute: typeof CookiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/data-deletion': {
-      id: '/data-deletion'
-      path: '/data-deletion'
-      fullPath: '/data-deletion'
-      preLoaderRoute: typeof DataDeletionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/drivers': {
-      id: '/drivers'
-      path: '/drivers'
-      fullPath: '/drivers'
-      preLoaderRoute: typeof DriversRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/earn': {
-      id: '/earn'
-      path: '/earn'
-      fullPath: '/earn'
-      preLoaderRoute: typeof EarnRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pitch': {
-      id: '/pitch'
-      path: '/pitch'
-      fullPath: '/pitch'
-      preLoaderRoute: typeof PitchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pooling': {
-      id: '/pooling'
-      path: '/pooling'
-      fullPath: '/pooling'
-      preLoaderRoute: typeof PoolingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
+    '/wash': {
+      id: '/wash'
+      path: '/wash'
+      fullPath: '/wash'
+      preLoaderRoute: typeof WashRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -576,88 +499,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wash': {
-      id: '/wash'
-      path: '/wash'
-      fullPath: '/wash'
-      preLoaderRoute: typeof WashRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/account': {
-      id: '/_authenticated/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AuthenticatedAccountRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/pooling': {
+      id: '/pooling'
+      path: '/pooling'
+      fullPath: '/pooling'
+      preLoaderRoute: typeof PoolingRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/pitch': {
+      id: '/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof PitchRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/bookings': {
-      id: '/_authenticated/bookings'
-      path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/driver-dashboard': {
-      id: '/_authenticated/driver-dashboard'
-      path: '/driver-dashboard'
-      fullPath: '/driver-dashboard'
-      preLoaderRoute: typeof AuthenticatedDriverDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/earn': {
+      id: '/earn'
+      path: '/earn'
+      fullPath: '/earn'
+      preLoaderRoute: typeof EarnRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/hires': {
-      id: '/_authenticated/hires'
-      path: '/hires'
-      fullPath: '/hires'
-      preLoaderRoute: typeof AuthenticatedHiresRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/drivers': {
+      id: '/drivers'
+      path: '/drivers'
+      fullPath: '/drivers'
+      preLoaderRoute: typeof DriversRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/scan': {
-      id: '/_authenticated/scan'
-      path: '/scan'
-      fullPath: '/scan'
-      preLoaderRoute: typeof AuthenticatedScanRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/wallet': {
-      id: '/_authenticated/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof AuthenticatedWalletRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/browse': {
+      id: '/browse'
+      path: '/browse'
+      fullPath: '/browse'
+      preLoaderRoute: typeof BrowseRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/washes': {
-      id: '/_authenticated/washes'
-      path: '/washes'
-      fullPath: '/washes'
-      preLoaderRoute: typeof AuthenticatedWashesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/wishlist': {
-      id: '/_authenticated/wishlist'
-      path: '/wishlist'
-      fullPath: '/wishlist'
-      preLoaderRoute: typeof AuthenticatedWishlistRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/driver/$id': {
-      id: '/driver/$id'
-      path: '/driver/$id'
-      fullPath: '/driver/$id'
-      preLoaderRoute: typeof DriverIdRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vehicle/$id': {
@@ -667,32 +590,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VehicleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/messages/$bookingId': {
-      id: '/_authenticated/messages/$bookingId'
-      path: '/messages/$bookingId'
-      fullPath: '/messages/$bookingId'
-      preLoaderRoute: typeof AuthenticatedMessagesBookingIdRouteImport
+    '/driver/$id': {
+      id: '/driver/$id'
+      path: '/driver/$id'
+      fullPath: '/driver/$id'
+      preLoaderRoute: typeof DriverIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/wishlist': {
+      id: '/_authenticated/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof AuthenticatedWishlistRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/pooling/driver': {
-      id: '/_authenticated/pooling/driver'
-      path: '/pooling/driver'
-      fullPath: '/pooling/driver'
-      preLoaderRoute: typeof AuthenticatedPoolingDriverRouteImport
+    '/_authenticated/washes': {
+      id: '/_authenticated/washes'
+      path: '/washes'
+      fullPath: '/washes'
+      preLoaderRoute: typeof AuthenticatedWashesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/pooling/mine': {
-      id: '/_authenticated/pooling/mine'
-      path: '/pooling/mine'
-      fullPath: '/pooling/mine'
-      preLoaderRoute: typeof AuthenticatedPoolingMineRouteImport
+    '/_authenticated/wallet': {
+      id: '/_authenticated/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedWalletRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/pooling/new': {
-      id: '/_authenticated/pooling/new'
-      path: '/pooling/new'
-      fullPath: '/pooling/new'
-      preLoaderRoute: typeof AuthenticatedPoolingNewRouteImport
+    '/_authenticated/scan': {
+      id: '/_authenticated/scan'
+      path: '/scan'
+      fullPath: '/scan'
+      preLoaderRoute: typeof AuthenticatedScanRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hires': {
+      id: '/_authenticated/hires'
+      path: '/hires'
+      fullPath: '/hires'
+      preLoaderRoute: typeof AuthenticatedHiresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/driver-dashboard': {
+      id: '/_authenticated/driver-dashboard'
+      path: '/driver-dashboard'
+      fullPath: '/driver-dashboard'
+      preLoaderRoute: typeof AuthenticatedDriverDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/vendor/': {
@@ -709,25 +681,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingQrCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/bookings/$id/dispute': {
-      id: '/_authenticated/bookings/$id/dispute'
-      path: '/$id/dispute'
-      fullPath: '/bookings/$id/dispute'
-      preLoaderRoute: typeof AuthenticatedBookingsIdDisputeRouteImport
-      parentRoute: typeof AuthenticatedBookingsRoute
+    '/_authenticated/pooling/new': {
+      id: '/_authenticated/pooling/new'
+      path: '/pooling/new'
+      fullPath: '/pooling/new'
+      preLoaderRoute: typeof AuthenticatedPoolingNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/bookings/$id/trip': {
-      id: '/_authenticated/bookings/$id/trip'
-      path: '/$id/trip'
-      fullPath: '/bookings/$id/trip'
-      preLoaderRoute: typeof AuthenticatedBookingsIdTripRouteImport
-      parentRoute: typeof AuthenticatedBookingsRoute
+    '/_authenticated/pooling/mine': {
+      id: '/_authenticated/pooling/mine'
+      path: '/pooling/mine'
+      fullPath: '/pooling/mine'
+      preLoaderRoute: typeof AuthenticatedPoolingMineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/receipt/$kind/$id': {
-      id: '/_authenticated/receipt/$kind/$id'
-      path: '/receipt/$kind/$id'
-      fullPath: '/receipt/$kind/$id'
-      preLoaderRoute: typeof AuthenticatedReceiptKindIdRouteImport
+    '/_authenticated/pooling/driver': {
+      id: '/_authenticated/pooling/driver'
+      path: '/pooling/driver'
+      fullPath: '/pooling/driver'
+      preLoaderRoute: typeof AuthenticatedPoolingDriverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/messages/$bookingId': {
+      id: '/_authenticated/messages/$bookingId'
+      path: '/messages/$bookingId'
+      fullPath: '/messages/$bookingId'
+      preLoaderRoute: typeof AuthenticatedMessagesBookingIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/vendor/vehicles/new': {
@@ -736,6 +715,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/vendor/vehicles/new'
       preLoaderRoute: typeof AuthenticatedVendorVehiclesNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/receipt/$kind/$id': {
+      id: '/_authenticated/receipt/$kind/$id'
+      path: '/receipt/$kind/$id'
+      fullPath: '/receipt/$kind/$id'
+      preLoaderRoute: typeof AuthenticatedReceiptKindIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bookings/$id/trip': {
+      id: '/_authenticated/bookings/$id/trip'
+      path: '/$id/trip'
+      fullPath: '/bookings/$id/trip'
+      preLoaderRoute: typeof AuthenticatedBookingsIdTripRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
+    }
+    '/_authenticated/bookings/$id/dispute': {
+      id: '/_authenticated/bookings/$id/dispute'
+      path: '/$id/dispute'
+      fullPath: '/bookings/$id/dispute'
+      preLoaderRoute: typeof AuthenticatedBookingsIdDisputeRouteImport
+      parentRoute: typeof AuthenticatedBookingsRoute
     }
   }
 }
