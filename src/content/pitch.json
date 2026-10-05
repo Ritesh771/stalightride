@@ -20,7 +20,7 @@
     "url": "https://stalightride.lovable.app/pitch"
   },
   "launchGates": [
-    { "title": "Security acceptance", "detail": "Resolve or substantiate public-data and avatar-access scan findings; test access as customer, host, driver and admin." },
+    { "title": "Security acceptance", "detail": "Complete access-control acceptance checks as customer, host, driver and administrator before opening the pilot." },
     { "title": "Payment resilience", "detail": "Validate hosted credentials, payment reconciliation, cancellation and refund outcomes, including interrupted checkout." },
     { "title": "Real-world workflow tests", "detail": "Exercise deployed bookings, overlapping availability, QR handovers, disputes and wallet balances with signed-in accounts." },
     { "title": "Operational readiness", "detail": "Complete long-list pagination, monitoring, backup/restore drills and incident ownership before scaling." }

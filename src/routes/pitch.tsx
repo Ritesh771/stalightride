@@ -252,6 +252,14 @@ function PitchPage() {
                 </article>
               ))}
             </div>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2">
+              {pitch.launchGates.map((item) => (
+                <article key={item.title} className="border-t border-border pt-5">
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -261,8 +269,8 @@ function PitchPage() {
               <div className="relative grid gap-10 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan">Decision brief</p>
-                  <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold sm:text-5xl">Evaluate the product. Validate deployment. Scale with evidence.</h2>
-                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">Use the downloadable deck for stakeholder review, then explore the live product journeys and define the deployment validation plan.</p>
+                  <h2 className="mt-4 max-w-3xl font-display text-3xl font-bold sm:text-5xl">{pitch.decision.title}</h2>
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">{pitch.decision.detail}</p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
                   <Button asChild size="lg" className="btn-gradient h-13 rounded-2xl px-6"><a href="/api/public/pitch-deck" download><Download className="h-4 w-4" /> Download PDF</a></Button>
