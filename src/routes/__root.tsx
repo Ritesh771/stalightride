@@ -70,8 +70,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Synchoo — Rent cars, bikes & EVs near you" },
       { name: "twitter:description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Hourly, daily or weekly rentals with instant confirmation and secure payments." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/9Fqw0s8nIfV04662WALvNrgwsK33/social-images/social-1784890622529-11997.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/9Fqw0s8nIfV04662WALvNrgwsK33/social-images/social-1784890622529-11997.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
