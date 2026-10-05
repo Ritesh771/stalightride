@@ -1,6 +1,30 @@
 {
   "eyebrow": "Mobility infrastructure, unified",
   "title": "One operating system for shared mobility.",
+  "executive": {
+    "headline": "Synchoo",
+    "offer": "A connected operating layer for shared mobility",
+    "thesis": "Bring discovery, booking, payment and trip evidence together—without forcing every mobility service into the same workflow.",
+    "proposal": "Evaluate a controlled pilot before committing to broader rollout.",
+    "audience": "Clients · operating partners · strategic stakeholders"
+  },
+  "value": [
+    { "title": "For customers", "detail": "One account connects discovery, payment and booking records across mobility services.", "measure": "Pilot measure: booking completion and support requests per trip." },
+    { "title": "For operators", "detail": "Availability, verification and handover evidence stay attached to the relevant booking.", "measure": "Pilot measure: approval turnaround and handover exceptions." },
+    { "title": "For partners", "detail": "Separate service lifecycles provide a foundation for expanding supply without replacing the core product.", "measure": "Pilot measure: partner activation and completed service requests." }
+  ],
+  "decision": {
+    "title": "Start with a controlled pilot. Scale on evidence.",
+    "detail": "Align on service scope, supply partners and success criteria; validate security and money movement before opening wider access.",
+    "steps": ["Agree pilot geography and service scope", "Close security and payment release gates", "Run real bookings with participating partners", "Review outcomes before expanding"],
+    "url": "https://stalightride.lovable.app/pitch"
+  },
+  "launchGates": [
+    { "title": "Security acceptance", "detail": "Resolve or substantiate public-data and avatar-access scan findings; test access as customer, host, driver and admin." },
+    { "title": "Payment resilience", "detail": "Validate hosted credentials, payment reconciliation, cancellation and refund outcomes, including interrupted checkout." },
+    { "title": "Real-world workflow tests", "detail": "Exercise deployed bookings, overlapping availability, QR handovers, disputes and wallet balances with signed-in accounts." },
+    { "title": "Operational readiness", "detail": "Complete long-list pagination, monitoring, backup/restore drills and incident ownership before scaling." }
+  ],
   "summary": "Synchoo connects vehicle rental, verified driver hire, car pooling and vehicle care in one role-aware marketplace with payments, trust controls and trip operations built in.",
   "positioning": [
     "Four distinct mobility services create fragmented journeys for customers and operators.",
@@ -69,6 +93,6 @@
     "No traction, revenue, market-size or customer adoption claims are included because the repository does not substantiate them.",
     "The existing automated suite models lifecycle rules in memory; it is not a substitute for deployed database and browser end-to-end testing.",
     "The install experience is manifest-based; offline caching and background sync are not currently established.",
-    "Vehicle-rental cancellation refund automation was not verified in the audited implementation; driver-hire and wash refund workflows are present."
+      "Card refund execution and payment reconciliation require deployment validation across every service; cancellation UI or ledger records alone do not establish completed external refunds."
   ]
 }
