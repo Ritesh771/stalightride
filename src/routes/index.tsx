@@ -7,7 +7,6 @@ import {
   MapPin,
   Clock,
   ArrowRight,
-  Star,
   Car,
   UserRound,
   Droplets,
@@ -19,7 +18,6 @@ import {
   CircleAlert,
   QrCode,
   
-  Quote,
 } from "lucide-react";
 import { useState } from "react";
 import { CategoryIcon } from "@/components/category-icon";
@@ -35,6 +33,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Synchoo — Premium car, bike & EV rentals near you" },
       { property: "og:description", content: "Book cars, motorcycles, scooters and EVs from verified local hosts. Instant confirmation, QR handover, live GPS tracking and secure wallet payments." },
       { property: "og:url", content: "https://stalightride.lovable.app/" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://stalightride.lovable.app/" }],
     scripts: [{
@@ -57,27 +57,6 @@ const CATS = [
   { key: "scooter", label: "Scooters", desc: "Zip through the city" },
   { key: "bike", label: "Bicycles", desc: "Pedal on your terms" },
 ] as const;
-
-const TESTIMONIALS = [
-  {
-    quote: "Booked an EV in Bengaluru at 11pm, scanned the QR at pickup and was on the road in four minutes. Cleanest rental flow I've used.",
-    name: "Aarav Menon",
-    role: "Weekend traveller",
-    tint: "text-brand",
-  },
-  {
-    quote: "As a host, the earnings panel and availability calendar are exactly what I needed. Payouts land without me chasing anyone.",
-    name: "Divya Rao",
-    role: "Host · 3 vehicles",
-    tint: "text-cyan",
-  },
-  {
-    quote: "The fuel and damage inspection with photos saved a dispute for me. Support closed it in a day with the evidence already there.",
-    name: "Karthik S.",
-    role: "Frequent renter",
-    tint: "text-violet",
-  },
-];
 
 function Index() {
   const navigate = useNavigate();
@@ -141,14 +120,13 @@ function Index() {
 
             <dl className="mt-11 grid max-w-lg grid-cols-3 gap-2.5 text-left sm:gap-4">
               {[
-                { k: "10k+", v: "Trips completed" },
-                { k: "4.8", v: "Average rating", star: true },
-                { k: "24/7", v: "Rider support" },
+                { k: "QR", v: "Pickup & return" },
+                { k: "GPS", v: "Active-trip sharing" },
+                { k: "Wallet", v: "Booking payments" },
               ].map((s) => (
                 <div key={s.v} className="glass px-3 py-2.5 sm:px-4 sm:py-3">
                   <dt className="flex items-center gap-1 font-display text-xl font-bold text-foreground sm:text-2xl">
                     {s.k}
-                    {s.star ? <Star className="h-4 w-4 fill-current text-ember" aria-hidden /> : null}
                   </dt>
                   <dd className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground sm:text-[11px]">{s.v}</dd>
                 </div>
@@ -286,7 +264,7 @@ function Index() {
             {[
               { n: "01", title: "Find your ride", body: "Search by city and category. Compare verified vehicles with real photos and ratings." },
               { n: "02", title: "Book in seconds", body: "Pick your dates, pay by card or wallet, and get instant confirmation." },
-              { n: "03", title: "Unlock & go", body: "Meet your host, scan the QR to verify, and start your trip. Support 24/7." },
+              { n: "03", title: "Check in & go", body: "Meet your host, scan the QR to confirm handover, and complete the pickup inspection." },
             ].map((s, i) => (
               <div
                 key={s.n}
@@ -297,28 +275,6 @@ function Index() {
                 <h3 className="mt-3 text-lg font-semibold">{s.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ————— Testimonials ————— */}
-      <section className="cv-auto relative py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-10 max-w-2xl">
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">Riders and hosts, in their words</h2>
-            <p className="mt-3 text-base text-muted-foreground">Real trips, real handovers, real payouts.</p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {TESTIMONIALS.map((t, i) => (
-              <figure key={t.name} className="glass lift flex flex-col p-7" style={{ animation: `sy-rise 620ms ${i * 100}ms both` }}>
-                <Quote className={`h-6 w-6 ${t.tint}`} aria-hidden />
-                <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-foreground/90">“{t.quote}”</blockquote>
-                <figcaption className="mt-5 border-t border-border pt-4">
-                  <div className="text-sm font-semibold">{t.name}</div>
-                  <div className="text-xs text-muted-foreground">{t.role}</div>
-                </figcaption>
-              </figure>
             ))}
           </div>
         </div>
@@ -366,7 +322,7 @@ function Index() {
                 </div>
               </div>
               <ul className="grid gap-3 text-sm">
-                {["Free listing, no monthly fees", "Fast payouts to your wallet", "Insurance-ready documents", "24/7 host support"].map((t) => (
+                {["Control pricing and availability", "Booking payment records", "Vehicle document review", "Trip evidence and dispute tools"].map((t) => (
                   <li key={t} className="glass flex items-center gap-2.5 px-4 py-3">
                     <ShieldCheck className="h-4 w-4 text-emerald" aria-hidden /> {t}
                   </li>
