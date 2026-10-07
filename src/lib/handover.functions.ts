@@ -64,7 +64,7 @@ export const confirmHandover = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: booking, error } = await supabase
       .from("bookings")
-      .select("id, status, payment_status, vendor_id, pickup_checked_at, return_checked_at")
+      .select("id, status, payment_status, vendor_id, start_date, end_date, pickup_time, dropoff_time, pickup_checked_at, return_checked_at")
       .eq("qr_code", data.code)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -77,12 +77,22 @@ export const confirmHandover = createServerFn({ method: "POST" })
     if (booking.status !== "confirmed" || booking.payment_status !== "paid") {
       throw new Error("This booking is not paid and confirmed yet.");
     }
-    if (data.phase === "pickup" && booking.pickup_checked_at) {
-      throw new Error("Pickup was already confirmed.");
+
+    // Enforce the same timing rules as the trip page: check-in opens
+    // 30 minutes before pickup; check-out needs a recorded pickup.
+    const gate = getHandoverGate(booking);
+    if (data.phase === "pickup") {
+      if (booking.pickup_checked_at) throw new Error("Pickup was already confirmed.");
+      if (!gate.canCheckin) {
+        throw new Error(gate.checkinReason ?? "Check-in is not open yet.");
+      }
     }
     if (data.phase === "return") {
       if (!booking.pickup_checked_at) throw new Error("Confirm the pickup first.");
       if (booking.return_checked_at) throw new Error("Return was already confirmed.");
+      if (!gate.canCheckout) {
+        throw new Error(gate.checkoutReason ?? "Check-out is not available yet.");
+      }
     }
 
     const patch =
