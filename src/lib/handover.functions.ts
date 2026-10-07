@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { getHandoverGate } from "@/lib/trip-window";
 
 const codeSchema = z.object({ code: z.string().min(8).max(200) });
 const confirmSchema = z.object({
