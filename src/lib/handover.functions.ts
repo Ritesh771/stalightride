@@ -35,6 +35,8 @@ export const resolveHandoverCode = createServerFn({ method: "POST" })
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
     ]);
 
+    const gate = getHandoverGate(booking);
+
     return {
       found: true as const,
       booking,
@@ -42,6 +44,13 @@ export const resolveHandoverCode = createServerFn({ method: "POST" })
       rider,
       canConfirm: booking.vendor_id === userId || isAdmin === true,
       isRider: booking.customer_id === userId,
+      gate: {
+        canCheckin: gate.canCheckin,
+        canCheckout: gate.canCheckout,
+        checkinReason: gate.checkinReason,
+        checkoutReason: gate.checkoutReason,
+        opensAt: gate.opensAt?.toISOString() ?? null,
+      },
     };
   });
 
