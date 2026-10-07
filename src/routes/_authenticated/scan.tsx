@@ -163,12 +163,24 @@ function ScanPage() {
                 </p>
               )}
 
-              {result.canConfirm && phase && (
-                <Button className="w-full rounded-xl" disabled={busy} onClick={() => doConfirm(phase)}>
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  {busy ? "Confirming…" : phase === "pickup" ? "Confirm pickup handover" : "Confirm return handover"}
-                </Button>
-              )}
+              {result.canConfirm && phase && (() => {
+                const gate = result.gate;
+                const allowed = phase === "pickup" ? gate?.canCheckin !== false : gate?.canCheckout !== false;
+                const reason = phase === "pickup" ? gate?.checkinReason : gate?.checkoutReason;
+                return (
+                  <div className="space-y-2">
+                    {!allowed && reason && (
+                      <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700 dark:text-amber-400">
+                        {reason}
+                      </p>
+                    )}
+                    <Button className="w-full rounded-xl" disabled={busy || !allowed} onClick={() => doConfirm(phase)}>
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      {busy ? "Confirming…" : phase === "pickup" ? "Confirm pickup handover" : "Confirm return handover"}
+                    </Button>
+                  </div>
+                );
+              })()}
 
               {!phase && (
                 <div className="flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
