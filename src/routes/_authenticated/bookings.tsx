@@ -300,12 +300,21 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                     {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                     )}
-                    {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
+                    {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && b.return_odometer != null && (
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
                     )}
                     {(() => {
                       const gate = getHandoverGate(b);
                       if (!gate.ctaLabel) return null;
+                      const onTrip = b.pickup_checked_at && !b.return_checked_at;
+                      const label =
+                        b.pickup_checked_at && b.pickup_odometer == null
+                          ? "Pickup checklist"
+                          : b.return_checked_at && b.return_odometer == null
+                            ? "Return checklist"
+                            : onTrip
+                              ? role === "customer" ? "Live trip & GPS" : "Track trip · End trip"
+                              : gate.ctaLabel;
                       const locked = !gate.canCheckin && !gate.canCheckout && !b.return_checked_at;
                       if (locked)
                         return (
@@ -318,7 +327,7 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                         <Button asChild size="sm" variant="outline" className="rounded-full">
                           <Link to="/bookings/$id/trip" params={{ id: b.id }}>
                             <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                            {gate.ctaLabel}
+                            {label}
                           </Link>
                         </Button>
                       );
@@ -345,7 +354,7 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                   </div>
                 </div>
 
-                {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
+                {role === "customer" && b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
                   <a
                     href={`/booking/qr/${b.qr_code}`}
                     target="_blank"
