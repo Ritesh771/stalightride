@@ -36,6 +36,7 @@ function extractCode(text: string) {
 function ScanPage() {
   const resolve = useServerFn(resolveHandoverCode);
   const confirm = useServerFn(confirmHandover);
+  const navigate = useNavigate();
   const [scanning, setScanning] = useState(true);
   const [manual, setManual] = useState("");
   const [busy, setBusy] = useState(false);
@@ -68,7 +69,9 @@ function ScanPage() {
     setBusy(true);
     try {
       await confirm({ data: { code, phase } });
-      toast.success(phase === "pickup" ? "Pickup confirmed" : "Return confirmed");
+      toast.success(phase === "pickup" ? "Pickup confirmed — now complete the checklist" : "Return confirmed — now complete the return checklist");
+      const id = result?.booking?.id;
+      if (id) return navigate({ to: "/bookings/$id/trip", params: { id } });
       await lookup(code);
     } catch (e: any) {
       toast.error(e?.message ?? "Could not confirm the handover.");

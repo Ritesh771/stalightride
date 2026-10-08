@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText,
   CircleSlash, CarFront, ArrowRight, CheckCircle2, CalendarDays, Clock,
-} from "lucide-react";
+, ScanLine } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -332,6 +332,11 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                         </Button>
                       );
                     })()}
+                    {role === "vendor" && b.status === "confirmed" && b.payment_status === "paid" && !b.return_checked_at && (
+                      <Button asChild size="sm" className="btn-gradient rounded-full">
+                        <Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan rider QR</Link>
+                      </Button>
+                    )}
                     {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
                       <Button asChild size="sm" variant="ghost" className="rounded-full">
                         <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
