@@ -17,6 +17,7 @@ import { getHandoverGate } from "@/lib/trip-window";
 import { useServerFn } from "@tanstack/react-start";
 import { submitInspection } from "@/lib/trip-inspection.functions";
 import { LiveTracker } from "@/components/live-tracker";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id/trip")({ component: TripInspection });
 
@@ -55,12 +56,14 @@ function TripInspection() {
     load();
   }, [id]);
 
+  const isAdmin = useIsAdmin();
   const role = useMemo(() => {
     if (!user || !b) return null;
     if (user.id === b.customer_id) return "customer" as const;
     if (user.id === b.vendor_id) return "vendor" as const;
+    if (isAdmin) return "admin" as const;
     return null;
-  }, [user, b]);
+  }, [user, b, isAdmin]);
 
   if (b === null)
     return (
@@ -93,8 +96,12 @@ function TripInspection() {
     );
 
   const gate = getHandoverGate(b);
-  const canCheckin = gate.canCheckin;
-  const canCheckout = gate.canCheckout;
+  // Checklist is "done" once readings exist; a QR scan alone only stamps the handover time.
+  const pickupDone = b.pickup_odometer != null;
+  const returnDone = b.return_odometer != null;
+  const canCheckin = !pickupDone && (gate.canCheckin || !!b.pickup_checked_at);
+  const canCheckout = pickupDone && !returnDone && (gate.canCheckout || !!b.return_checked_at);
+  const tripActive = !!b.pickup_checked_at && !b.return_checked_at && b.status === "confirmed";
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,7 +123,7 @@ function TripInspection() {
         </div>
 
         <div className="grid gap-6">
-          {(role === "customer" || role === "vendor") && b.pickup_checked_at && !b.return_checked_at && (
+          {tripActive && (
             <Card>
               <CardContent className="p-6">
                 <div className="mb-3 flex items-start justify-between gap-2">
@@ -127,7 +134,7 @@ function TripInspection() {
                     <p className="text-xs text-muted-foreground">
                       {role === "customer"
                         ? "Share your phone GPS so the host can see your live position during the trip."
-                        : "The customer's live phone position updates here while they're sharing."}
+                        : "The rider's live phone position updates here while they're sharing."}
                     </p>
                   </div>
                   <Badge className="bg-red-600 text-white">Active trip</Badge>
@@ -146,9 +153,9 @@ function TripInspection() {
           <Section
             title="Pickup check-in"
             subtitle="Record fuel, odometer and photos before starting the trip."
-            done={!!b.pickup_checked_at}
+            done={pickupDone}
           >
-            {b.pickup_checked_at ? (
+            {pickupDone ? (
               <ReadOnlySnapshot
                 bookingId={b.id}
                 fuel={b.pickup_fuel_pct}
@@ -197,9 +204,9 @@ function TripInspection() {
           <Section
             title="Return check-out"
             subtitle="Record fuel, odometer and photos when returning the vehicle."
-            done={!!b.return_checked_at}
+            done={returnDone}
           >
-            {b.return_checked_at ? (
+            {returnDone ? (
               <ReadOnlySnapshot
                 bookingId={b.id}
                 fuel={b.return_fuel_pct}

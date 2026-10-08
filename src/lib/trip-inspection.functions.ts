@@ -36,7 +36,7 @@ export const submitInspection = createServerFn({ method: "POST" })
     const { data: booking, error } = await supabase
       .from("bookings")
       .select(
-        "id, status, payment_status, start_date, end_date, pickup_time, dropoff_time, customer_id, vendor_id, pickup_checked_at, return_checked_at",
+        "id, status, payment_status, start_date, end_date, pickup_time, dropoff_time, customer_id, vendor_id, pickup_checked_at, return_checked_at, pickup_odometer, return_odometer",
       )
       .eq("id", data.bookingId)
       .maybeSingle();
@@ -48,10 +48,18 @@ export const submitInspection = createServerFn({ method: "POST" })
     if (!isParty && isAdmin !== true) throw new Error("You don't have access to this trip.");
 
     const gate = getHandoverGate(booking);
-    if (data.phase === "pickup" && !gate.canCheckin) {
+    // A QR scan may already have stamped the handover; the checklist is still due then.
+    const pickupScanned = !!booking.pickup_checked_at && booking.pickup_odometer == null;
+    const returnScanned = !!booking.return_checked_at && booking.return_odometer == null;
+    if (data.phase === "pickup" && booking.pickup_odometer != null) throw new Error("Pickup checklist already recorded.");
+    if (data.phase === "return" && booking.return_odometer != null) throw new Error("Return checklist already recorded.");
+    if (data.phase === "return" && booking.pickup_odometer != null && data.odo < booking.pickup_odometer) {
+      throw new Error("Return odometer can't be lower than the pickup reading.");
+    }
+    if (data.phase === "pickup" && !gate.canCheckin && !pickupScanned) {
       throw new Error(gate.checkinReason ?? "Check-in is not available yet.");
     }
-    if (data.phase === "return" && !gate.canCheckout) {
+    if (data.phase === "return" && !gate.canCheckout && !returnScanned) {
       throw new Error(gate.checkoutReason ?? "Check-out is not available yet.");
     }
 
@@ -63,7 +71,7 @@ export const submitInspection = createServerFn({ method: "POST" })
             pickup_photos: data.photoPaths,
             pickup_notes: data.notes || null,
             pickup_damage: data.damage,
-            pickup_checked_at: new Date().toISOString(),
+            pickup_checked_at: booking.pickup_checked_at ?? new Date().toISOString(),
           }
         : {
             return_fuel_pct: data.fuel,
@@ -71,7 +79,7 @@ export const submitInspection = createServerFn({ method: "POST" })
             return_photos: data.photoPaths,
             return_notes: data.notes || null,
             return_damage: data.damage,
-            return_checked_at: new Date().toISOString(),
+            return_checked_at: booking.return_checked_at ?? new Date().toISOString(),
             status: "completed" as const,
           };
 
