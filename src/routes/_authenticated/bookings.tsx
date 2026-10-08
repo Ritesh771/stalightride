@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText,
   CircleSlash, CarFront, ArrowRight, CheckCircle2, CalendarDays, Clock,
-, ScanLine } from "lucide-react";
+  ScanLine } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
