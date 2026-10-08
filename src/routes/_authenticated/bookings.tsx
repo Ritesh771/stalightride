@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   MessageSquare, CreditCard, ClipboardCheck, AlertTriangle, Wallet as WalletIcon, ReceiptText,
   CircleSlash, CarFront, ArrowRight, CheckCircle2, CalendarDays, Clock,
-} from "lucide-react";
+  ScanLine } from "lucide-react";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay.functions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
 
@@ -300,12 +300,21 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                     {role === "customer" && (b.status === "pending" || (b.status === "confirmed" && b.payment_status !== "paid")) && (
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "cancelled")}>Cancel</Button>
                     )}
-                    {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && (
+                    {b.status === "confirmed" && b.payment_status === "paid" && role === "vendor" && b.return_checked_at && b.return_odometer != null && (
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => onAction(b.id, "completed")}>Mark completed</Button>
                     )}
                     {(() => {
                       const gate = getHandoverGate(b);
                       if (!gate.ctaLabel) return null;
+                      const onTrip = b.pickup_checked_at && !b.return_checked_at;
+                      const label =
+                        b.pickup_checked_at && b.pickup_odometer == null
+                          ? "Pickup checklist"
+                          : b.return_checked_at && b.return_odometer == null
+                            ? "Return checklist"
+                            : onTrip
+                              ? role === "customer" ? "Live trip & GPS" : "Track trip · End trip"
+                              : gate.ctaLabel;
                       const locked = !gate.canCheckin && !gate.canCheckout && !b.return_checked_at;
                       if (locked)
                         return (
@@ -318,11 +327,16 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                         <Button asChild size="sm" variant="outline" className="rounded-full">
                           <Link to="/bookings/$id/trip" params={{ id: b.id }}>
                             <ClipboardCheck className="mr-1.5 h-4 w-4" />
-                            {gate.ctaLabel}
+                            {label}
                           </Link>
                         </Button>
                       );
                     })()}
+                    {role === "vendor" && b.status === "confirmed" && b.payment_status === "paid" && !b.return_checked_at && (
+                      <Button asChild size="sm" className="btn-gradient rounded-full">
+                        <Link to="/scan"><ScanLine className="mr-1.5 h-4 w-4" />Scan rider QR</Link>
+                      </Button>
+                    )}
                     {b.status !== "completed" && b.status !== "cancelled" && b.status !== "rejected" && (
                       <Button asChild size="sm" variant="ghost" className="rounded-full">
                         <Link to="/messages/$bookingId" params={{ bookingId: b.id }}><MessageSquare className="mr-1.5 h-4 w-4" />Message</Link>
@@ -345,7 +359,7 @@ function List({ items, role, onAction, onPay, onWalletPay, walletBalance, paying
                   </div>
                 </div>
 
-                {b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
+                {role === "customer" && b.status === "confirmed" && b.payment_status === "paid" && b.qr_code && (
                   <a
                     href={`/booking/qr/${b.qr_code}`}
                     target="_blank"

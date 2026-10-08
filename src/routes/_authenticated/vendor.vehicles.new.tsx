@@ -1,3 +1,4 @@
+import { recommendPrice } from "@/lib/price-guide";
 import { CityPicker } from "@/components/city-picker";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -188,6 +189,26 @@ function NewVehicle() {
             </Section>
 
             <Section title="Pricing (INR)">
+              {form.brand.trim() && form.model.trim() && form.city && Number(form.year) > 1980 && (() => {
+                const r = recommendPrice({ ...form, year: Number(form.year), seats: form.seats ? Number(form.seats) : null });
+                return (
+                  <div className="mb-4 rounded-2xl border border-brand/30 bg-brand/5 p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-brand">Recommended price</p>
+                        <p className="mt-1 font-display text-2xl font-semibold">₹{r.daily.toLocaleString("en-IN")}<span className="text-sm font-normal text-muted-foreground"> / day</span></p>
+                        <p className="text-xs text-muted-foreground">
+                          Typical range ₹{r.dailyLow.toLocaleString("en-IN")}–₹{r.dailyHigh.toLocaleString("en-IN")} · ₹{r.hourly}/hr · ₹{r.weekly.toLocaleString("en-IN")}/week
+                        </p>
+                        <p className="mt-1 text-[11px] text-muted-foreground">Based on similar {form.brand} {form.model} rentals in {form.city} on other rental sites.</p>
+                      </div>
+                      <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={() => setForm((f) => ({ ...f, price_daily: String(r.daily), price_hourly: String(r.hourly), price_weekly: String(r.weekly), security_deposit: String(r.deposit) }))}>
+                        Use these prices
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })()}
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <Field label="Hourly"><Input type="number" step="1" value={form.price_hourly} onChange={(e) => set("price_hourly", e.target.value)} /></Field>
                 <Field label="Daily *"><Input type="number" step="1" value={form.price_daily} onChange={(e) => set("price_daily", e.target.value)} required /></Field>
